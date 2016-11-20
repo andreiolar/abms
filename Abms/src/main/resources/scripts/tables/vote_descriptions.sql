@@ -1,0 +1,4 @@
+CREATE TABLE IF NOT EXISTS VOTE_DESCRIPTIONS(
+	vote_id int(11) PRIMARY KEY,
+    description varchar(500) NOT NULL
+);

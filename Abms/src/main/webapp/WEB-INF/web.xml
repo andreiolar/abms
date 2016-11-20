@@ -1,0 +1,405 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee 
+              http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+         version="2.5"
+         xmlns="http://java.sun.com/xml/ns/javaee">
+
+  <!-- Servlets -->
+
+  <servlet>
+        <servlet-name>mySQLConnection</servlet-name>
+        <servlet-class>com.andreiolar.abms.server.DBConnectionImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>mySQLConnection</servlet-name>
+        <url-pattern>/abms/DBConnectionImpl</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>emailChecker</servlet-name>
+        <servlet-class>com.andreiolar.abms.server.DBCheckForEmailImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>emailChecker</servlet-name>
+        <url-pattern>/abms/DBCheckForEmailImpl</url-pattern>
+    </servlet-mapping>
+    
+     <servlet>
+        <servlet-name>getCountries</servlet-name>
+        <servlet-class>com.andreiolar.abms.server.DBGetCountriesImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>getCountries</servlet-name>
+        <url-pattern>/abms/DBGetCountriesImpl</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>checkUsername</servlet-name>
+        <servlet-class>com.andreiolar.abms.server.DBCheckAvailableUsernameImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>checkUsername</servlet-name>
+        <url-pattern>/abms/DBCheckAvailableUsernameImpl</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>registerUser</servlet-name>
+        <servlet-class>com.andreiolar.abms.server.DBRegisterUserImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>registerUser</servlet-name>
+        <url-pattern>/abms/DBRegisterUserImpl</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>getUserInfo</servlet-name>
+        <servlet-class>com.andreiolar.abms.server.DBGetUserInfoImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>getUserInfo</servlet-name>
+        <url-pattern>/abms/DBGetUserInfoImpl</url-pattern>
+    </servlet-mapping>
+    
+     <servlet>
+        <servlet-name>submitComplaint</servlet-name>
+        <servlet-class>com.andreiolar.abms.server.DBSubmitComplaintImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>submitComplaint</servlet-name>
+        <url-pattern>/abms/DBSubmitComplaintImpl</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>getContactInfo</servlet-name>
+        <servlet-class>com.andreiolar.abms.server.DBGetContactInfoImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>getContactInfo</servlet-name>
+        <url-pattern>/abms/DBGetContactInfoImpl</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+    	<servlet-name>uploadServlet</servlet-name>
+    	<servlet-class>com.andreiolar.abms.server.FileUploadServlet</servlet-class>
+  	</servlet>
+  	<servlet-mapping>
+    	<servlet-name>uploadServlet</servlet-name>
+    	<url-pattern>/abms/upload</url-pattern>
+  	</servlet-mapping>
+  	
+  	<servlet>
+        <servlet-name>getTable</servlet-name>
+        <servlet-class>com.andreiolar.abms.server.GetHtmlTableFromExelImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>getTable</servlet-name>
+        <url-pattern>/abms/GetHtmlTableFromExelImpl</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+	    <servlet-name>downloadServlet</servlet-name>
+	    <servlet-class>com.andreiolar.abms.server.DownloadServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+	    <servlet-name>downloadServlet</servlet-name>
+	    <url-pattern>/abms/downloadServlet</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+        <servlet-name>getPersonalCosts</servlet-name>
+        <servlet-class>com.andreiolar.abms.server.DBPersonalCostsImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>getPersonalCosts</servlet-name>
+        <url-pattern>/abms/DBPersonalCostsImpl</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+	    <servlet-name>pdfGenerator</servlet-name>
+	    <servlet-class>com.andreiolar.abms.server.PersonalViewToPDFServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+	    <servlet-name>pdfGenerator</servlet-name>
+	    <url-pattern>/abms/pdfGenerator</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+        <servlet-name>dateGetter</servlet-name>
+        <servlet-class>com.andreiolar.abms.server.DateGetterImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>dateGetter</servlet-name>
+        <url-pattern>/abms/DateGetterImpl</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>selfReader</servlet-name>
+        <servlet-class>com.andreiolar.abms.server.DBSelfReadingImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>selfReader</servlet-name>
+        <url-pattern>/abms/DBSelfReadingImpl</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>votingOptions</servlet-name>
+        <servlet-class>com.andreiolar.abms.server.DBGetVotingOptionsImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>votingOptions</servlet-name>
+        <url-pattern>/abms/DBGetVotingOptionsImpl</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>votingDescription</servlet-name>
+        <servlet-class>com.andreiolar.abms.server.DBGetVotingDescriptionImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>votingDescription</servlet-name>
+        <url-pattern>/abms/DBGetVotingDescriptionImpl</url-pattern>
+    </servlet-mapping>
+    
+     <servlet>
+        <servlet-name>sendVote</servlet-name>
+        <servlet-class>com.andreiolar.abms.server.DBSubmitVoteImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>sendVote</servlet-name>
+        <url-pattern>/abms/DBSubmitVoteImpl</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>getFinishedVoteIds</servlet-name>
+        <servlet-class>com.andreiolar.abms.server.DBGetFinishedVoteIdsImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>getFinishedVoteIds</servlet-name>
+        <url-pattern>/abms/DBGetFinishedVoteIdsImpl</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>getVoteResults</servlet-name>
+        <servlet-class>com.andreiolar.abms.server.DBGetVotingResultsImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>getVoteResults</servlet-name>
+        <url-pattern>/abms/DBGetVotingResultsImpl</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>getUserVote</servlet-name>
+        <servlet-class>com.andreiolar.abms.server.DBGetUserVoteImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>getUserVote</servlet-name>
+        <url-pattern>/abms/DBGetUserVoteImpl</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>updateUser</servlet-name>
+        <servlet-class>com.andreiolar.abms.server.DBUpdateUserImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>updateUser</servlet-name>
+        <url-pattern>/abms/DBUpdateUserImpl</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>changePassword</servlet-name>
+        <servlet-class>com.andreiolar.abms.server.DBChangePasswordImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>changePassword</servlet-name>
+        <url-pattern>/abms/DBChangePasswordImpl</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>retrieveComplaints</servlet-name>
+        <servlet-class>com.andreiolar.abms.server.DBGetComplaintInfoImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>retrieveComplaints</servlet-name>
+        <url-pattern>/abms/DBGetComplaintInfoImpl</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>getReadings</servlet-name>
+        <servlet-class>com.andreiolar.abms.server.DBGetSelfReadingsImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>getReadings</servlet-name>
+        <url-pattern>/abms/DBGetSelfReadingsImpl</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>checkForVoteId</servlet-name>
+        <servlet-class>com.andreiolar.abms.server.DBCheckIfVoteIDAvailableImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>checkForVoteId</servlet-name>
+        <url-pattern>/abms/DBCheckIfVoteIDAvailableImpl</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>checkForActiveVotes</servlet-name>
+        <servlet-class>com.andreiolar.abms.server.DBCheckIfActiveVotingSessionImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>checkForActiveVotes</servlet-name>
+        <url-pattern>/abms/DBCheckIfActiveVotingSessionImpl</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>getActiveVoteID</servlet-name>
+        <servlet-class>com.andreiolar.abms.server.DBGetActiveVoteIDImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>getActiveVoteID</servlet-name>
+        <url-pattern>/abms/DBGetActiveVoteIDImpl</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>deactivateVote</servlet-name>
+        <servlet-class>com.andreiolar.abms.server.DBDeactivateVoteImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>deactivateVote</servlet-name>
+        <url-pattern>/abms/DBDeactivateVoteImpl</url-pattern>
+    </servlet-mapping>
+    
+     <servlet>
+        <servlet-name>insertVotingSession</servlet-name>
+        <servlet-class>com.andreiolar.abms.server.DBInsertVoteImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>insertVotingSession</servlet-name>
+        <url-pattern>/abms/DBInsertVoteImpl</url-pattern>
+    </servlet-mapping>
+    
+     <servlet>
+        <servlet-name>insertEmail</servlet-name>
+        <servlet-class>com.andreiolar.abms.server.DBInsertEmailImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>insertEmail</servlet-name>
+        <url-pattern>/abms/DBInsertEmailImpl</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>updateUsername</servlet-name>
+        <servlet-class>com.andreiolar.abms.server.DBChangeUsernameImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>updateUsername</servlet-name>
+        <url-pattern>/abms/DBChangeUsernameImpl</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>forgotPassword</servlet-name>
+        <servlet-class>com.andreiolar.abms.server.DBForgotPasswordImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>forgotPassword</servlet-name>
+        <url-pattern>/abms/DBForgotPasswordImpl</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>resetPassword</servlet-name>
+        <servlet-class>com.andreiolar.abms.server.DBChangeForgotPasswordImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>resetPassword</servlet-name>
+        <url-pattern>/abms/DBChangeForgotPasswordImpl</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>sendMessage</servlet-name>
+        <servlet-class>com.andreiolar.abms.server.DBSendMessageImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>sendMessage</servlet-name>
+        <url-pattern>/abms/DBSendMessageImpl</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>getAllConversations</servlet-name>
+        <servlet-class>com.andreiolar.abms.server.DBGetAllConversationsImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>getAllConversations</servlet-name>
+        <url-pattern>/abms/DBGetAllConversationsImpl</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>viewConversation</servlet-name>
+        <servlet-class>com.andreiolar.abms.server.ViewConversationServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>viewConversation</servlet-name>
+        <url-pattern>/abms/viewConversation</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>viewMessagesForConversation</servlet-name>
+        <servlet-class>com.andreiolar.abms.server.DBGetMessagesForConversationImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>viewMessagesForConversation</servlet-name>
+        <url-pattern>/abms/DBGetMessagesForConversationImpl</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>replyToConversation</servlet-name>
+        <servlet-class>com.andreiolar.abms.server.DBReplyToConversationImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>replyToConversation</servlet-name>
+        <url-pattern>/abms/DBReplyToConversationImpl</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>moveConversation</servlet-name>
+        <servlet-class>com.andreiolar.abms.server.DBMoveConversationImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>moveConversation</servlet-name>
+        <url-pattern>/abms/DBMoveConversationImpl</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>getAllSuggestions</servlet-name>
+        <servlet-class>com.andreiolar.abms.server.DBGetAllSuggestionsImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>getAllSuggestions</servlet-name>
+        <url-pattern>/abms/DBGetAllSuggestionsImpl</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>deleteConversation</servlet-name>
+        <servlet-class>com.andreiolar.abms.server.DBDeleteConversationImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>deleteConversation</servlet-name>
+        <url-pattern>/abms/DBDeleteConversationImpl</url-pattern>
+    </servlet-mapping>
+    
+     <servlet>
+        <servlet-name>getTenantSuggestions</servlet-name>
+        <servlet-class>com.andreiolar.abms.server.DBGetTenantSuggestionsImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>getTenantSuggestions</servlet-name>
+        <url-pattern>/abms/DBGetTenantSuggestionsImpl</url-pattern>
+    </servlet-mapping>
+    
+  
+  <!-- Default page to serve -->
+  <welcome-file-list>
+    <welcome-file>Abms.html</welcome-file>
+  </welcome-file-list>
+  
+    
+
+</web-app>

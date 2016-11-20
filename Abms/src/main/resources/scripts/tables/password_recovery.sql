@@ -1,0 +1,4 @@
+CREATE TABLE IF NOT EXISTS PASSWORD_RECOVERY(
+	email varchar(50) PRIMARY KEY,
+	token varchar(500) NOT NULL
+);
