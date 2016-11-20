@@ -4,7 +4,7 @@
 
   <!-- POM file generated with GWT webAppCreator -->
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.andreiolar.ambs</groupId>
+  <groupId>com.andreiolar.abms</groupId>
   <artifactId>Abms</artifactId>
   <packaging>war</packaging>
   <version>1.0-SNAPSHOT</version>
@@ -16,8 +16,8 @@
     <!-- Note: GWT needs at least java 1.6 -->
     <maven.compiler.source>1.7</maven.compiler.source>
     <maven.compiler.target>1.7</maven.compiler.target>
-  </properties>
-
+  </properties> 
+ 
   <dependencyManagement>
     <dependencies>
       <!-- ensure all GWT deps use the same version (unless overridden) -->
