@@ -57,7 +57,7 @@ public class DBForgotPasswordImpl extends RemoteServiceServlet implements DBForg
 		if (executed > 0) {
 			String subject = "Password Recovery";
 			String to = email;
-			String message = "In order to reset your password plese click the link below! <br><br><a href=\"http://127.0.0.1:8888/AdministrareBloc.html#PasswordRecoveryPlace:"
+			String message = "In order to reset your password plese click the link below! <br><br><a href=\"http://127.0.0.1:8888/Abms.html#PasswordRecoveryPlace:"
 					+ token + "\">Click Me!</a> ";
 
 			MailSender.sendMail(subject, to, message, null);

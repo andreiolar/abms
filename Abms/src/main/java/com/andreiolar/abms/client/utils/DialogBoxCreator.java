@@ -39,7 +39,7 @@ public class DialogBoxCreator {
 				dialogBox.hide();
 
 				if (goToHomepage) {
-					Window.Location.replace("http://127.0.0.1:8888/AdministrareBloc.html");
+					Window.Location.replace("http://127.0.0.1:8888/Abms.html");
 				}
 
 				if (reload) {
@@ -81,7 +81,7 @@ public class DialogBoxCreator {
 				dialogBox.hide();
 
 				if (goToHomepage) {
-					Window.Location.replace("http://127.0.0.1:8888/AdministrareBloc.html");
+					Window.Location.replace("http://127.0.0.1:8888/Abms.html");
 				}
 
 				if (reload) {

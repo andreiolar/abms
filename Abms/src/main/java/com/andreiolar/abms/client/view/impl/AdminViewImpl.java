@@ -314,7 +314,7 @@ public class AdminViewImpl extends Composite implements AdminView {
 
 			@Override
 			public void execute() {
-				Window.Location.replace("http://127.0.0.1:8888/AdministrareBloc.html");
+				Window.Location.replace("http://127.0.0.1:8888/Abms.html");
 			}
 		});
 

@@ -515,7 +515,7 @@ public class RegisterViewImpl extends Composite implements RegisterView {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				Window.Location.replace("http://127.0.0.1:8888/AdministrareBloc.html");
+				Window.Location.replace("http://127.0.0.1:8888/Abms.html");
 			}
 		});
 
@@ -682,7 +682,7 @@ public class RegisterViewImpl extends Composite implements RegisterView {
 				dialogBox.hide();
 
 				if (goToHomepage) {
-					Window.Location.replace("http://127.0.0.1:8888/AdministrareBloc.html");
+					Window.Location.replace("http://127.0.0.1:8888/Abms.html");
 				}
 			}
 		});
