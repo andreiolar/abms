@@ -20,10 +20,12 @@
    <stylesheet src="Abms.css" />
 
   <!-- Other module inherits                                      -->
+  <inherits name="org.moxieapps.gwt.highcharts.Highcharts"/>
+  <inherits name="com.vaadin.polymer.Elements"/>
 
   <!-- Specify the app entry point class.                         -->
   <entry-point class='com.andreiolar.abms.client.Abms'/>
-  <inherits name="org.moxieapps.gwt.highcharts.Highcharts"/>
+  
   
   <replace-with class="com.andreiolar.abms.client.ClientFactoryImpl">
     <when-type-is class="com.andreiolar.abms.client.ClientFactory"/>

@@ -1,4 +1,5 @@
 eclipse.preferences.version=1
-lastWarOutDir=E\:/EclipseWorkspace/Abms/target/war
+lastWarOutDir=E\:/EclipseWorkspace/abms-repo/Abms/target/war
+launchConfigExternalUrlPrefix=
 warSrcDir=src/main/webapp
 warSrcDirIsOutput=false
