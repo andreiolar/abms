@@ -16,6 +16,8 @@
 		<!-- Note: GWT needs at least java 1.6 -->
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
+		<gwt-material.version>2.0-rc2</gwt-material.version>
+		<gwt-material-table.version>1.0-rc2</gwt-material-table.version>
 	</properties>
 
 	<dependencyManagement>
@@ -90,6 +92,28 @@
 			<artifactId>vaadin-gwt-polymer-elements</artifactId>
 			<version>1.7.0.0</version>
 			<scope>provided</scope>
+		</dependency>
+
+		<!-- GwtMaterial -->
+		<dependency>
+			<groupId>com.github.gwtmaterialdesign</groupId>
+			<artifactId>gwt-material</artifactId>
+			<version>${gwt-material.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.gwtmaterialdesign</groupId>
+			<artifactId>gwt-material-themes</artifactId>
+			<version>${gwt-material.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.gwtmaterialdesign</groupId>
+			<artifactId>gwt-material-addins</artifactId>
+			<version>${gwt-material.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.gwtmaterialdesign</groupId>
+			<artifactId>gwt-material-table</artifactId>
+			<version>${gwt-material-table.version}</version>
 		</dependency>
 
 	</dependencies>
