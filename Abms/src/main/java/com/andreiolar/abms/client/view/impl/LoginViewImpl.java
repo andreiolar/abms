@@ -4,6 +4,7 @@ import java.util.Date;
 
 import com.andreiolar.abms.client.constants.DialogBoxConstants;
 import com.andreiolar.abms.client.constants.LoginFormConstants;
+import com.andreiolar.abms.client.exception.InvalidCredentialsException;
 import com.andreiolar.abms.client.place.AdminPlace;
 import com.andreiolar.abms.client.place.UserPlace;
 import com.andreiolar.abms.client.rpc.DBConnection;
@@ -12,6 +13,7 @@ import com.andreiolar.abms.client.rpc.DBForgotPassword;
 import com.andreiolar.abms.client.rpc.DBForgotPasswordAsync;
 import com.andreiolar.abms.client.utils.DialogBoxCreator;
 import com.andreiolar.abms.client.view.LoginView;
+import com.andreiolar.abms.client.widgets.ModalCreator;
 import com.andreiolar.abms.shared.User;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Display;
@@ -22,6 +24,9 @@ import com.google.gwt.dom.client.Style.TextTransform;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -35,6 +40,7 @@ import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PasswordTextBox;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -48,6 +54,7 @@ import gwt.material.design.client.ui.MaterialButton;
 import gwt.material.design.client.ui.MaterialCheckBox;
 import gwt.material.design.client.ui.MaterialColumn;
 import gwt.material.design.client.ui.MaterialImage;
+import gwt.material.design.client.ui.MaterialModal;
 import gwt.material.design.client.ui.MaterialPanel;
 import gwt.material.design.client.ui.MaterialRow;
 import gwt.material.design.client.ui.MaterialTextBox;
@@ -96,6 +103,18 @@ public class LoginViewImpl extends Composite implements LoginView {
 		MaterialTextBox passwordBox = new MaterialTextBox();
 		passwordBox.setType(InputType.PASSWORD);
 		passwordBox.setPlaceholder("Password");
+		passwordBox.addKeyDownHandler(new KeyDownHandler() {
+
+			@Override
+			public void onKeyDown(KeyDownEvent event) {
+				if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+					String username = userBox.getText();
+					String password = passwordBox.getText();
+
+					performUserConnection(username, password);
+				}
+			}
+		});
 
 		MaterialButton loginButton = new MaterialButton();
 		loginButton.setWaves(WavesType.LIGHT);
@@ -105,7 +124,10 @@ public class LoginViewImpl extends Composite implements LoginView {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				MaterialToast.fireToast("Login", "rounded");
+				String username = userBox.getText();
+				String password = passwordBox.getText();
+
+				performUserConnection(username, password);
 			}
 		});
 
@@ -426,12 +448,15 @@ public class LoginViewImpl extends Composite implements LoginView {
 			@Override
 			public void onFailure(Throwable caught) {
 				DOM.getElementById("loading").getStyle().setDisplay(Display.NONE);
-				DialogBox dialogBox = DialogBoxCreator.createDialogBox(DialogBoxConstants.TITLE, caught.getMessage(), DialogBoxConstants.CLOSE_BUTTON,
-						false, false);
-				dialogBox.setGlassEnabled(true);
-				dialogBox.setAnimationEnabled(true);
-				dialogBox.center();
-				dialogBox.show();
+
+				if (caught instanceof InvalidCredentialsException) {
+					MaterialToast.fireToast(caught.getMessage(), "rounded");
+				} else {
+					MaterialModal materialModal = ModalCreator.createModal("Something went wrong", caught);
+					RootPanel.get().add(materialModal);
+					materialModal.open();
+				}
+
 			}
 
 		});

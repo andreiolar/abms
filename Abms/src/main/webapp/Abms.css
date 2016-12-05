@@ -4,6 +4,7 @@ body {
 	background-color: #E8E8E8 !important;
 	font-family: Arial, sans-serif !important;
 	color: #333333;
+	width: 100%;
 	height: 100%;
 }
 
@@ -500,10 +501,13 @@ a:active {
 
 .login-demo{
 	padding: 5%;
-	background-image: linear-gradient(rgba(255,255,255,0.5),rgba(255,255,255,0.5)), url("images/icons/neighborhood.png");
+	height: 100%;
+	
+	margin-bottom: 0 !important;
+	
+	background-image: linear-gradient(rgba(255,255,255,0.5),rgba(255,255,255,0.5)), url("images/icons/city_1.png");
 	background-repeat: no-repeat;
 	background-size: cover;
-	height: 100%;
 }
 
 .panel {
