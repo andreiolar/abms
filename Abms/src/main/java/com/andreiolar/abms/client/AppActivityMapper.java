@@ -3,12 +3,10 @@ package com.andreiolar.abms.client;
 import com.andreiolar.abms.client.activity.AdminActivity;
 import com.andreiolar.abms.client.activity.LoginActivity;
 import com.andreiolar.abms.client.activity.PasswordRecoveryActivity;
-import com.andreiolar.abms.client.activity.RegisterActivity;
 import com.andreiolar.abms.client.activity.UserActivity;
 import com.andreiolar.abms.client.place.AdminPlace;
 import com.andreiolar.abms.client.place.LoginPlace;
 import com.andreiolar.abms.client.place.PasswordRecoveryPlace;
-import com.andreiolar.abms.client.place.RegisterPlace;
 import com.andreiolar.abms.client.place.UserPlace;
 import com.google.gwt.activity.shared.Activity;
 import com.google.gwt.activity.shared.ActivityMapper;
@@ -27,8 +25,6 @@ public class AppActivityMapper implements ActivityMapper {
 	public Activity getActivity(Place place) {
 		if (place instanceof LoginPlace) {
 			return new LoginActivity((LoginPlace) place, clientFactory);
-		} else if (place instanceof RegisterPlace) {
-			return new RegisterActivity((RegisterPlace) place, clientFactory);
 		} else if (place instanceof UserPlace) {
 			return new UserActivity((UserPlace) place, clientFactory);
 		} else if (place instanceof AdminPlace) {

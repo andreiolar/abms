@@ -1,12 +1,11 @@
 package com.andreiolar.abms.server;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Properties;
 
+import com.andreiolar.abms.client.exception.EmailNotFoundException;
 import com.andreiolar.abms.client.rpc.DBCheckForEmail;
 import com.andreiolar.abms.shared.Email;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -15,27 +14,11 @@ public class DBCheckForEmailImpl extends RemoteServiceServlet implements DBCheck
 
 	private static final long serialVersionUID = 1L;
 
-	private String URL = new String("jdbc:mysql://localhost:3306");
-	private String user = "root";
-	private String pass = "andrei";
-	private String schema = "administrare_bloc";
-
 	public DBCheckForEmailImpl() {
 	}
 
-	private Connection getConnection() throws Exception {
-		Properties props = new Properties();
-		props.setProperty("user", user);
-		props.setProperty("password", pass);
-		props.setProperty("zeroDateTimeBehavior", "convertToNull");
-		Class.forName("com.mysql.jdbc.Driver").newInstance();
-		Connection conn = DriverManager.getConnection(URL + "/" + schema, props);
-
-		return conn;
-	}
-
 	@Override
-	public Email checkForEmail(String emailAddress) throws Exception {
+	public Email checkForEmail(String emailAddress) throws EmailNotFoundException {
 
 		Email emailToReturn = null;
 		Connection conn = null;
@@ -43,7 +26,7 @@ public class DBCheckForEmailImpl extends RemoteServiceServlet implements DBCheck
 		ResultSet rs = null;
 
 		try {
-			conn = getConnection();
+			conn = MyConnection.getConnection();
 
 			try {
 				String q = "select * from email_for_registration where email=?";
@@ -60,16 +43,21 @@ public class DBCheckForEmailImpl extends RemoteServiceServlet implements DBCheck
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
-		} catch (SQLException ex) {
-			ex.printStackTrace();
+		} catch (Exception ex) {
+			throw new RuntimeException("Something went wrong: " + ex.getMessage(), ex);
 		} finally {
-			rs.close();
-			stmt.close();
-			conn.close();
+			try {
+				rs.close();
+				stmt.close();
+				conn.close();
+			} catch (SQLException e) {
+				throw new RuntimeException("Something went wrong: " + e.getMessage(), e);
+			}
+
 		}
 
 		if (emailToReturn == null) {
-			throw new Exception("E-Mail Address Not Found!");
+			throw new EmailNotFoundException("E-Mail Address Not Found!");
 		}
 
 		return emailToReturn;

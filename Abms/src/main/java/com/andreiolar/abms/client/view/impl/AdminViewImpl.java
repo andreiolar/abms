@@ -42,7 +42,6 @@ import com.andreiolar.abms.client.widgets.CustomTexBox;
 import com.andreiolar.abms.client.widgets.InstInfoWidget;
 import com.andreiolar.abms.client.widgets.VotingResultsWidget;
 import com.andreiolar.abms.shared.ComplaintInfo;
-import com.andreiolar.abms.shared.EmailValidator;
 import com.andreiolar.abms.shared.EmptyStringValidator;
 import com.andreiolar.abms.shared.IDSeriesValidator;
 import com.andreiolar.abms.shared.MobileNumberValidator;
@@ -826,7 +825,7 @@ public class AdminViewImpl extends Composite implements AdminView {
 		// Email
 		final CustomTexBox emailBox = new CustomTexBox();
 		emailBox.setMaxLength(50);
-		emailBox.addValidator(new EmailValidator());
+		// emailBox.addValidator(new EmailValidator());
 		emailBox.setStyleName("fixed-input");
 
 		emailBox.addChangeHandler(new ChangeHandler() {

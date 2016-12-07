@@ -24,6 +24,10 @@ import gwt.material.design.client.ui.html.Br;
 
 public final class ModalCreator {
 
+	public static MaterialModal createModal(Throwable caught) {
+		return createModal("Something went wrong", caught);
+	}
+
 	public static MaterialModal createModal(String title, Throwable caught) {
 		MaterialModal materialModal = new MaterialModal();
 		materialModal.setType(ModalType.DEFAULT);
