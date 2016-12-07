@@ -119,7 +119,7 @@ public class DBRegisterUserImpl extends RemoteServiceServlet implements DBRegist
 
 				String subject = "Welcome " + userInfo.getFirstName() + " " + userInfo.getLastName();
 				String to = userInfo.getEmail();
-				String message = "<p>" + subject + "," + "<br><br>" + "You have been successfully registered to your APMS." + "<br>"
+				String message = "<p>" + subject + "," + "<br><br>" + "You have been successfully registered to your ABMS." + "<br>"
 						+ "If you have questions please don't hesitate to contact your Administrator. You'll find all necesarry contact information, by clicking the <b>Hotline</b> Button on your hommepage, or by navigating to Help -&gt; About."
 						+ "<br><br>" + "Login information:" + "<br>" + "Username: " + userInfo.getUsername() + "<br>" + "Password: NOT VISIBLE"
 						+ "<br><br>" + "In case you forget your password please use the form available on the Login Page." + "<br><br>"
