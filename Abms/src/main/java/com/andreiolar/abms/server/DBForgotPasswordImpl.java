@@ -3,10 +3,11 @@ package com.andreiolar.abms.server;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Random;
 
 import com.andreiolar.abms.client.rpc.DBForgotPassword;
 import com.andreiolar.abms.mail.MailSender;
-import com.andreiolar.abms.security.BCrypt;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class DBForgotPasswordImpl extends RemoteServiceServlet implements DBForgotPassword {
@@ -14,16 +15,17 @@ public class DBForgotPasswordImpl extends RemoteServiceServlet implements DBForg
 	private static final long serialVersionUID = 681017190615010623L;
 
 	@Override
-	public Boolean sendMailToServer(String email) throws Exception {
-		Boolean result = new Boolean(false);
+	public Boolean sendMailToServer(String email) throws SQLException {
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
-		String token = null;
+
+		boolean isValidEmail = false;
 		int executed = 0;
 
 		try {
 			conn = MyConnection.getConnection();
+
 			try {
 				String q = "select email from user_info where email=?";
 				stmt = conn.prepareStatement(q);
@@ -32,40 +34,49 @@ public class DBForgotPasswordImpl extends RemoteServiceServlet implements DBForg
 				rs = stmt.executeQuery();
 
 				if (rs.next()) {
-					String q2 = "insert into password_recovery(email, token) values(?, ?)";
-					stmt = conn.prepareStatement(q2);
-					stmt.setString(1, email);
-					token = BCrypt.hashpw(email, BCrypt.gensalt());
-					stmt.setString(2, token);
-
-					executed = stmt.executeUpdate();
-
+					isValidEmail = true;
 				}
 
-			} catch (Exception ex) {
+			} catch (SQLException ex) {
 				ex.printStackTrace();
 			} finally {
+				rs.close();
 				stmt.close();
 			}
 
+			if (isValidEmail) {
+				try {
+					String q = "INSERT INTO password_recovery(email, token) VALUES (?, ?) ON DUPLICATE KEY UPDATE token = VALUES(token)";
+					stmt = conn.prepareStatement(q);
+					stmt.setString(1, email);
+
+					Random random = new Random();
+					int token = random.nextInt(999999 - 1 + 1) + 1;
+					stmt.setString(2, String.valueOf(token));
+
+					executed = stmt.executeUpdate();
+
+					if (executed > 0) {
+						String subject = "Password Recovery";
+						String to = email;
+						String message = "<p>"
+								+ "You have successuflly requested a new password reset. In order to reset your password please use the token below."
+								+ "</p>" + "<p>Token: <b>" + token + "</b></p>" + "<br />" + "Thank you,<br />" + "Administration";
+						MailSender.sendMail(subject, to, message, null);
+					}
+				} catch (SQLException sqle) {
+					sqle.printStackTrace();
+				} finally {
+					stmt.close();
+				}
+			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		} finally {
 			conn.close();
 		}
 
-		if (executed > 0) {
-			String subject = "Password Recovery";
-			String to = email;
-			String message = "In order to reset your password plese click the link below! <br><br><a href=\"http://127.0.0.1:8888/Abms.html#PasswordRecoveryPlace:"
-					+ token + "\">Click Me!</a> ";
-
-			MailSender.sendMail(subject, to, message, null);
-		} else {
-			throw new Exception("Error processing your request. Plese check your E-Mail Address again!");
-		}
-
-		return result;
+		return true;
 	}
 
 }

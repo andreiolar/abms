@@ -11,6 +11,8 @@ import com.andreiolar.abms.client.rpc.DBCheckForEmail;
 import com.andreiolar.abms.client.rpc.DBCheckForEmailAsync;
 import com.andreiolar.abms.client.rpc.DBConnection;
 import com.andreiolar.abms.client.rpc.DBConnectionAsync;
+import com.andreiolar.abms.client.rpc.DBForgotPassword;
+import com.andreiolar.abms.client.rpc.DBForgotPasswordAsync;
 import com.andreiolar.abms.client.rpc.DBRegisterUser;
 import com.andreiolar.abms.client.rpc.DBRegisterUserAsync;
 import com.andreiolar.abms.client.view.LoginView;
@@ -43,6 +45,7 @@ import gwt.material.design.client.constants.Color;
 import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.constants.ImageType;
 import gwt.material.design.client.constants.InputType;
+import gwt.material.design.client.constants.ModalType;
 import gwt.material.design.client.constants.WavesType;
 import gwt.material.design.client.ui.MaterialButton;
 import gwt.material.design.client.ui.MaterialCheckBox;
@@ -54,10 +57,12 @@ import gwt.material.design.client.ui.MaterialListBox;
 import gwt.material.design.client.ui.MaterialLoader;
 import gwt.material.design.client.ui.MaterialModal;
 import gwt.material.design.client.ui.MaterialModalContent;
+import gwt.material.design.client.ui.MaterialModalFooter;
 import gwt.material.design.client.ui.MaterialPanel;
 import gwt.material.design.client.ui.MaterialRow;
 import gwt.material.design.client.ui.MaterialTextArea;
 import gwt.material.design.client.ui.MaterialTextBox;
+import gwt.material.design.client.ui.MaterialTitle;
 import gwt.material.design.client.ui.MaterialToast;
 import gwt.material.design.client.ui.html.Option;
 
@@ -164,7 +169,9 @@ public class LoginViewImpl extends Composite implements LoginView {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				MaterialToast.fireToast("Password", "rounded");
+				MaterialModal forgotPasswordPanel = createForgotPasswordPanel();
+				RootPanel.get().add(forgotPasswordPanel);
+				forgotPasswordPanel.open();
 			}
 		});
 
@@ -184,6 +191,136 @@ public class LoginViewImpl extends Composite implements LoginView {
 		materialRow.add(materialColumn);
 
 		return materialRow;
+	}
+
+	protected MaterialModal createForgotPasswordPanel() {
+		MaterialModal forgotPasswordPanel = new MaterialModal();
+		forgotPasswordPanel.setType(ModalType.DEFAULT);
+		forgotPasswordPanel.setDismissible(false);
+		forgotPasswordPanel.setInDuration(500);
+		forgotPasswordPanel.setOutDuration(500);
+
+		MaterialModalContent materialModalContent = new MaterialModalContent();
+		MaterialTitle materialTitle = new MaterialTitle("Password Recovery");
+		materialTitle.setDescription(
+				"Please provide all necessary information in order to reset your password. A code will be sent to you by E-Mail which will be used in the next step.");
+
+		materialModalContent.add(materialTitle);
+
+		MaterialTextBox emailTextBox = new MaterialTextBox();
+		emailTextBox.setType(InputType.EMAIL);
+		emailTextBox.setPlaceholder("E-Mail");
+		emailTextBox.setIconType(IconType.ACCOUNT_CIRCLE);
+		materialModalContent.add(emailTextBox);
+
+		MaterialButton processEmailButton = new MaterialButton();
+		processEmailButton.setWaves(WavesType.LIGHT);
+		processEmailButton.setText("Send Code");
+		processEmailButton.setWidth("100%");
+		processEmailButton.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				String email = emailTextBox.getText();
+				processEmailButton.setEnabled(false);
+
+				if (email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.(?:[a-zA-Z]{2,6})$")) {
+					DBForgotPasswordAsync rpcService = (DBForgotPasswordAsync) GWT.create(DBForgotPassword.class);
+					ServiceDefTarget target = (ServiceDefTarget) rpcService;
+					String moduleRelativeURL = GWT.getModuleBaseURL() + "DBForgotPasswordImpl";
+					target.setServiceEntryPoint(moduleRelativeURL);
+
+					rpcService.sendMailToServer(email, new AsyncCallback<Boolean>() {
+
+						@Override
+						public void onSuccess(Boolean result) {
+							materialTitle.setDescription("Please enter the code you recieved by E-Mail.");
+							materialModalContent.remove(emailTextBox);
+							materialModalContent.remove(processEmailButton);
+
+							MaterialTextBox codeBox = new MaterialTextBox();
+							codeBox.setType(InputType.TEXT);
+							codeBox.setPlaceholder("Confirmation Code");
+							codeBox.setIconType(IconType.LOCK);
+							materialModalContent.add(codeBox);
+
+							MaterialButton processCodeButton = new MaterialButton();
+							processCodeButton.setWaves(WavesType.LIGHT);
+							processCodeButton.setText("Proceed");
+							processCodeButton.setWidth("100%");
+							processCodeButton.addClickHandler(new ClickHandler() {
+
+								@Override
+								public void onClick(ClickEvent event) {
+									materialTitle.setDescription("Please choose a new password.");
+									materialModalContent.remove(codeBox);
+									materialModalContent.remove(processCodeButton);
+
+									MaterialTextBox passwordBox = new MaterialTextBox();
+									passwordBox.setType(InputType.PASSWORD);
+									passwordBox.setPlaceholder("Password");
+									passwordBox.setLength(10);
+									passwordBox.setMaxLength(10);
+									passwordBox.setIconType(IconType.LOCK);
+									materialModalContent.add(passwordBox);
+
+									MaterialTextBox repeatPasswordBox = new MaterialTextBox();
+									repeatPasswordBox.setType(InputType.PASSWORD);
+									repeatPasswordBox.setPlaceholder("Repeat Password");
+									repeatPasswordBox.setLength(10);
+									repeatPasswordBox.setMaxLength(10);
+									repeatPasswordBox.setIconType(IconType.LOCK);
+									materialModalContent.add(repeatPasswordBox);
+
+									MaterialButton processPasswordButton = new MaterialButton();
+									processPasswordButton.setWaves(WavesType.LIGHT);
+									processPasswordButton.setText("Change Password");
+									processPasswordButton.setWidth("100%");
+									processPasswordButton.addClickHandler(new ClickHandler() {
+
+										@Override
+										public void onClick(ClickEvent event) {
+											forgotPasswordPanel.close();
+											RootPanel.get().remove(forgotPasswordPanel);
+										}
+									});
+									materialModalContent.add(processPasswordButton);
+
+								}
+							});
+							materialModalContent.add(processCodeButton);
+						}
+
+						@Override
+						public void onFailure(Throwable caught) {
+							processEmailButton.setEnabled(true);
+							MaterialModal errorModal = ModalCreator.createModal(caught);
+							RootPanel.get().add(errorModal);
+							errorModal.open();
+						}
+					});
+				} else {
+					processEmailButton.setEnabled(true);
+					emailTextBox.setError("Not a valid E-Mail Address.");
+				}
+			}
+		});
+		materialModalContent.add(processEmailButton);
+
+		MaterialModalFooter materialModalFooter = new MaterialModalFooter();
+		MaterialButton closeButton = new MaterialButton();
+		closeButton.setText("Close");
+		closeButton.setType(ButtonType.FLAT);
+		closeButton.addClickHandler(h -> {
+			forgotPasswordPanel.close();
+			RootPanel.get().remove(forgotPasswordPanel);
+		});
+
+		materialModalFooter.add(closeButton);
+		forgotPasswordPanel.add(materialModalContent);
+		forgotPasswordPanel.add(materialModalFooter);
+
+		return forgotPasswordPanel;
 	}
 
 	protected MaterialModal createRegistrationPanel() {
@@ -659,7 +796,7 @@ public class LoginViewImpl extends Composite implements LoginView {
 	}
 
 	private static void performUserConnection(String username, String password) {
-		MaterialLoader.showLoading(true);
+		// MaterialLoader.showLoading(true);
 
 		DBConnectionAsync rpcService = (DBConnectionAsync) GWT.create(DBConnection.class);
 		ServiceDefTarget target = (ServiceDefTarget) rpcService;
@@ -670,7 +807,7 @@ public class LoginViewImpl extends Composite implements LoginView {
 
 			@Override
 			public void onSuccess(User user) {
-				MaterialLoader.showLoading(false);
+				// MaterialLoader.showLoading(false);
 
 				String username = user.getUsername();
 				final long DURATION = 1000 * 60 * 60 * 24 * 1; // 1 day
@@ -686,7 +823,7 @@ public class LoginViewImpl extends Composite implements LoginView {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				MaterialLoader.showLoading(false);
+				// MaterialLoader.showLoading(false);
 
 				if (caught instanceof InvalidCredentialsException) {
 					MaterialToast.fireToast(caught.getMessage(), "rounded");
