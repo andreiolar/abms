@@ -4,5 +4,5 @@ import com.google.gwt.user.client.rpc.RemoteService;
 
 public interface DBChangeForgotPassword extends RemoteService {
 
-	public Boolean resetPassword(String token, String password) throws Exception;
+	public Boolean resetPassword(String email, String password) throws Exception;
 }

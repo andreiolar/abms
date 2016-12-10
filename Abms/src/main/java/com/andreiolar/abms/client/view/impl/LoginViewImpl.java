@@ -3,12 +3,17 @@ package com.andreiolar.abms.client.view.impl;
 import java.util.Date;
 
 import com.andreiolar.abms.client.exception.EmailNotFoundException;
+import com.andreiolar.abms.client.exception.InvalidCodeException;
 import com.andreiolar.abms.client.exception.InvalidCredentialsException;
 import com.andreiolar.abms.client.exception.UsernameUnavailableException;
 import com.andreiolar.abms.client.place.AdminPlace;
 import com.andreiolar.abms.client.place.UserPlace;
+import com.andreiolar.abms.client.rpc.DBChangeForgotPassword;
+import com.andreiolar.abms.client.rpc.DBChangeForgotPasswordAsync;
 import com.andreiolar.abms.client.rpc.DBCheckForEmail;
 import com.andreiolar.abms.client.rpc.DBCheckForEmailAsync;
+import com.andreiolar.abms.client.rpc.DBCodeChecker;
+import com.andreiolar.abms.client.rpc.DBCodeCheckerAsync;
 import com.andreiolar.abms.client.rpc.DBConnection;
 import com.andreiolar.abms.client.rpc.DBConnectionAsync;
 import com.andreiolar.abms.client.rpc.DBForgotPassword;
@@ -252,40 +257,117 @@ public class LoginViewImpl extends Composite implements LoginView {
 
 								@Override
 								public void onClick(ClickEvent event) {
-									materialTitle.setDescription("Please choose a new password.");
-									materialModalContent.remove(codeBox);
-									materialModalContent.remove(processCodeButton);
+									String code = codeBox.getText();
+									processCodeButton.setEnabled(false);
 
-									MaterialTextBox passwordBox = new MaterialTextBox();
-									passwordBox.setType(InputType.PASSWORD);
-									passwordBox.setPlaceholder("Password");
-									passwordBox.setLength(10);
-									passwordBox.setMaxLength(10);
-									passwordBox.setIconType(IconType.LOCK);
-									materialModalContent.add(passwordBox);
+									DBCodeCheckerAsync rpcService = (DBCodeCheckerAsync) GWT.create(DBCodeChecker.class);
+									ServiceDefTarget target = (ServiceDefTarget) rpcService;
+									String moduleRelativeURL = GWT.getModuleBaseURL() + "DBCodeCheckerImpl";
+									target.setServiceEntryPoint(moduleRelativeURL);
 
-									MaterialTextBox repeatPasswordBox = new MaterialTextBox();
-									repeatPasswordBox.setType(InputType.PASSWORD);
-									repeatPasswordBox.setPlaceholder("Repeat Password");
-									repeatPasswordBox.setLength(10);
-									repeatPasswordBox.setMaxLength(10);
-									repeatPasswordBox.setIconType(IconType.LOCK);
-									materialModalContent.add(repeatPasswordBox);
-
-									MaterialButton processPasswordButton = new MaterialButton();
-									processPasswordButton.setWaves(WavesType.LIGHT);
-									processPasswordButton.setText("Change Password");
-									processPasswordButton.setWidth("100%");
-									processPasswordButton.addClickHandler(new ClickHandler() {
+									rpcService.checkCode(code, email, new AsyncCallback<Void>() {
 
 										@Override
-										public void onClick(ClickEvent event) {
-											forgotPasswordPanel.close();
-											RootPanel.get().remove(forgotPasswordPanel);
+										public void onSuccess(Void result) {
+											materialTitle.setDescription("Please choose a new password.");
+											materialModalContent.remove(codeBox);
+											materialModalContent.remove(processCodeButton);
+
+											MaterialTextBox passwordBox = new MaterialTextBox();
+											passwordBox.setType(InputType.PASSWORD);
+											passwordBox.setPlaceholder("Password");
+											passwordBox.setLength(10);
+											passwordBox.setMaxLength(10);
+											passwordBox.setIconType(IconType.LOCK);
+											materialModalContent.add(passwordBox);
+
+											MaterialTextBox repeatPasswordBox = new MaterialTextBox();
+											repeatPasswordBox.setType(InputType.PASSWORD);
+											repeatPasswordBox.setPlaceholder("Repeat Password");
+											repeatPasswordBox.setLength(10);
+											repeatPasswordBox.setMaxLength(10);
+											repeatPasswordBox.setIconType(IconType.LOCK);
+											materialModalContent.add(repeatPasswordBox);
+
+											MaterialButton processPasswordButton = new MaterialButton();
+											processPasswordButton.setWaves(WavesType.LIGHT);
+											processPasswordButton.setText("Change Password");
+											processPasswordButton.setWidth("100%");
+											processPasswordButton.addClickHandler(new ClickHandler() {
+
+												@Override
+												public void onClick(ClickEvent event) {
+													String password = passwordBox.getText();
+													String repeatPassword = repeatPasswordBox.getText();
+													boolean canProceed = true;
+
+													if (!password.matches("[A-Za-z0-9]{5,10}")) {
+														canProceed = false;
+														passwordBox.setError(
+																"Password can only contain uppercase, lowercase letters and 0-9 digits. Password has to be between 5 and 10 characters long.");
+													} else {
+														passwordBox.setSuccess("");
+													}
+
+													if (!repeatPassword.matches("[A-Za-z0-9]{5,10}")) {
+														canProceed = false;
+														repeatPasswordBox.setError(
+																"Password can only contain uppercase, lowercase letters and 0-9 digits. Password has to be between 5 and 10 characters long.");
+													} else {
+														repeatPasswordBox.setSuccess("");
+													}
+
+													if (canProceed) {
+														if (!repeatPassword.equals(password)) {
+															repeatPasswordBox.setError("Passwords must match.");
+														} else {
+															processPasswordButton.setEnabled(false);
+
+															DBChangeForgotPasswordAsync rpcService = (DBChangeForgotPasswordAsync) GWT
+																	.create(DBChangeForgotPassword.class);
+															ServiceDefTarget target = (ServiceDefTarget) rpcService;
+															String moduleRelativeURL = GWT.getModuleBaseURL() + "DBChangeForgotPasswordImpl";
+															target.setServiceEntryPoint(moduleRelativeURL);
+
+															rpcService.resetPassword(email, password, new AsyncCallback<Boolean>() {
+
+																@Override
+																public void onSuccess(Boolean result) {
+																	forgotPasswordPanel.close();
+																	RootPanel.get().remove(forgotPasswordPanel);
+
+																	MaterialToast.fireToast("Password changed successfully!", "rounded");
+																}
+
+																@Override
+																public void onFailure(Throwable caught) {
+																	processPasswordButton.setEnabled(true);
+
+																	if (!(caught instanceof RuntimeException)) {
+																		MaterialToast.fireToast(caught.getMessage(), "rounded");
+																	}
+																}
+															});
+														}
+													}
+												}
+											});
+											materialModalContent.add(processPasswordButton);
+										}
+
+										@Override
+										public void onFailure(Throwable caught) {
+											processCodeButton.setEnabled(true);
+
+											if (caught instanceof InvalidCodeException) {
+												codeBox.setError(caught.getMessage());
+											} else {
+												MaterialModal errorModal = ModalCreator.createModal(caught);
+												RootPanel.get().add(errorModal);
+												errorModal.open();
+											}
 										}
 									});
-									materialModalContent.add(processPasswordButton);
-
 								}
 							});
 							materialModalContent.add(processCodeButton);

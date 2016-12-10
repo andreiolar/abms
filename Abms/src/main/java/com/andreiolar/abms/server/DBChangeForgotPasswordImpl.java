@@ -2,7 +2,6 @@ package com.andreiolar.abms.server;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 
 import com.andreiolar.abms.client.rpc.DBChangeForgotPassword;
 import com.andreiolar.abms.security.BCrypt;
@@ -13,70 +12,58 @@ public class DBChangeForgotPasswordImpl extends RemoteServiceServlet implements 
 	private static final long serialVersionUID = 9208827813638944891L;
 
 	@Override
-	public Boolean resetPassword(String token, String password) throws Exception {
-		Boolean result = new Boolean(false);
-		int execute = 0;
-		String email = null;
+	public Boolean resetPassword(String email, String password) throws Exception {
 		Connection conn = null;
 		PreparedStatement stmt = null;
-		ResultSet rs = null;
+
+		boolean isUserPasswordUpdated = false;
 
 		try {
 			conn = MyConnection.getConnection();
 
 			try {
-				String q = "select email from password_recovery where token=?";
+				String q = "UPDATE users SET password=? WHERE username=(SELECT username FROM user_info WHERE email=?)";
 				stmt = conn.prepareStatement(q);
-				stmt.setString(1, token);
+				String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
 
-				rs = stmt.executeQuery();
+				stmt.setString(1, hashedPassword);
+				stmt.setString(2, email);
 
-				if (rs.next()) {
-					email = rs.getString("email");
-
-					String q2 = "update users set password=? where username=(select username from user_info where email=?)";
-					stmt = conn.prepareStatement(q2);
-					String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
-
-					stmt.setString(1, hashedPassword);
-					stmt.setString(2, email);
-
-					execute = stmt.executeUpdate();
-
-					if (execute > 0) {
-						String q3 = "delete from password_recovery where email=?";
-						stmt = conn.prepareStatement(q3);
-						stmt.setString(1, email);
-
-						execute = stmt.executeUpdate();
-					}
-				} else {
-					result = null;
+				int executed = stmt.executeUpdate();
+				if (executed > 0) {
+					isUserPasswordUpdated = true;
 				}
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			} finally {
 
+			} catch (Exception ex) {
+				throw new RuntimeException("Something went wrong: " + ex.getMessage(), ex);
+			} finally {
+				stmt.close();
+			}
+
+			if (isUserPasswordUpdated) {
+				try {
+					String q = "DELETE FROM password_recovery WHERE email=?";
+					stmt = conn.prepareStatement(q);
+					stmt.setString(1, email);
+
+					stmt.executeUpdate();
+				} catch (Exception e) {
+					throw new RuntimeException("Something went wrong: " + e.getMessage(), e);
+				} finally {
+					stmt.close();
+				}
 			}
 		} catch (Exception ex) {
-			ex.printStackTrace();
+			throw new RuntimeException("Something went wrong: " + ex.getMessage(), ex);
 		} finally {
 			conn.close();
 		}
 
-		if (result == null) {
-			throw new Exception("Error reseting password! Link is not valid anymore!");
+		if (!isUserPasswordUpdated) {
+			throw new Exception("Failed to reset password. Please try again.");
 		}
 
-		if (execute > 0) {
-			result = new Boolean(true);
-		}
-
-		if (result.booleanValue() == false) {
-			throw new Exception("Error reseting your password!");
-		}
-
-		return result;
+		return true;
 	}
 
 }

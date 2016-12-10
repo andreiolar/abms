@@ -394,6 +394,15 @@
         <url-pattern>/abms/DBGetTenantSuggestionsImpl</url-pattern>
     </servlet-mapping>
     
+    <servlet>
+        <servlet-name>checkCode</servlet-name>
+        <servlet-class>com.andreiolar.abms.server.DBCodeCheckerImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>checkCode</servlet-name>
+        <url-pattern>/abms/DBCodeCheckerImpl</url-pattern>
+    </servlet-mapping>
+    
   
   <!-- Default page to serve -->
   <welcome-file-list>

@@ -2,11 +2,9 @@ package com.andreiolar.abms.client;
 
 import com.andreiolar.abms.client.view.AdminView;
 import com.andreiolar.abms.client.view.LoginView;
-import com.andreiolar.abms.client.view.PasswordRecoveryView;
 import com.andreiolar.abms.client.view.UserView;
 import com.andreiolar.abms.client.view.impl.AdminViewImpl;
 import com.andreiolar.abms.client.view.impl.LoginViewImpl;
-import com.andreiolar.abms.client.view.impl.PasswordRecoveryViewImpl;
 import com.andreiolar.abms.client.view.impl.UserViewImpl;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.event.shared.SimpleEventBus;
@@ -46,11 +44,6 @@ public class ClientFactoryImpl implements ClientFactory {
 	@Override
 	public AdminView getAdminView() {
 		return new AdminViewImpl();
-	}
-
-	@Override
-	public PasswordRecoveryView getPasswordRecoveryView() {
-		return new PasswordRecoveryViewImpl();
 	}
 
 }
