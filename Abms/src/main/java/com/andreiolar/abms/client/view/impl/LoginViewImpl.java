@@ -38,6 +38,7 @@ import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONString;
 import com.google.gwt.user.client.Cookies;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.Composite;
@@ -78,8 +79,22 @@ public class LoginViewImpl extends Composite implements LoginView {
 	private static String name;
 
 	public LoginViewImpl() {
-		Widget loginForm = createLoginForm();
+		String loggedInUser = Cookies.getCookie("sid");
+		if (loggedInUser != null) {
+			Window.Location.replace(GWT.getHostPageBaseURL() + "#UserPlace:" + loggedInUser);
+		}
 
+		String cookieMessage = Cookies.getCookie("badUserInfo");
+		if (cookieMessage != null) {
+			MaterialToast.fireToast(cookieMessage, "rounded");
+		}
+
+		String sessionExpired = Cookies.getCookie("sessionExpired");
+		if (sessionExpired != null) {
+			MaterialToast.fireToast(sessionExpired, "rounded");
+		}
+
+		Widget loginForm = createLoginForm();
 		initWidget(loginForm);
 	}
 
@@ -110,6 +125,9 @@ public class LoginViewImpl extends Composite implements LoginView {
 		passwordBox.setType(InputType.PASSWORD);
 		passwordBox.setPlaceholder("Password");
 
+		MaterialCheckBox loggedIn = new MaterialCheckBox();
+		loggedIn.setText("Keep me logged in");
+
 		MaterialButton loginButton = new MaterialButton();
 		loginButton.setWaves(WavesType.LIGHT);
 		loginButton.setText("Log In");
@@ -121,7 +139,7 @@ public class LoginViewImpl extends Composite implements LoginView {
 				String username = userBox.getText();
 				String password = passwordBox.getText();
 
-				performUserConnection(username, password, loginButton);
+				performUserConnection(username, password, loginButton, loggedIn);
 			}
 		});
 
@@ -133,7 +151,7 @@ public class LoginViewImpl extends Composite implements LoginView {
 					String username = userBox.getText();
 					String password = passwordBox.getText();
 
-					performUserConnection(username, password, loginButton);
+					performUserConnection(username, password, loginButton, loggedIn);
 				}
 			}
 		});
@@ -159,9 +177,6 @@ public class LoginViewImpl extends Composite implements LoginView {
 
 		MaterialColumn mCol = new MaterialColumn(12, 12, 6);
 		mCol.setWidth("100%");
-
-		MaterialCheckBox loggedIn = new MaterialCheckBox();
-		loggedIn.setText("Keep me logged in");
 
 		MaterialButton forgotPaswordLink = new MaterialButton();
 		forgotPaswordLink.setText("Forgot Password?");
@@ -879,7 +894,7 @@ public class LoginViewImpl extends Composite implements LoginView {
 		return registerPanel;
 	}
 
-	private static void performUserConnection(String username, String password, MaterialButton loginButton) {
+	private static void performUserConnection(String username, String password, MaterialButton loginButton, MaterialCheckBox loggedIn) {
 		loginButton.setEnabled(false);
 
 		DBConnectionAsync rpcService = (DBConnectionAsync) GWT.create(DBConnection.class);
@@ -892,11 +907,6 @@ public class LoginViewImpl extends Composite implements LoginView {
 			@Override
 			public void onSuccess(UserInfo userInfo) {
 				loginButton.setEnabled(true);
-
-				String username = userInfo.getUsername();
-				final long DURATION = 1000 * 60 * 60 * 24 * 1; // 1 day
-				Date expires = new Date(System.currentTimeMillis() + DURATION);
-				Cookies.setCookie("sid", username, expires, null, "/", false);
 
 				JSONObject userInfoObject = new JSONObject();
 				userInfoObject.put("firstName", new JSONString(userInfo.getFirstName()));
@@ -912,6 +922,16 @@ public class LoginViewImpl extends Composite implements LoginView {
 				userInfoObject.put("idSeries", new JSONString(userInfo.getIdSeries()));
 				userInfoObject.put("apartmentNumber", new JSONString(userInfo.getApartmentNumber()));
 				userInfoObject.put("username", new JSONString(userInfo.getUsername()));
+
+				if (loggedIn.getValue()) {
+					final long DURATION = 1000 * 60 * 60 * 24 * 1; // 1 day
+					Date expires = new Date(System.currentTimeMillis() + DURATION);
+					Cookies.setCookie("sid", userInfoObject.toString(), expires, null, "/", false);
+				} else {
+					final long DURATION = 1000 * 60 * 60; // 1 hour
+					Date expires = new Date(System.currentTimeMillis() + DURATION);
+					Cookies.setCookie("sid", userInfoObject.toString(), expires, null, "/", false);
+				}
 
 				if (userInfo.getType().equals("User")) {
 					presenter.goTo(new UserPlace(userInfoObject.toString()));

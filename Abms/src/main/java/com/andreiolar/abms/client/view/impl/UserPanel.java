@@ -12,6 +12,7 @@ import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONValue;
+import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
@@ -48,9 +49,22 @@ public class UserPanel extends Composite implements UserView {
 	private UserInfo userInfo;
 
 	public UserPanel() {
+		String sid = Cookies.getCookie("sid");
+		if (sid == null) {
+			int cookieDuration = 5000;
+			Date expires = new Date(System.currentTimeMillis() + cookieDuration);
+			Cookies.setCookie("sessionExpired", "Session expired. Please log in again.", expires, null, "/", false);
+
+			Window.Location.replace(GWT.getHostPageBaseURL());
+		}
+
 		setUserInfo();
 
 		if (userInfo == null) {
+			int cookieDuration = 5000;
+			Date expires = new Date(System.currentTimeMillis() + cookieDuration);
+			Cookies.setCookie("badUserInfo", "Something bad happened. Please log in again.", expires, null, "/", false);
+
 			Window.Location.replace(GWT.getHostPageBaseURL());
 		}
 
@@ -65,34 +79,38 @@ public class UserPanel extends Composite implements UserView {
 		String token = History.getToken();
 		String json = token.substring(token.indexOf(":") + 1, token.length());
 
-		JSONObject userInfoObject;
-		JSONValue jsonValue = JSONParser.parseStrict(json);
-		if ((userInfoObject = jsonValue.isObject()) == null) {
-			Window.alert("Error parsing JSON");
+		try {
+			JSONObject userInfoObject;
+			JSONValue jsonValue = JSONParser.parseStrict(json);
+			if ((userInfoObject = jsonValue.isObject()) == null) {
+				Window.alert("Error parsing JSON");
+			}
+
+			JSONValue firstName = userInfoObject.get("firstName");
+			JSONValue lastName = userInfoObject.get("lastName");
+			JSONValue dateOfBirth = userInfoObject.get("dateOfBirth");
+			JSONValue email = userInfoObject.get("email");
+			JSONValue mobileNumber = userInfoObject.get("mobileNumber");
+			JSONValue gender = userInfoObject.get("gender");
+			JSONValue address = userInfoObject.get("address");
+			JSONValue city = userInfoObject.get("city");
+			JSONValue country = userInfoObject.get("country");
+			JSONValue personalNumber = userInfoObject.get("personalNumber");
+			JSONValue idSeries = userInfoObject.get("idSeries");
+			JSONValue apartmentNumber = userInfoObject.get("apartmentNumber");
+			JSONValue username = userInfoObject.get("username");
+
+			DateTimeFormat df = DateTimeFormat.getFormat("yyyy-MM-dd");
+			Date date = df.parse(dateOfBirth.toString().replaceAll("\"", ""));
+
+			userInfo = new UserInfo(firstName.toString().replaceAll("\"", ""), lastName.toString().replaceAll("\"", ""), date,
+					email.toString().replaceAll("\"", ""), mobileNumber.toString().replaceAll("\"", ""), gender.toString().replaceAll("\"", ""),
+					address.toString().replaceAll("\"", ""), city.toString().replaceAll("\"", ""), country.toString().replaceAll("\"", ""),
+					personalNumber.toString().replaceAll("\"", ""), idSeries.toString().replaceAll("\"", ""),
+					username.toString().replaceAll("\"", ""), null, apartmentNumber.toString().replaceAll("\"", ""));
+		} catch (Exception e) {
+			userInfo = null;
 		}
-
-		JSONValue firstName = userInfoObject.get("firstName");
-		JSONValue lastName = userInfoObject.get("lastName");
-		JSONValue dateOfBirth = userInfoObject.get("dateOfBirth");
-		JSONValue email = userInfoObject.get("email");
-		JSONValue mobileNumber = userInfoObject.get("mobileNumber");
-		JSONValue gender = userInfoObject.get("gender");
-		JSONValue address = userInfoObject.get("address");
-		JSONValue city = userInfoObject.get("city");
-		JSONValue country = userInfoObject.get("country");
-		JSONValue personalNumber = userInfoObject.get("personalNumber");
-		JSONValue idSeries = userInfoObject.get("idSeries");
-		JSONValue apartmentNumber = userInfoObject.get("apartmentNumber");
-		JSONValue username = userInfoObject.get("username");
-
-		DateTimeFormat df = DateTimeFormat.getFormat("yyyy-MM-dd");
-		Date date = df.parse(dateOfBirth.toString().replaceAll("\"", ""));
-
-		userInfo = new UserInfo(firstName.toString().replaceAll("\"", ""), lastName.toString().replaceAll("\"", ""), date,
-				email.toString().replaceAll("\"", ""), mobileNumber.toString().replaceAll("\"", ""), gender.toString().replaceAll("\"", ""),
-				address.toString().replaceAll("\"", ""), city.toString().replaceAll("\"", ""), country.toString().replaceAll("\"", ""),
-				personalNumber.toString().replaceAll("\"", ""), idSeries.toString().replaceAll("\"", ""), username.toString().replaceAll("\"", ""),
-				null, apartmentNumber.toString().replaceAll("\"", ""));
 	}
 
 	private Widget createMenu() {
@@ -107,6 +125,7 @@ public class UserPanel extends Composite implements UserView {
 		materialNavBar.setBackgroundColor(Color.BLUE);
 
 		MaterialNavBrand materialNavBrand = new MaterialNavBrand();
+		materialNavBrand.setHref("javascript:window.location.reload()");
 		materialNavBrand.setText("ABMS");
 
 		materialNavBar.add(materialNavBrand);
@@ -122,6 +141,7 @@ public class UserPanel extends Composite implements UserView {
 			@Override
 			public void onClick(ClickEvent event) {
 				userInfo = null;
+				Cookies.removeCookie("sid");
 				Window.Location.replace(GWT.getHostPageBaseURL());
 			}
 		});
