@@ -23,7 +23,6 @@ import com.andreiolar.abms.client.rpc.DBRegisterUserAsync;
 import com.andreiolar.abms.client.view.LoginView;
 import com.andreiolar.abms.client.widgets.ModalCreator;
 import com.andreiolar.abms.shared.Email;
-import com.andreiolar.abms.shared.User;
 import com.andreiolar.abms.shared.UserInfo;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Float;
@@ -36,6 +35,8 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONString;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
@@ -108,18 +109,6 @@ public class LoginViewImpl extends Composite implements LoginView {
 		MaterialTextBox passwordBox = new MaterialTextBox();
 		passwordBox.setType(InputType.PASSWORD);
 		passwordBox.setPlaceholder("Password");
-		passwordBox.addKeyDownHandler(new KeyDownHandler() {
-
-			@Override
-			public void onKeyDown(KeyDownEvent event) {
-				if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
-					String username = userBox.getText();
-					String password = passwordBox.getText();
-
-					performUserConnection(username, password);
-				}
-			}
-		});
 
 		MaterialButton loginButton = new MaterialButton();
 		loginButton.setWaves(WavesType.LIGHT);
@@ -132,7 +121,20 @@ public class LoginViewImpl extends Composite implements LoginView {
 				String username = userBox.getText();
 				String password = passwordBox.getText();
 
-				performUserConnection(username, password);
+				performUserConnection(username, password, loginButton);
+			}
+		});
+
+		passwordBox.addKeyDownHandler(new KeyDownHandler() {
+
+			@Override
+			public void onKeyDown(KeyDownEvent event) {
+				if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+					String username = userBox.getText();
+					String password = passwordBox.getText();
+
+					performUserConnection(username, password, loginButton);
+				}
 			}
 		});
 
@@ -877,35 +879,50 @@ public class LoginViewImpl extends Composite implements LoginView {
 		return registerPanel;
 	}
 
-	private static void performUserConnection(String username, String password) {
-		// MaterialLoader.showLoading(true);
+	private static void performUserConnection(String username, String password, MaterialButton loginButton) {
+		loginButton.setEnabled(false);
 
 		DBConnectionAsync rpcService = (DBConnectionAsync) GWT.create(DBConnection.class);
 		ServiceDefTarget target = (ServiceDefTarget) rpcService;
 		String moduleRelativeURL = GWT.getModuleBaseURL() + "DBConnectionImpl";
 		target.setServiceEntryPoint(moduleRelativeURL);
 
-		rpcService.authenticateUser(username, password, new AsyncCallback<User>() {
+		rpcService.authenticateUser(username, password, new AsyncCallback<UserInfo>() {
 
 			@Override
-			public void onSuccess(User user) {
-				// MaterialLoader.showLoading(false);
+			public void onSuccess(UserInfo userInfo) {
+				loginButton.setEnabled(true);
 
-				String username = user.getUsername();
+				String username = userInfo.getUsername();
 				final long DURATION = 1000 * 60 * 60 * 24 * 1; // 1 day
 				Date expires = new Date(System.currentTimeMillis() + DURATION);
 				Cookies.setCookie("sid", username, expires, null, "/", false);
 
-				if (user.getType().equals("User")) {
-					presenter.goTo(new UserPlace(username));
-				} else if (user.getType().equals("Admin")) {
+				JSONObject userInfoObject = new JSONObject();
+				userInfoObject.put("firstName", new JSONString(userInfo.getFirstName()));
+				userInfoObject.put("lastName", new JSONString(userInfo.getLastName()));
+				userInfoObject.put("dateOfBirth", new JSONString(userInfo.getDateOfBirth().toString()));
+				userInfoObject.put("email", new JSONString(userInfo.getEmail()));
+				userInfoObject.put("mobileNumber", new JSONString(userInfo.getMobileNumber()));
+				userInfoObject.put("gender", new JSONString(userInfo.getGender()));
+				userInfoObject.put("address", new JSONString(userInfo.getAddress()));
+				userInfoObject.put("city", new JSONString(userInfo.getCity()));
+				userInfoObject.put("country", new JSONString(userInfo.getCountry()));
+				userInfoObject.put("personalNumber", new JSONString(userInfo.getPersonalNumber()));
+				userInfoObject.put("idSeries", new JSONString(userInfo.getIdSeries()));
+				userInfoObject.put("apartmentNumber", new JSONString(userInfo.getApartmentNumber()));
+				userInfoObject.put("username", new JSONString(userInfo.getUsername()));
+
+				if (userInfo.getType().equals("User")) {
+					presenter.goTo(new UserPlace(userInfoObject.toString()));
+				} else if (userInfo.getType().equals("Admin")) {
 					presenter.goTo(new AdminPlace(username));
 				}
 			}
 
 			@Override
 			public void onFailure(Throwable caught) {
-				// MaterialLoader.showLoading(false);
+				loginButton.setEnabled(true);
 
 				if (caught instanceof InvalidCredentialsException) {
 					MaterialToast.fireToast(caught.getMessage(), "rounded");

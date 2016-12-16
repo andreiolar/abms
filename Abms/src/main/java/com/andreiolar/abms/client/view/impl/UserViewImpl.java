@@ -90,6 +90,7 @@ public class UserViewImpl extends Composite implements UserView {
 
 	private void setUsername() {
 		String token = History.getToken();
+		Window.alert(token);
 		this.username = token.substring(token.indexOf(":") + 1, token.length());
 	}
 
@@ -575,11 +576,6 @@ public class UserViewImpl extends Composite implements UserView {
 	}
 
 	@Override
-	public void setName(String placeName) {
-
-	}
-
-	@Override
 	public void setPresenter(Presenter presenter) {
 
 	}
@@ -738,6 +734,11 @@ public class UserViewImpl extends Composite implements UserView {
 		});
 
 		return month;
+	}
+
+	@Override
+	public void setUsername(String username) {
+		// TODO Auto-generated method stub
 	}
 
 }

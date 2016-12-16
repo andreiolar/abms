@@ -19,7 +19,6 @@ public class DBGetUserInfoImpl extends RemoteServiceServlet implements DBGetUser
 
 	@Override
 	public UserInfo getUserInfo(String username) throws Exception {
-
 		UserInfo userInfo = null;
 		Connection conn = null;
 		PreparedStatement stmt = null;

@@ -5,7 +5,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 
 public interface UserView extends IsWidget {
 
-	void setName(String name);
+	void setUsername(String username);
 
 	void setPresenter(Presenter presenter);
 

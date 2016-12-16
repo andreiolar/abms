@@ -18,11 +18,12 @@ public class UserInfo implements IsSerializable {
 	private String personalNumber;
 	private String idSeries;
 	private String apartmentNumber;
+	private String type;
 
 	private String username;
 	private String password;
 
-	private UserInfo() {
+	public UserInfo() {
 	}
 
 	public UserInfo(String firstName, String lastName, Date dateOfBirth, String email, String mobileNumber, String gender, String address,
@@ -153,6 +154,14 @@ public class UserInfo implements IsSerializable {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 }

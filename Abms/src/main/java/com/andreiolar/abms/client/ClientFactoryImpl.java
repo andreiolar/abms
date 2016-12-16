@@ -5,7 +5,7 @@ import com.andreiolar.abms.client.view.LoginView;
 import com.andreiolar.abms.client.view.UserView;
 import com.andreiolar.abms.client.view.impl.AdminViewImpl;
 import com.andreiolar.abms.client.view.impl.LoginViewImpl;
-import com.andreiolar.abms.client.view.impl.UserViewImpl;
+import com.andreiolar.abms.client.view.impl.UserPanel;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.event.shared.SimpleEventBus;
 import com.google.gwt.place.shared.PlaceController;
@@ -38,7 +38,7 @@ public class ClientFactoryImpl implements ClientFactory {
 
 	@Override
 	public UserView getUserView() {
-		return new UserViewImpl();
+		return new UserPanel();
 	}
 
 	@Override

@@ -1,7 +1,7 @@
 /** Add css rules here for your application. */
 /* Login */
 body {
-	background-color: #E8E8E8 !important;
+	background-color: #FFFFFF !important;
 	font-family: Arial, sans-serif !important;
 	color: #333333;
 	width: 100%;
@@ -230,10 +230,6 @@ body {
 
 .radio-button-label {
 	font-size: 25px;
-}
-
-a {
-	font-style: oblique;
 }
 
 a:link {
@@ -531,4 +527,17 @@ a:active {
 
 .rowAction {
 	margin-top: 20px;
+}
+
+header, main, footer{
+	padding-left: 280px;
+}
+
+.label{
+	margin: 24px;
+}
+
+.footer-copyright{
+	text-align: center;
+	vertical-align: middle;
 }

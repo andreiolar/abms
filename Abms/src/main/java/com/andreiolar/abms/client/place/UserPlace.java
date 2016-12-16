@@ -11,7 +11,7 @@ public class UserPlace extends Place {
 		this.username = username;
 	}
 
-	public String getPlaceName() {
+	public String getUsername() {
 		return username;
 	}
 
@@ -24,7 +24,7 @@ public class UserPlace extends Place {
 
 		@Override
 		public String getToken(UserPlace place) {
-			return place.getPlaceName();
+			return place.getUsername();
 		}
 
 	}

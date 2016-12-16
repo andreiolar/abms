@@ -13,10 +13,10 @@ import com.google.gwt.user.client.ui.AcceptsOneWidget;
 public class UserActivity extends AbstractActivity implements UserView.Presenter {
 
 	private ClientFactory clientFactory;
-	private String name;
+	private String username;
 
 	public UserActivity(UserPlace place, ClientFactory clientFactory) {
-		this.name = place.getPlaceName();
+		this.username = place.getUsername();
 		this.clientFactory = clientFactory;
 	}
 
@@ -27,7 +27,7 @@ public class UserActivity extends AbstractActivity implements UserView.Presenter
 			@Override
 			public void onSuccess() {
 				UserView userView = clientFactory.getUserView();
-				userView.setName(name);
+				userView.setUsername(username);
 				userView.setPresenter(UserActivity.this);
 				containerWidget.setWidget(userView.asWidget());
 
