@@ -541,3 +541,39 @@ header, main, footer{
 	text-align: center;
 	vertical-align: middle;
 }
+
+@media (min-height: 500px){
+	.main-container{
+		min-height: 480px;
+	}
+}
+
+@media (min-height: 600px){
+	.main-container{
+		min-height: 580px;
+	}
+}
+
+@media (min-height: 700px){
+	.main-container{
+		min-height: 680px;
+	}
+}
+
+@media (min-height: 800px){
+	.main-container{
+		min-height: 780px;
+	}
+}
+
+@media (min-height: 900px){
+	.main-container{
+		min-height: 880px;
+	}
+}
+
+@media (min-height: 1000px){
+	.main-container{
+		min-height: 980px;
+	}
+}

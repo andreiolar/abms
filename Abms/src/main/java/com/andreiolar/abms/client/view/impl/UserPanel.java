@@ -5,6 +5,7 @@ import java.util.Date;
 import com.andreiolar.abms.client.view.UserView;
 import com.andreiolar.abms.shared.UserInfo;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.dom.client.Style.Float;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -38,6 +39,7 @@ import gwt.material.design.client.ui.MaterialNavBrand;
 import gwt.material.design.client.ui.MaterialNavSection;
 import gwt.material.design.client.ui.MaterialSideNav;
 import gwt.material.design.client.ui.MaterialTooltip;
+import gwt.material.design.client.ui.html.Anchor;
 import gwt.material.design.client.ui.html.Header;
 
 public class UserPanel extends Composite implements UserView {
@@ -70,6 +72,7 @@ public class UserPanel extends Composite implements UserView {
 
 		container = new MaterialContainer();
 		container.setFontSize("1em");
+		container.addStyleName("main-container");
 
 		Widget mainMenu = createMenu();
 		initWidget(mainMenu);
@@ -125,14 +128,33 @@ public class UserPanel extends Composite implements UserView {
 		materialNavBar.setBackgroundColor(Color.BLUE);
 
 		MaterialNavBrand materialNavBrand = new MaterialNavBrand();
-		materialNavBrand.setHref("javascript:window.location.reload()");
+		// materialNavBrand.setHref("javascript:window.location.reload()");
 		materialNavBrand.setText("ABMS");
+		materialNavBrand.getElement().getStyle().setCursor(Cursor.POINTER);
+		materialNavBrand.addClickHandler(new ClickHandler() {
 
-		materialNavBar.add(materialNavBrand);
+			@Override
+			public void onClick(ClickEvent event) {
+				container.clear();
+				MaterialImage backgroundImage = new MaterialImage("images/icons/city_1.png");
+				backgroundImage.setWidth("100%");
+				backgroundImage.setHeight("100%");
+				backgroundImage.setTop(0.0);
+				backgroundImage.setBottom(0.0);
+				backgroundImage.setOpacity(0.5);
+				container.add(backgroundImage);
+			}
+		});
+
+		Anchor a = new Anchor();
+		a.add(materialNavBrand);
+
+		materialNavBar.add(a);
 
 		MaterialNavSection materialNavSection = new MaterialNavSection();
 		materialNavSection.setFloat(Float.RIGHT);
 
+		/** Log Out **/
 		MaterialLink searchLink = new MaterialLink();
 		searchLink.setIconType(IconType.POWER_SETTINGS_NEW);
 		searchLink.setIconPosition(IconPosition.NONE);
@@ -145,10 +167,59 @@ public class UserPanel extends Composite implements UserView {
 				Window.Location.replace(GWT.getHostPageBaseURL());
 			}
 		});
-
 		MaterialTooltip seatchTooltip = new MaterialTooltip(searchLink, "Log Out");
 		seatchTooltip.setPosition(Position.BOTTOM);
 
+		/** Help **/
+		MaterialLink aboutLink = new MaterialLink();
+		aboutLink.setIconType(IconType.HELP_OUTLINE);
+		aboutLink.setIconPosition(IconPosition.NONE);
+		aboutLink.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+			}
+		});
+		MaterialTooltip helpTooltip = new MaterialTooltip(aboutLink, "About");
+		helpTooltip.setPosition(Position.BOTTOM);
+
+		/** Contact Information **/
+		MaterialLink contactLink = new MaterialLink();
+		contactLink.setIconType(IconType.CONTACT_PHONE);
+		contactLink.setIconPosition(IconPosition.NONE);
+		contactLink.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+			}
+		});
+		MaterialTooltip contactTooltip = new MaterialTooltip(contactLink, "Contact Information");
+		contactTooltip.setPosition(Position.BOTTOM);
+
+		/** Refresh **/
+		MaterialLink homeLink = new MaterialLink();
+		homeLink.setIconType(IconType.HOME);
+		homeLink.setIconPosition(IconPosition.NONE);
+		homeLink.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				container.clear();
+				MaterialImage backgroundImage = new MaterialImage("images/icons/city_1.png");
+				backgroundImage.setWidth("100%");
+				backgroundImage.setHeight("100%");
+				backgroundImage.setTop(0.0);
+				backgroundImage.setBottom(0.0);
+				backgroundImage.setOpacity(0.5);
+				container.add(backgroundImage);
+			}
+		});
+		MaterialTooltip homeTooltip = new MaterialTooltip(homeLink, "Home");
+		homeTooltip.setPosition(Position.BOTTOM);
+
+		materialNavSection.add(homeLink);
+		materialNavSection.add(contactLink);
+		materialNavSection.add(aboutLink);
 		materialNavSection.add(searchLink);
 
 		materialNavBar.add(materialNavSection);
@@ -216,11 +287,13 @@ public class UserPanel extends Composite implements UserView {
 		htmlPanel.add(header);
 
 		/** Creating the main container **/
-		MaterialLabel demoLabel = new MaterialLabel("Demo Text");
-		demoLabel.setTextColor(Color.BLACK);
-		demoLabel.addStyleName("label");
-
-		container.add(demoLabel);
+		MaterialImage backgroundImage = new MaterialImage("images/icons/city_1.png");
+		backgroundImage.setWidth("100%");
+		backgroundImage.setHeight("100%");
+		backgroundImage.setTop(0.0);
+		backgroundImage.setBottom(0.0);
+		backgroundImage.setOpacity(0.5);
+		container.add(backgroundImage);
 
 		htmlPanel.add(container);
 
