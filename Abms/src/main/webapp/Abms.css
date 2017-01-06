@@ -577,3 +577,29 @@ header, main, footer{
 		min-height: 980px;
 	}
 }
+
+.about{
+	margin-top: 20px;
+}
+
+.first-paragraph{
+	margin-bottom: 20px;
+}
+
+.main-about{
+	margin-bottom: 40px;
+}
+
+.main-about ul li{
+	padding: 1px;
+}
+
+.main-about ul li ul li{
+	padding: 1px;
+	margin-left: 12px;
+}
+
+.author ul li{
+	padding: 1px;
+	margin-left: 12px;
+}

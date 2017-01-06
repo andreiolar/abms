@@ -947,7 +947,7 @@ public class LoginViewImpl extends Composite implements LoginView {
 				if (caught instanceof InvalidCredentialsException) {
 					MaterialToast.fireToast(caught.getMessage(), "rounded");
 				} else {
-					MaterialModal materialModal = ModalCreator.createModal("Something went wrong", caught);
+					MaterialModal materialModal = ModalCreator.createErrorModal("Something went wrong", caught);
 					RootPanel.get().add(materialModal);
 					materialModal.open();
 				}

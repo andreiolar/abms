@@ -3,12 +3,18 @@ package com.andreiolar.abms.client.view.impl;
 import java.util.Date;
 
 import com.andreiolar.abms.client.view.UserView;
+import com.andreiolar.abms.client.widgets.ModalCreator;
 import com.andreiolar.abms.shared.UserInfo;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.dom.client.Style.Float;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.RequestBuilder;
+import com.google.gwt.http.client.RequestCallback;
+import com.google.gwt.http.client.RequestException;
+import com.google.gwt.http.client.Response;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
@@ -17,7 +23,9 @@ import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import gwt.material.design.addins.client.sideprofile.MaterialSideProfile;
@@ -34,6 +42,7 @@ import gwt.material.design.client.ui.MaterialFooterCopyright;
 import gwt.material.design.client.ui.MaterialImage;
 import gwt.material.design.client.ui.MaterialLabel;
 import gwt.material.design.client.ui.MaterialLink;
+import gwt.material.design.client.ui.MaterialModal;
 import gwt.material.design.client.ui.MaterialNavBar;
 import gwt.material.design.client.ui.MaterialNavBrand;
 import gwt.material.design.client.ui.MaterialNavSection;
@@ -158,6 +167,7 @@ public class UserPanel extends Composite implements UserView {
 		MaterialLink searchLink = new MaterialLink();
 		searchLink.setIconType(IconType.POWER_SETTINGS_NEW);
 		searchLink.setIconPosition(IconPosition.NONE);
+		searchLink.setMarginRight(10.0);
 		searchLink.addClickHandler(new ClickHandler() {
 
 			@Override
@@ -178,6 +188,23 @@ public class UserPanel extends Composite implements UserView {
 
 			@Override
 			public void onClick(ClickEvent event) {
+				try {
+					new RequestBuilder(RequestBuilder.GET, "pages/about.html").sendRequest("", new RequestCallback() {
+						@Override
+						public void onResponseReceived(Request req, Response resp) {
+							HTML html = new HTML(resp.getText());
+							MaterialModal aboutModal = ModalCreator.createWidgetModal("About", html);
+							RootPanel.get().add(aboutModal);
+							aboutModal.open();
+						}
+
+						@Override
+						public void onError(Request res, Throwable throwable) {
+						}
+					});
+				} catch (RequestException e) {
+					e.printStackTrace();
+				}
 			}
 		});
 		MaterialTooltip helpTooltip = new MaterialTooltip(aboutLink, "About");
@@ -191,6 +218,7 @@ public class UserPanel extends Composite implements UserView {
 
 			@Override
 			public void onClick(ClickEvent event) {
+
 			}
 		});
 		MaterialTooltip contactTooltip = new MaterialTooltip(contactLink, "Contact Information");

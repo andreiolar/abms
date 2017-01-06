@@ -1,6 +1,7 @@
 package com.andreiolar.abms.client.widgets;
 
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 import gwt.material.design.client.constants.ButtonType;
 import gwt.material.design.client.constants.CollapsibleType;
@@ -25,10 +26,10 @@ import gwt.material.design.client.ui.html.Br;
 public final class ModalCreator {
 
 	public static MaterialModal createModal(Throwable caught) {
-		return createModal("Something went wrong", caught);
+		return createErrorModal("Something went wrong", caught);
 	}
 
-	public static MaterialModal createModal(String title, Throwable caught) {
+	public static MaterialModal createErrorModal(String title, Throwable caught) {
 		MaterialModal materialModal = new MaterialModal();
 		materialModal.setType(ModalType.DEFAULT);
 		materialModal.setDismissible(false);
@@ -84,6 +85,35 @@ public final class ModalCreator {
 
 		materialCollapsible.add(materialCollapsibleItem);
 		materialModalContent.add(materialCollapsible);
+
+		MaterialModalFooter materialModalFooter = new MaterialModalFooter();
+		MaterialButton closeButton = new MaterialButton();
+		closeButton.setText("Close");
+		closeButton.setType(ButtonType.FLAT);
+		closeButton.addClickHandler(h -> {
+			materialModal.close();
+			RootPanel.get().remove(materialModal);
+		});
+
+		materialModalFooter.add(closeButton);
+		materialModal.add(materialModalContent);
+		materialModal.add(materialModalFooter);
+
+		return materialModal;
+	}
+
+	public static MaterialModal createWidgetModal(String title, Widget widget) {
+		MaterialModal materialModal = new MaterialModal();
+		materialModal.setType(ModalType.DEFAULT);
+		materialModal.setDismissible(false);
+		materialModal.setInDuration(500);
+		materialModal.setOutDuration(500);
+
+		MaterialModalContent materialModalContent = new MaterialModalContent();
+		MaterialTitle materialTitle = new MaterialTitle(title);
+
+		materialModalContent.add(materialTitle);
+		materialModalContent.add(widget);
 
 		MaterialModalFooter materialModalFooter = new MaterialModalFooter();
 		MaterialButton closeButton = new MaterialButton();
