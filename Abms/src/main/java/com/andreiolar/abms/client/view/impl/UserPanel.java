@@ -200,10 +200,15 @@ public class UserPanel extends Composite implements UserView {
 
 						@Override
 						public void onError(Request res, Throwable throwable) {
+							MaterialModal errorModal = ModalCreator.createModal(throwable);
+							RootPanel.get().add(errorModal);
+							errorModal.open();
 						}
 					});
 				} catch (RequestException e) {
-					e.printStackTrace();
+					MaterialModal errorModal = ModalCreator.createModal(e);
+					RootPanel.get().add(errorModal);
+					errorModal.open();
 				}
 			}
 		});
@@ -218,7 +223,29 @@ public class UserPanel extends Composite implements UserView {
 
 			@Override
 			public void onClick(ClickEvent event) {
+				try {
+					new RequestBuilder(RequestBuilder.GET, "pages/contact_info.html").sendRequest("", new RequestCallback() {
+						@Override
+						public void onResponseReceived(Request req, Response resp) {
+							HTML html = new HTML(resp.getText());
+							MaterialModal contactInformationModal = ModalCreator.createWidgetModal("Contact Information", html);
+							contactInformationModal.setWidth("400px");
+							RootPanel.get().add(contactInformationModal);
+							contactInformationModal.open();
+						}
 
+						@Override
+						public void onError(Request res, Throwable throwable) {
+							MaterialModal errorModal = ModalCreator.createModal(throwable);
+							RootPanel.get().add(errorModal);
+							errorModal.open();
+						}
+					});
+				} catch (RequestException e) {
+					MaterialModal errorModal = ModalCreator.createModal(e);
+					RootPanel.get().add(errorModal);
+					errorModal.open();
+				}
 			}
 		});
 		MaterialTooltip contactTooltip = new MaterialTooltip(contactLink, "Contact Information");
