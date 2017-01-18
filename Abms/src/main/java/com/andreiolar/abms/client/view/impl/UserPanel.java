@@ -3,6 +3,7 @@ package com.andreiolar.abms.client.view.impl;
 import java.util.Date;
 
 import com.andreiolar.abms.client.view.UserView;
+import com.andreiolar.abms.client.widgets.ComplaintsWidget;
 import com.andreiolar.abms.client.widgets.ModalCreator;
 import com.andreiolar.abms.shared.UserInfo;
 import com.google.gwt.core.client.GWT;
@@ -323,6 +324,8 @@ public class UserPanel extends Composite implements UserView {
 			@Override
 			public void onClick(ClickEvent event) {
 				container.clear();
+				ComplaintsWidget widget = new ComplaintsWidget(userInfo);
+				container.add(widget);
 			}
 		});
 		materialSideNav.add(complaintsLink);

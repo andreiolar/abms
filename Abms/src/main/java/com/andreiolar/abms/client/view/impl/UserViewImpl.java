@@ -15,7 +15,7 @@ import com.andreiolar.abms.client.utils.WidgetUtils;
 import com.andreiolar.abms.client.view.UserView;
 import com.andreiolar.abms.client.widgets.AboutWidget;
 import com.andreiolar.abms.client.widgets.AccountSettingsWidget;
-import com.andreiolar.abms.client.widgets.ComplaintWidget;
+import com.andreiolar.abms.client.widgets.ComplaintWidget_bkp;
 import com.andreiolar.abms.client.widgets.ContactViewWidget;
 import com.andreiolar.abms.client.widgets.ConversationWidget;
 import com.andreiolar.abms.client.widgets.GeneralCostWidget;
@@ -185,7 +185,7 @@ public class UserViewImpl extends Composite implements UserView {
 			@Override
 			public void execute() {
 				scroller.clear();
-				Widget localPoliceForm = new ComplaintWidget(userInfo, UserMenuConstants.COMPLAINT_NOTE_LOCAL_POLICE,
+				Widget localPoliceForm = new ComplaintWidget_bkp(userInfo, UserMenuConstants.COMPLAINT_NOTE_LOCAL_POLICE,
 						UserMenuConstants.MENU_ITEM_LOCAL_POLICE);
 				scroller.add(localPoliceForm);
 			}
@@ -197,7 +197,7 @@ public class UserViewImpl extends Composite implements UserView {
 			@Override
 			public void execute() {
 				scroller.clear();
-				Widget nationalPoliceForm = new ComplaintWidget(userInfo, UserMenuConstants.COMPLAINT_NOTE_NATIONAL_POLICE,
+				Widget nationalPoliceForm = new ComplaintWidget_bkp(userInfo, UserMenuConstants.COMPLAINT_NOTE_NATIONAL_POLICE,
 						UserMenuConstants.MENU_ITEM_NATIONAL_POLICE);
 				scroller.add(nationalPoliceForm);
 			}
@@ -208,7 +208,7 @@ public class UserViewImpl extends Composite implements UserView {
 			@Override
 			public void execute() {
 				scroller.clear();
-				Widget medicalServiceForm = new ComplaintWidget(userInfo, UserMenuConstants.COMPLAINT_NOTE_MEDICAL_SERVICE,
+				Widget medicalServiceForm = new ComplaintWidget_bkp(userInfo, UserMenuConstants.COMPLAINT_NOTE_MEDICAL_SERVICE,
 						UserMenuConstants.MENU_ITEM_MEDICAL_SERVICE);
 				scroller.add(medicalServiceForm);
 			}
@@ -219,7 +219,7 @@ public class UserViewImpl extends Composite implements UserView {
 			@Override
 			public void execute() {
 				scroller.clear();
-				Widget firefighterServiceForm = new ComplaintWidget(userInfo, UserMenuConstants.COMPLAINT_NOTE_FIREFIGHTER_SERVICE,
+				Widget firefighterServiceForm = new ComplaintWidget_bkp(userInfo, UserMenuConstants.COMPLAINT_NOTE_FIREFIGHTER_SERVICE,
 						UserMenuConstants.MENU_ITEM_FIREFIGHTER_SERVICE);
 				scroller.add(firefighterServiceForm);
 			}
@@ -237,7 +237,7 @@ public class UserViewImpl extends Composite implements UserView {
 			@Override
 			public void execute() {
 				scroller.clear();
-				Widget publicTransportForm = new ComplaintWidget(userInfo, UserMenuConstants.COMPLAINT_NOTE_PUBLIC_TRANSPORT,
+				Widget publicTransportForm = new ComplaintWidget_bkp(userInfo, UserMenuConstants.COMPLAINT_NOTE_PUBLIC_TRANSPORT,
 						UserMenuConstants.MENU_ITEM_PUBLIC_TRANSPORT);
 				scroller.add(publicTransportForm);
 			}
@@ -248,7 +248,7 @@ public class UserViewImpl extends Composite implements UserView {
 			@Override
 			public void execute() {
 				scroller.clear();
-				Widget firefighterServiceForm = new ComplaintWidget(userInfo, UserMenuConstants.COMPLAINT_NOTE_NATIONAL_RAILWAY,
+				Widget firefighterServiceForm = new ComplaintWidget_bkp(userInfo, UserMenuConstants.COMPLAINT_NOTE_NATIONAL_RAILWAY,
 						UserMenuConstants.MENU_ITEM_NATIONAL_RAILWAY);
 				scroller.add(firefighterServiceForm);
 			}
@@ -259,7 +259,7 @@ public class UserViewImpl extends Composite implements UserView {
 			@Override
 			public void execute() {
 				scroller.clear();
-				Widget airportForm = new ComplaintWidget(userInfo, UserMenuConstants.COMPLAINT_NOTE_AIRPORT, UserMenuConstants.MENU_ITEM_AIRPORT);
+				Widget airportForm = new ComplaintWidget_bkp(userInfo, UserMenuConstants.COMPLAINT_NOTE_AIRPORT, UserMenuConstants.MENU_ITEM_AIRPORT);
 				scroller.add(airportForm);
 			}
 		});
@@ -277,7 +277,7 @@ public class UserViewImpl extends Composite implements UserView {
 			@Override
 			public void execute() {
 				scroller.clear();
-				Widget salubrityForm = new ComplaintWidget(userInfo, UserMenuConstants.COMPLAINT_NOTE_SALUBRITY,
+				Widget salubrityForm = new ComplaintWidget_bkp(userInfo, UserMenuConstants.COMPLAINT_NOTE_SALUBRITY,
 						UserMenuConstants.MENU_ITEM_SALUBRITY);
 				scroller.add(salubrityForm);
 			}
@@ -292,7 +292,7 @@ public class UserViewImpl extends Composite implements UserView {
 			@Override
 			public void execute() {
 				scroller.clear();
-				Widget townHallForm = new ComplaintWidget(userInfo, UserMenuConstants.COMPLAINT_NOTE_TOWN_HALL,
+				Widget townHallForm = new ComplaintWidget_bkp(userInfo, UserMenuConstants.COMPLAINT_NOTE_TOWN_HALL,
 						UserMenuConstants.MENU_ITEM_TOWN_HALL);
 				scroller.add(townHallForm);
 			}

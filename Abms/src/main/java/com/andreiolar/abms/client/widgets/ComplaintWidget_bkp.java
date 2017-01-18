@@ -27,14 +27,14 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class ComplaintWidget extends Composite {
+public class ComplaintWidget_bkp extends Composite {
 
 	private String complaintToWho;
 	private String complaintTo;
 
 	private UserInfo userInfo;
 
-	public ComplaintWidget(UserInfo userInfo, String complaintToWho, String complaintTo) {
+	public ComplaintWidget_bkp(UserInfo userInfo, String complaintToWho, String complaintTo) {
 		this.userInfo = userInfo;
 		this.complaintToWho = complaintToWho;
 		this.complaintTo = complaintTo;

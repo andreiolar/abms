@@ -2,7 +2,6 @@
 /* Login */
 body {
 	background-color: #FFFFFF !important;
-	font-family: Arial, sans-serif !important;
 	color: #333333;
 	width: 100%;
 	height: 100%;
@@ -495,13 +494,12 @@ a:active {
 	color: #FFFFFF;
 }
 
-.login-demo{
+.login-demo {
 	padding: 5%;
 	height: 100%;
-	
 	margin-bottom: 0 !important;
-	
-	background-image: linear-gradient(rgba(255,255,255,0.5),rgba(255,255,255,0.5)), url("images/icons/city_1.png");
+	background-image: linear-gradient(rgba(255, 255, 255, 0.5),
+		rgba(255, 255, 255, 0.5)), url("images/icons/city_1.png");
 	background-repeat: no-repeat;
 	background-size: cover;
 }
@@ -529,77 +527,96 @@ a:active {
 	margin-top: 20px;
 }
 
-header, main, footer{
+header, main, footer {
 	padding-left: 280px;
 }
 
-.label{
+.label {
 	margin: 24px;
 }
 
-.footer-copyright{
+.footer-copyright {
 	text-align: center;
 	vertical-align: middle;
 }
 
-@media (min-height: 500px){
-	.main-container{
+@media ( min-height : 500px) {
+	.main-container {
 		min-height: 480px;
 	}
 }
 
-@media (min-height: 600px){
-	.main-container{
+@media ( min-height : 600px) {
+	.main-container {
 		min-height: 580px;
 	}
 }
 
-@media (min-height: 700px){
-	.main-container{
+@media ( min-height : 700px) {
+	.main-container {
 		min-height: 680px;
 	}
 }
 
-@media (min-height: 800px){
-	.main-container{
+@media ( min-height : 800px) {
+	.main-container {
 		min-height: 780px;
 	}
 }
 
-@media (min-height: 900px){
-	.main-container{
+@media ( min-height : 900px) {
+	.main-container {
 		min-height: 880px;
 	}
 }
 
-@media (min-height: 1000px){
-	.main-container{
+@media ( min-height : 1000px) {
+	.main-container {
 		min-height: 980px;
 	}
 }
 
-.about{
+.about {
 	margin-top: 20px;
 }
 
-.first-paragraph{
+.first-paragraph {
 	margin-bottom: 20px;
 }
 
-.main-about{
+.main-about {
 	margin-bottom: 40px;
 }
 
-.main-about ul li{
+.main-about ul li {
 	padding: 1px;
 }
 
-.main-about ul li ul li{
+.main-about ul li ul li {
 	padding: 1px;
 	margin-left: 12px;
 }
 
-.author ul li{
+.author ul li {
 	padding: 1px;
 	margin-left: 12px;
+}
+
+hr {
+	border: 0;
+	height: 1px !important;
+	background: #333;
+	background-image: linear-gradient(to right, #ccc, #333, #ccc);
+}
+
+strong {
+	color: #000;
+	font-style: normal;
+	font-weight: bold !important;
+}
+
+.comboboxInst{
+	width: 30%;
+	margin-top: 25px !important;
+	margin: auto;
 }
