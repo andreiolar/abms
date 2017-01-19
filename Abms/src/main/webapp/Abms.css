@@ -620,3 +620,16 @@ strong {
 	margin-top: 25px !important;
 	margin: auto;
 }
+
+.complaintsComponent{
+	width: 30%;
+	margin-top: 25px !important;
+	margin-left: 25px !important;
+}
+
+.complaintsEditor{
+	width: 95%;
+	margin: auto;
+	margin-top: 25px !important;
+	margin-bottom: 25px !important;
+}
