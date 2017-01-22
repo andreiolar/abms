@@ -5,7 +5,7 @@ import java.util.Date;
 import com.andreiolar.abms.client.view.UserView;
 import com.andreiolar.abms.client.widgets.ComplaintsWidget;
 import com.andreiolar.abms.client.widgets.ModalCreator;
-import com.andreiolar.abms.shared.UserInfo;
+import com.andreiolar.abms.shared.UserDetails;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.dom.client.Style.Float;
@@ -58,7 +58,7 @@ public class UserPanel extends Composite implements UserView {
 
 	private Presenter presenter;
 
-	private UserInfo userInfo;
+	private UserDetails userDetails;
 
 	public UserPanel() {
 		String sid = Cookies.getCookie("sid");
@@ -72,7 +72,7 @@ public class UserPanel extends Composite implements UserView {
 
 		setUserInfo();
 
-		if (userInfo == null) {
+		if (userDetails == null) {
 			int cookieDuration = 5000;
 			Date expires = new Date(System.currentTimeMillis() + cookieDuration);
 			Cookies.setCookie("badUserInfo", "Something bad happened. Please log in again.", expires, null, "/", false);
@@ -116,13 +116,13 @@ public class UserPanel extends Composite implements UserView {
 			DateTimeFormat df = DateTimeFormat.getFormat("yyyy-MM-dd");
 			Date date = df.parse(dateOfBirth.toString().replaceAll("\"", ""));
 
-			userInfo = new UserInfo(firstName.toString().replaceAll("\"", ""), lastName.toString().replaceAll("\"", ""), date,
+			userDetails = new UserDetails(firstName.toString().replaceAll("\"", ""), lastName.toString().replaceAll("\"", ""), date,
 					email.toString().replaceAll("\"", ""), mobileNumber.toString().replaceAll("\"", ""), gender.toString().replaceAll("\"", ""),
 					address.toString().replaceAll("\"", ""), city.toString().replaceAll("\"", ""), country.toString().replaceAll("\"", ""),
 					personalNumber.toString().replaceAll("\"", ""), idSeries.toString().replaceAll("\"", ""),
 					username.toString().replaceAll("\"", ""), null, apartmentNumber.toString().replaceAll("\"", ""));
 		} catch (Exception e) {
-			userInfo = null;
+			userDetails = null;
 		}
 	}
 
@@ -173,7 +173,7 @@ public class UserPanel extends Composite implements UserView {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				userInfo = null;
+				userDetails = null;
 				Cookies.removeCookie("sid");
 				Window.Location.replace(GWT.getHostPageBaseURL());
 			}
@@ -294,19 +294,19 @@ public class UserPanel extends Composite implements UserView {
 		profile.setUrl("images/icons/profile.png");
 
 		String url = "images/icons/male.png";
-		if (userInfo.getGender().equals("Female")) {
+		if (userDetails.getGender().equals("Female")) {
 			url = "images/icons/female.png";
 		}
 
 		MaterialImage materialImage = new MaterialImage(url);
 		profile.add(materialImage);
 
-		MaterialLabel label = new MaterialLabel("Logged in as: " + userInfo.getFirstName() + " " + userInfo.getLastName());
+		MaterialLabel label = new MaterialLabel("Logged in as: " + userDetails.getFirstName() + " " + userDetails.getLastName());
 		label.setTextColor(Color.WHITE);
 		profile.add(label);
 
 		MaterialLink link = new MaterialLink();
-		link.setText(userInfo.getUsername());
+		link.setText(userDetails.getUsername());
 		link.setActivates("dropProfile");
 		link.setIconType(IconType.ARROW_DROP_DOWN);
 		link.setIconPosition(IconPosition.RIGHT);
@@ -324,7 +324,7 @@ public class UserPanel extends Composite implements UserView {
 			@Override
 			public void onClick(ClickEvent event) {
 				container.clear();
-				ComplaintsWidget widget = new ComplaintsWidget(userInfo);
+				ComplaintsWidget widget = new ComplaintsWidget(userDetails);
 				container.add(widget);
 			}
 		});

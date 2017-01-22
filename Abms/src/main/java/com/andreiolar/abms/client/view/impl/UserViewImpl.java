@@ -15,15 +15,12 @@ import com.andreiolar.abms.client.utils.WidgetUtils;
 import com.andreiolar.abms.client.view.UserView;
 import com.andreiolar.abms.client.widgets.AboutWidget;
 import com.andreiolar.abms.client.widgets.AccountSettingsWidget;
-import com.andreiolar.abms.client.widgets.ComplaintWidget_bkp;
-import com.andreiolar.abms.client.widgets.ContactViewWidget;
 import com.andreiolar.abms.client.widgets.ConversationWidget;
 import com.andreiolar.abms.client.widgets.GeneralCostWidget;
 import com.andreiolar.abms.client.widgets.InstInfoWidget;
 import com.andreiolar.abms.client.widgets.MessageDialogBox;
 import com.andreiolar.abms.client.widgets.PasswordChangeWidget;
 import com.andreiolar.abms.client.widgets.PersonalCostWidget;
-import com.andreiolar.abms.client.widgets.SelfReadingWidget;
 import com.andreiolar.abms.client.widgets.VotingResultsWidget;
 import com.andreiolar.abms.client.widgets.VotingWidget;
 import com.andreiolar.abms.shared.PersonalUpkeepInformation;
@@ -180,157 +177,157 @@ public class UserViewImpl extends Composite implements UserView {
 		menu.addItem(new MenuItem(constants.complaints(), complaintsMenu));
 
 		// Add complaints menu items
-		emergencyServicesMenu.addItem(UserMenuConstants.MENU_ITEM_LOCAL_POLICE, new Command() {
+		// emergencyServicesMenu.addItem(UserMenuConstants.MENU_ITEM_LOCAL_POLICE, new Command() {
+		//
+		// @Override
+		// public void execute() {
+		// scroller.clear();
+		// Widget localPoliceForm = new ComplaintWidget_bkp(userInfo, UserMenuConstants.COMPLAINT_NOTE_LOCAL_POLICE,
+		// UserMenuConstants.MENU_ITEM_LOCAL_POLICE);
+		// scroller.add(localPoliceForm);
+		// }
+		//
+		// });
+		//
+		// emergencyServicesMenu.addItem(UserMenuConstants.MENU_ITEM_NATIONAL_POLICE, new Command() {
+		//
+		// @Override
+		// public void execute() {
+		// scroller.clear();
+		// Widget nationalPoliceForm = new ComplaintWidget_bkp(userInfo, UserMenuConstants.COMPLAINT_NOTE_NATIONAL_POLICE,
+		// UserMenuConstants.MENU_ITEM_NATIONAL_POLICE);
+		// scroller.add(nationalPoliceForm);
+		// }
+		// });
+		//
+		// emergencyServicesMenu.addItem(UserMenuConstants.MENU_ITEM_MEDICAL_SERVICE, new Command() {
+		//
+		// @Override
+		// public void execute() {
+		// scroller.clear();
+		// Widget medicalServiceForm = new ComplaintWidget_bkp(userInfo, UserMenuConstants.COMPLAINT_NOTE_MEDICAL_SERVICE,
+		// UserMenuConstants.MENU_ITEM_MEDICAL_SERVICE);
+		// scroller.add(medicalServiceForm);
+		// }
+		// });
+		//
+		// emergencyServicesMenu.addItem(UserMenuConstants.MENU_ITEM_FIREFIGHTER_SERVICE, new Command() {
+		//
+		// @Override
+		// public void execute() {
+		// scroller.clear();
+		// Widget firefighterServiceForm = new ComplaintWidget_bkp(userInfo, UserMenuConstants.COMPLAINT_NOTE_FIREFIGHTER_SERVICE,
+		// UserMenuConstants.MENU_ITEM_FIREFIGHTER_SERVICE);
+		// scroller.add(firefighterServiceForm);
+		// }
+		// });
+		//
+		// complaintsMenu.addItem(UserMenuConstants.MENU_ITEM_EMERGENCY_SERVICES, emergencyServicesMenu);
+		//
+		// // End of Emergency Services Menu
+		//
+		// // Start of Public Transportation Menu
+		// MenuBar publicTransportationMenu = new MenuBar(true);
+		//
+		// publicTransportationMenu.addItem(UserMenuConstants.MENU_ITEM_PUBLIC_TRANSPORT, new Command() {
+		//
+		// @Override
+		// public void execute() {
+		// scroller.clear();
+		// Widget publicTransportForm = new ComplaintWidget_bkp(userInfo, UserMenuConstants.COMPLAINT_NOTE_PUBLIC_TRANSPORT,
+		// UserMenuConstants.MENU_ITEM_PUBLIC_TRANSPORT);
+		// scroller.add(publicTransportForm);
+		// }
+		// });
+		//
+		// publicTransportationMenu.addItem(UserMenuConstants.MENU_ITEM_NATIONAL_RAILWAY, new Command() {
+		//
+		// @Override
+		// public void execute() {
+		// scroller.clear();
+		// Widget firefighterServiceForm = new ComplaintWidget_bkp(userInfo, UserMenuConstants.COMPLAINT_NOTE_NATIONAL_RAILWAY,
+		// UserMenuConstants.MENU_ITEM_NATIONAL_RAILWAY);
+		// scroller.add(firefighterServiceForm);
+		// }
+		// });
+		//
+		// publicTransportationMenu.addItem(UserMenuConstants.MENU_ITEM_AIRPORT, new Command() {
+		//
+		// @Override
+		// public void execute() {
+		// scroller.clear();
+		// Widget airportForm = new ComplaintWidget_bkp(userInfo, UserMenuConstants.COMPLAINT_NOTE_AIRPORT, UserMenuConstants.MENU_ITEM_AIRPORT);
+		// scroller.add(airportForm);
+		// }
+		// });
+		//
+		// complaintsMenu.addItem(UserMenuConstants.MENU_ITEM_PUBLIC_TRANSPORTATION, publicTransportationMenu);
+		//
+		// // End of Public Transportation Menu
+		//
+		// // Start of Salubrity Menu
+		//
+		// complaintsMenu.addSeparator();
+		//
+		// complaintsMenu.addItem(UserMenuConstants.MENU_ITEM_SALUBRITY, new Command() {
+		//
+		// @Override
+		// public void execute() {
+		// scroller.clear();
+		// Widget salubrityForm = new ComplaintWidget_bkp(userInfo, UserMenuConstants.COMPLAINT_NOTE_SALUBRITY,
+		// UserMenuConstants.MENU_ITEM_SALUBRITY);
+		// scroller.add(salubrityForm);
+		// }
+		// });
+		//
+		// // End of Salubrity Menu
+		//
+		// // Start of Town Hall Menu
+		//
+		// complaintsMenu.addItem(UserMenuConstants.MENU_ITEM_TOWN_HALL, new Command() {
+		//
+		// @Override
+		// public void execute() {
+		// scroller.clear();
+		// Widget townHallForm = new ComplaintWidget_bkp(userInfo, UserMenuConstants.COMPLAINT_NOTE_TOWN_HALL,
+		// UserMenuConstants.MENU_ITEM_TOWN_HALL);
+		// scroller.add(townHallForm);
+		// }
+		// });
+		//
+		// // End of Town Hall Menu
+		//
+		// /* End of Complaints Menu */
+		//
+		// /* Create the Administration Menu */
+		// MenuBar administrationMenu = new MenuBar(true);
+		// administrationMenu.setAnimationEnabled(true);
+		// menu.addItem(new MenuItem(UserMenuConstants.MENU_ITEM_ADMINISTRATION, administrationMenu));
+		//
+		// // Add contact info Menu
+		// administrationMenu.addItem(UserMenuConstants.MENU_ITEM_CONTACT_INFO, new Command() {
+		//
+		// @Override
+		// public void execute() {
+		// scroller.clear();
+		// Widget contactView = new ContactViewWidget(userInfo);
+		// scroller.add(contactView);
+		// }
+		//
+		// });
+		// // End of Contact Info Menu
+		//
+		// administrationMenu.addItem(UserMenuConstants.MENU_ITEM_SELF_READINGS, new Command() {
+		//
+		// @Override
+		// public void execute() {
+		// scroller.clear();
+		// Widget selfReadingsWidget = new SelfReadingWidget(previousMonth, currentYear, userInfo);
+		// scroller.add(selfReadingsWidget);
+		// }
+		// });
 
-			@Override
-			public void execute() {
-				scroller.clear();
-				Widget localPoliceForm = new ComplaintWidget_bkp(userInfo, UserMenuConstants.COMPLAINT_NOTE_LOCAL_POLICE,
-						UserMenuConstants.MENU_ITEM_LOCAL_POLICE);
-				scroller.add(localPoliceForm);
-			}
-
-		});
-
-		emergencyServicesMenu.addItem(UserMenuConstants.MENU_ITEM_NATIONAL_POLICE, new Command() {
-
-			@Override
-			public void execute() {
-				scroller.clear();
-				Widget nationalPoliceForm = new ComplaintWidget_bkp(userInfo, UserMenuConstants.COMPLAINT_NOTE_NATIONAL_POLICE,
-						UserMenuConstants.MENU_ITEM_NATIONAL_POLICE);
-				scroller.add(nationalPoliceForm);
-			}
-		});
-
-		emergencyServicesMenu.addItem(UserMenuConstants.MENU_ITEM_MEDICAL_SERVICE, new Command() {
-
-			@Override
-			public void execute() {
-				scroller.clear();
-				Widget medicalServiceForm = new ComplaintWidget_bkp(userInfo, UserMenuConstants.COMPLAINT_NOTE_MEDICAL_SERVICE,
-						UserMenuConstants.MENU_ITEM_MEDICAL_SERVICE);
-				scroller.add(medicalServiceForm);
-			}
-		});
-
-		emergencyServicesMenu.addItem(UserMenuConstants.MENU_ITEM_FIREFIGHTER_SERVICE, new Command() {
-
-			@Override
-			public void execute() {
-				scroller.clear();
-				Widget firefighterServiceForm = new ComplaintWidget_bkp(userInfo, UserMenuConstants.COMPLAINT_NOTE_FIREFIGHTER_SERVICE,
-						UserMenuConstants.MENU_ITEM_FIREFIGHTER_SERVICE);
-				scroller.add(firefighterServiceForm);
-			}
-		});
-
-		complaintsMenu.addItem(UserMenuConstants.MENU_ITEM_EMERGENCY_SERVICES, emergencyServicesMenu);
-
-		// End of Emergency Services Menu
-
-		// Start of Public Transportation Menu
-		MenuBar publicTransportationMenu = new MenuBar(true);
-
-		publicTransportationMenu.addItem(UserMenuConstants.MENU_ITEM_PUBLIC_TRANSPORT, new Command() {
-
-			@Override
-			public void execute() {
-				scroller.clear();
-				Widget publicTransportForm = new ComplaintWidget_bkp(userInfo, UserMenuConstants.COMPLAINT_NOTE_PUBLIC_TRANSPORT,
-						UserMenuConstants.MENU_ITEM_PUBLIC_TRANSPORT);
-				scroller.add(publicTransportForm);
-			}
-		});
-
-		publicTransportationMenu.addItem(UserMenuConstants.MENU_ITEM_NATIONAL_RAILWAY, new Command() {
-
-			@Override
-			public void execute() {
-				scroller.clear();
-				Widget firefighterServiceForm = new ComplaintWidget_bkp(userInfo, UserMenuConstants.COMPLAINT_NOTE_NATIONAL_RAILWAY,
-						UserMenuConstants.MENU_ITEM_NATIONAL_RAILWAY);
-				scroller.add(firefighterServiceForm);
-			}
-		});
-
-		publicTransportationMenu.addItem(UserMenuConstants.MENU_ITEM_AIRPORT, new Command() {
-
-			@Override
-			public void execute() {
-				scroller.clear();
-				Widget airportForm = new ComplaintWidget_bkp(userInfo, UserMenuConstants.COMPLAINT_NOTE_AIRPORT, UserMenuConstants.MENU_ITEM_AIRPORT);
-				scroller.add(airportForm);
-			}
-		});
-
-		complaintsMenu.addItem(UserMenuConstants.MENU_ITEM_PUBLIC_TRANSPORTATION, publicTransportationMenu);
-
-		// End of Public Transportation Menu
-
-		// Start of Salubrity Menu
-
-		complaintsMenu.addSeparator();
-
-		complaintsMenu.addItem(UserMenuConstants.MENU_ITEM_SALUBRITY, new Command() {
-
-			@Override
-			public void execute() {
-				scroller.clear();
-				Widget salubrityForm = new ComplaintWidget_bkp(userInfo, UserMenuConstants.COMPLAINT_NOTE_SALUBRITY,
-						UserMenuConstants.MENU_ITEM_SALUBRITY);
-				scroller.add(salubrityForm);
-			}
-		});
-
-		// End of Salubrity Menu
-
-		// Start of Town Hall Menu
-
-		complaintsMenu.addItem(UserMenuConstants.MENU_ITEM_TOWN_HALL, new Command() {
-
-			@Override
-			public void execute() {
-				scroller.clear();
-				Widget townHallForm = new ComplaintWidget_bkp(userInfo, UserMenuConstants.COMPLAINT_NOTE_TOWN_HALL,
-						UserMenuConstants.MENU_ITEM_TOWN_HALL);
-				scroller.add(townHallForm);
-			}
-		});
-
-		// End of Town Hall Menu
-
-		/* End of Complaints Menu */
-
-		/* Create the Administration Menu */
-		MenuBar administrationMenu = new MenuBar(true);
-		administrationMenu.setAnimationEnabled(true);
-		menu.addItem(new MenuItem(UserMenuConstants.MENU_ITEM_ADMINISTRATION, administrationMenu));
-
-		// Add contact info Menu
-		administrationMenu.addItem(UserMenuConstants.MENU_ITEM_CONTACT_INFO, new Command() {
-
-			@Override
-			public void execute() {
-				scroller.clear();
-				Widget contactView = new ContactViewWidget(userInfo);
-				scroller.add(contactView);
-			}
-
-		});
-		// End of Contact Info Menu
-
-		administrationMenu.addItem(UserMenuConstants.MENU_ITEM_SELF_READINGS, new Command() {
-
-			@Override
-			public void execute() {
-				scroller.clear();
-				Widget selfReadingsWidget = new SelfReadingWidget(previousMonth, currentYear, userInfo);
-				scroller.add(selfReadingsWidget);
-			}
-		});
-
-		administrationMenu.addSeparator();
+		// administrationMenu.addSeparator();
 
 		MenuBar upkeepMenu = new MenuBar(true);
 
@@ -428,7 +425,7 @@ public class UserViewImpl extends Composite implements UserView {
 			}
 		});
 
-		administrationMenu.addItem(UserMenuConstants.MENU_MONTHLY_COSTS, upkeepMenu);
+		// administrationMenu.addItem(UserMenuConstants.MENU_MONTHLY_COSTS, upkeepMenu);
 
 		/* Create the Voting Menu */
 		MenuBar votingMenu = new MenuBar(true);

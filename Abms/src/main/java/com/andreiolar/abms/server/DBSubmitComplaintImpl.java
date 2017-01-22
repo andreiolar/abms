@@ -11,28 +11,33 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import com.andreiolar.abms.client.exception.ComplaintSubmissionException;
+import com.andreiolar.abms.client.exception.MailException;
 import com.andreiolar.abms.client.rpc.DBSubmitComplaint;
 import com.andreiolar.abms.mail.MailSender;
+import com.andreiolar.abms.shared.UserDetails;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.html.simpleparser.HTMLWorker;
 import com.itextpdf.text.pdf.PdfWriter;
 
+@SuppressWarnings("deprecation")
 public class DBSubmitComplaintImpl extends RemoteServiceServlet implements DBSubmitComplaint {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 817411178442933495L;
 
 	public DBSubmitComplaintImpl() {
 	}
 
 	@Override
-	public Boolean addComplaint(String username, String phoneNumber, String complaintTo, String firstName, String lastName, String personalId,
-			String idSeries, String message) throws Exception {
+	public Boolean registerComplaint(UserDetails userInfo, String phoneNumber, String complaintTo, String complaint) throws Exception {
 		Boolean result = null;
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
+		boolean isMailSend = true;
+		String mailMessage = null;
 
 		int inserted = 0;
 
@@ -42,15 +47,16 @@ public class DBSubmitComplaintImpl extends RemoteServiceServlet implements DBSub
 			try {
 				String q = "insert into complaints(username, complaint_to, date, phone_number) values(?, ?, CURDATE(), ?)";
 				stmt = conn.prepareStatement(q);
-				stmt.setString(1, username);
+				stmt.setString(1, userInfo.getUsername());
 				stmt.setString(2, complaintTo);
 				stmt.setString(3, phoneNumber);
 
 				inserted = stmt.executeUpdate();
+				stmt.close();
 
 				String q2 = "select email from user_info where username=?";
 				stmt = conn.prepareStatement(q2);
-				stmt.setString(1, username);
+				stmt.setString(1, userInfo.getUsername());
 
 				rs = stmt.executeQuery();
 
@@ -64,15 +70,20 @@ public class DBSubmitComplaintImpl extends RemoteServiceServlet implements DBSub
 				String messageBody = "You have submitted a complaint to the " + complaintTo
 						+ ". <br>They will reach for you as soon as possible. Attached to thes E-Mail you have a PDF file containing your complaint details.<br><br>Regards,<br>Administration";
 
-				File myFile = generateComplaintPDFFile(complaintTo, firstName, lastName, phoneNumber, personalId, idSeries, message, username);
+				File myFile = generateComplaintPDFFile(userInfo, phoneNumber, complaintTo, complaint);
 
-				MailSender.sendMail(subject, to, messageBody, myFile.getAbsolutePath());
+				try {
+					MailSender.sendMail(subject, to, messageBody, myFile.getAbsolutePath());
+				} catch (Exception ex) {
+					mailMessage = ex.getMessage();
+					isMailSend = false;
+				}
 
 			} catch (Exception ex) {
-				ex.printStackTrace();
+				throw new RuntimeException("Something went wrong: " + ex.getMessage(), ex);
 			}
 		} catch (SQLException ex) {
-			ex.printStackTrace();
+			throw new RuntimeException("Something went wrong: " + ex.getMessage(), ex);
 		} finally {
 			stmt.close();
 			conn.close();
@@ -83,20 +94,24 @@ public class DBSubmitComplaintImpl extends RemoteServiceServlet implements DBSub
 		}
 
 		if (result == null) {
-			throw new Exception("Error subitting complaint!");
+			throw new ComplaintSubmissionException("Error subitting complaint!");
+		}
+
+		if (!isMailSend) {
+			throw new MailException("Unable to send mail: " + mailMessage);
 		}
 
 		return result;
 	}
 
-	private File generateComplaintPDFFile(String complaintTo, String firstName, String lastName, String phoneNumber, String personalId,
-			String idSeries, String message, String username) throws Exception {
+	private File generateComplaintPDFFile(UserDetails userInfo, String phoneNumber, String complaintTo, String complaint) throws Exception {
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		Calendar calendar = Calendar.getInstance();
 		String today = dateFormat.format(calendar.getTime());
 
 		String basePath = System.getProperty("user.dir");
-		File pdfFile = new File(basePath + "/files/complaints/" + username, firstName + "_" + lastName + "_" + complaintTo + "_" + today + ".pdf");
+		File pdfFile = new File(basePath + "/files/complaints/" + userInfo.getUsername(),
+				userInfo.getFirstName() + "_" + userInfo.getLastName() + "_" + complaintTo + "_" + today + ".pdf");
 
 		if (!pdfFile.exists()) {
 			pdfFile.getParentFile().mkdirs();
@@ -109,11 +124,11 @@ public class DBSubmitComplaintImpl extends RemoteServiceServlet implements DBSub
 		HTMLWorker htmlWorker = new HTMLWorker(document);
 		String personalInforamtionLabel = new String(
 				"<p style=\"font-size:20px\">" + "<b><i><u>" + "Personal Information" + "</u></i></b>" + "</p><br>");
-		String personalInformation = new String("<p>" + "<b>" + "Name: " + "</b>" + firstName + " " + lastName + "<br>" + "<b>" + "Phone Number: "
-				+ "</b>" + phoneNumber + "<br>" + "<b>" + "Personal Number: " + "</b>" + personalId + "<br>" + "<b>" + "ID Series: " + "</b>"
-				+ idSeries + "<br><b>Complaint To: </b>" + complaintTo + "</p><br><br><br>");
+		String personalInformation = new String("<p>" + "<b>" + "Name: " + "</b>" + userInfo.getFirstName() + " " + userInfo.getLastName() + "<br>"
+				+ "<b>" + "Phone Number: " + "</b>" + phoneNumber + "<br>" + "<b>" + "Personal Number: " + "</b>" + userInfo.getPersonalNumber()
+				+ "<br>" + "<b>" + "ID Series: " + "</b>" + userInfo.getIdSeries() + "<br><b>Complaint To: </b>" + complaintTo + "</p><br><br><br>");
 		String complaintLabel = new String("<p style=\"font-size:20px\">" + "<b><i><u>" + "Complaint" + "</u></i></b></p><br>");
-		String complaintText = new String("<p>" + message + "</p>");
+		String complaintText = new String("<p>" + complaint + "</p>");
 		String submittedOn = new String(
 				"<br><br><br><p style=\"font-size:20px\">" + "<b><i><u>" + "Submitted on: " + today + "</u></i></b>" + "</p>");
 
@@ -129,5 +144,4 @@ public class DBSubmitComplaintImpl extends RemoteServiceServlet implements DBSub
 
 		return pdfFile;
 	}
-
 }

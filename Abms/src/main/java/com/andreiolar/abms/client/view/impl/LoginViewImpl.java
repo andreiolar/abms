@@ -860,12 +860,9 @@ public class LoginViewImpl extends Composite implements LoginView {
 									errorModal.open();
 								}
 							}
-
 						});
-
 					}
 				}
-
 			}
 		});
 		stepThree.add(continueStepThreeButton);

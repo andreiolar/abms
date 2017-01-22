@@ -1,11 +1,21 @@
 package com.andreiolar.abms.client.widgets;
 
-import com.andreiolar.abms.shared.UserInfo;
+import com.andreiolar.abms.client.exception.ComplaintSubmissionException;
+import com.andreiolar.abms.client.exception.MailException;
+import com.andreiolar.abms.client.rpc.DBSubmitComplaint;
+import com.andreiolar.abms.client.rpc.DBSubmitComplaintAsync;
+import com.andreiolar.abms.shared.UserDetails;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.FontWeight;
 import com.google.gwt.dom.client.Style.Visibility;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import gwt.material.design.addins.client.combobox.MaterialComboBox;
@@ -16,14 +26,19 @@ import gwt.material.design.client.constants.IconPosition;
 import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.constants.InputType;
 import gwt.material.design.client.constants.TextAlign;
+import gwt.material.design.client.constants.WavesType;
+import gwt.material.design.client.ui.MaterialButton;
 import gwt.material.design.client.ui.MaterialCollapsible;
 import gwt.material.design.client.ui.MaterialCollapsibleBody;
 import gwt.material.design.client.ui.MaterialCollapsibleHeader;
 import gwt.material.design.client.ui.MaterialCollapsibleItem;
 import gwt.material.design.client.ui.MaterialLabel;
 import gwt.material.design.client.ui.MaterialLink;
+import gwt.material.design.client.ui.MaterialLoader;
+import gwt.material.design.client.ui.MaterialModal;
 import gwt.material.design.client.ui.MaterialPanel;
 import gwt.material.design.client.ui.MaterialTextBox;
+import gwt.material.design.client.ui.MaterialToast;
 import gwt.material.design.client.ui.html.Div;
 import gwt.material.design.client.ui.html.Hr;
 import gwt.material.design.client.ui.html.OptGroup;
@@ -31,10 +46,10 @@ import gwt.material.design.client.ui.html.Option;
 
 public class ComplaintsWidget extends Composite implements CustomWidget {
 
-	private UserInfo userInfo;
+	public UserDetails userDetails;
 
-	public ComplaintsWidget(UserInfo userInfo) {
-		this.userInfo = userInfo;
+	public ComplaintsWidget(UserDetails userDetails) {
+		this.userDetails = userDetails;
 
 		initWidget(initializeWidget());
 	}
@@ -114,7 +129,7 @@ public class ComplaintsWidget extends Composite implements CustomWidget {
 		firstNameBox.setMaxLength(30);
 		firstNameBox.setLength(30);
 		firstNameBox.setIconType(IconType.PERSON);
-		firstNameBox.setText(userInfo.getFirstName());
+		firstNameBox.setText(userDetails.getFirstName());
 		firstNameBox.setEnabled(false);
 		firstNameBox.setStyleName("complaintsComponent");
 		panel.add(firstNameBox);
@@ -125,7 +140,7 @@ public class ComplaintsWidget extends Composite implements CustomWidget {
 		lastNameBox.setMaxLength(30);
 		lastNameBox.setLength(30);
 		lastNameBox.setIconType(IconType.PERSON);
-		lastNameBox.setText(userInfo.getLastName());
+		lastNameBox.setText(userDetails.getLastName());
 		lastNameBox.setEnabled(false);
 		lastNameBox.setStyleName("complaintsComponent");
 		panel.add(lastNameBox);
@@ -136,7 +151,7 @@ public class ComplaintsWidget extends Composite implements CustomWidget {
 		mobileNumberBox.setMaxLength(10);
 		mobileNumberBox.setLength(10);
 		mobileNumberBox.setIconType(IconType.SMARTPHONE);
-		mobileNumberBox.setText(userInfo.getMobileNumber());
+		mobileNumberBox.setText(userDetails.getMobileNumber());
 		mobileNumberBox.setStyleName("complaintsComponent");
 		panel.add(mobileNumberBox);
 
@@ -146,7 +161,7 @@ public class ComplaintsWidget extends Composite implements CustomWidget {
 		cnpBox.setMaxLength(13);
 		cnpBox.setLength(13);
 		cnpBox.setIconType(IconType.PERM_IDENTITY);
-		cnpBox.setText(userInfo.getPersonalNumber());
+		cnpBox.setText(userDetails.getPersonalNumber());
 		cnpBox.setEnabled(false);
 		cnpBox.setStyleName("complaintsComponent");
 		panel.add(cnpBox);
@@ -157,13 +172,13 @@ public class ComplaintsWidget extends Composite implements CustomWidget {
 		personalNumberBox.setMaxLength(8);
 		personalNumberBox.setLength(8);
 		personalNumberBox.setIconType(IconType.PERM_IDENTITY);
-		personalNumberBox.setText(userInfo.getIdSeries());
+		personalNumberBox.setText(userDetails.getIdSeries());
 		personalNumberBox.setEnabled(false);
 		personalNumberBox.setStyleName("complaintsComponent");
 		panel.add(personalNumberBox);
 
 		Div div = new Div();
-		div.setHeight("400px");
+		div.setHeight("360px");
 		div.setStyleName("complaintsEditor");
 
 		MaterialRichEditor editor = new MaterialRichEditor();
@@ -171,6 +186,91 @@ public class ComplaintsWidget extends Composite implements CustomWidget {
 		editor.setHeight("150px");
 		div.add(editor);
 		panel.add(div);
+
+		Div buttonsDiv = new Div();
+		buttonsDiv.setStyleName("twoButtons");
+
+		MaterialButton submitButton = new MaterialButton();
+		submitButton.setWaves(WavesType.LIGHT);
+		submitButton.setText("Submit");
+		submitButton.setWidth("15%");
+		submitButton.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				String mobileNumber = mobileNumberBox.getText();
+				String complaintTo = institutionsBox.getSelectedValue();
+				String complaintText = editor.getHTML();
+
+				boolean canProcceed = true;
+
+				if (complaintTo.equals("Select Institution")) {
+					canProcceed = false;
+					institutionsBox.setError("Please select an institution.");
+				} else {
+					institutionsBox.setSuccess("");
+				}
+
+				if (!mobileNumber.matches("[0-9]{10}")) {
+					canProcceed = false;
+					mobileNumberBox.setError("Please enter a valid phone number. Only digits are allowed.");
+				} else {
+					mobileNumberBox.setSuccess("");
+				}
+
+				if (canProcceed) {
+					MaterialLoader.showLoading(true);
+					DBSubmitComplaintAsync rpcService = (DBSubmitComplaintAsync) GWT.create(DBSubmitComplaint.class);
+					ServiceDefTarget target = (ServiceDefTarget) rpcService;
+					String moduleRelativeURL = GWT.getModuleBaseURL() + "DBSubmitComplaintImpl";
+					target.setServiceEntryPoint(moduleRelativeURL);
+
+					rpcService.registerComplaint(userDetails, mobileNumber, complaintTo, complaintText, new AsyncCallback<Boolean>() {
+
+						@Override
+						public void onSuccess(Boolean result) {
+							MaterialLoader.showLoading(false);
+							MaterialToast.fireToast("Complaint submitted successfully!", "rounded");
+						}
+
+						@Override
+						public void onFailure(Throwable caught) {
+							MaterialLoader.showLoading(false);
+							if (caught instanceof ComplaintSubmissionException || caught instanceof MailException) {
+								MaterialToast.fireToast(caught.getMessage(), "rounded");
+							} else {
+								MaterialModal errorModal = ModalCreator.createModal(caught);
+								RootPanel.get().add(errorModal);
+								errorModal.open();
+							}
+						}
+					});
+
+					institutionsBox.setSelectedIndex(0);
+					mobileNumberBox.setText(userDetails.getMobileNumber());
+					editor.setHTML("");
+				}
+			}
+		});
+		buttonsDiv.add(submitButton);
+
+		MaterialButton clearButton = new MaterialButton();
+		clearButton.setWaves(WavesType.LIGHT);
+		clearButton.setText("Clear");
+		clearButton.setWidth("15%");
+		clearButton.setMarginLeft(25.0);
+		clearButton.setBackgroundColor(Color.LIGHT_BLUE_LIGHTEN_3);
+		clearButton.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				mobileNumberBox.setText(userDetails.getMobileNumber());
+				editor.setHTML("");
+			}
+		});
+		buttonsDiv.add(clearButton);
+
+		panel.add(buttonsDiv);
 
 		return panel;
 	}

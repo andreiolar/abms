@@ -1,10 +1,10 @@
 package com.andreiolar.abms.client.rpc;
 
+import com.andreiolar.abms.shared.UserDetails;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface DBSubmitComplaintAsync {
 
-	void addComplaint(String username, String phoneNumber, String complaintTo, String firstName, String lastName, String personalId, String idSeries,
-			String message, AsyncCallback<Boolean> callback);
+	void registerComplaint(UserDetails userInfo, String phoneNumber, String complaintTo, String complaint, AsyncCallback<Boolean> callback);
 
 }

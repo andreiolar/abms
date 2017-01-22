@@ -531,6 +531,10 @@ header, main, footer {
 	padding-left: 280px;
 }
 
+footer{
+	z-index: 996;
+}
+
 .label {
 	margin: 24px;
 }
@@ -632,4 +636,11 @@ strong {
 	margin: auto;
 	margin-top: 25px !important;
 	margin-bottom: 25px !important;
+}
+
+.twoButtons{
+	display: flex;
+	margin-left: 25px !important;
+	margin-top: 25px !important;
+	margin-bottom: 75px !important;
 }
