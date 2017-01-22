@@ -9,6 +9,7 @@ import gwt.material.design.client.constants.Color;
 import gwt.material.design.client.constants.IconPosition;
 import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.constants.ModalType;
+import gwt.material.design.client.constants.TextAlign;
 import gwt.material.design.client.constants.WavesType;
 import gwt.material.design.client.ui.MaterialButton;
 import gwt.material.design.client.ui.MaterialCollapsible;
@@ -111,6 +112,8 @@ public final class ModalCreator {
 
 		MaterialModalContent materialModalContent = new MaterialModalContent();
 		MaterialTitle materialTitle = new MaterialTitle(title);
+		materialTitle.setTextColor(Color.BLUE);
+		materialTitle.setTextAlign(TextAlign.CENTER);
 
 		materialModalContent.add(materialTitle);
 		materialModalContent.add(widget);

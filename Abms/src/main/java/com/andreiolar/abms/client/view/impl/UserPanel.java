@@ -165,11 +165,11 @@ public class UserPanel extends Composite implements UserView {
 		materialNavSection.setFloat(Float.RIGHT);
 
 		/** Log Out **/
-		MaterialLink searchLink = new MaterialLink();
-		searchLink.setIconType(IconType.POWER_SETTINGS_NEW);
-		searchLink.setIconPosition(IconPosition.NONE);
-		searchLink.setMarginRight(10.0);
-		searchLink.addClickHandler(new ClickHandler() {
+		MaterialLink logoutLink = new MaterialLink();
+		logoutLink.setIconType(IconType.POWER_SETTINGS_NEW);
+		logoutLink.setIconPosition(IconPosition.NONE);
+		logoutLink.setMarginRight(10.0);
+		logoutLink.addClickHandler(new ClickHandler() {
 
 			@Override
 			public void onClick(ClickEvent event) {
@@ -178,8 +178,8 @@ public class UserPanel extends Composite implements UserView {
 				Window.Location.replace(GWT.getHostPageBaseURL());
 			}
 		});
-		MaterialTooltip seatchTooltip = new MaterialTooltip(searchLink, "Log Out");
-		seatchTooltip.setPosition(Position.BOTTOM);
+		MaterialTooltip logoutTooltip = new MaterialTooltip(logoutLink, "Log Out");
+		logoutTooltip.setPosition(Position.BOTTOM);
 
 		/** Help **/
 		MaterialLink aboutLink = new MaterialLink();
@@ -215,6 +215,41 @@ public class UserPanel extends Composite implements UserView {
 		});
 		MaterialTooltip helpTooltip = new MaterialTooltip(aboutLink, "About");
 		helpTooltip.setPosition(Position.BOTTOM);
+
+		/** Institution Information **/
+		MaterialLink instLink = new MaterialLink();
+		instLink.setIconType(IconType.INFO_OUTLINE);
+		instLink.setIconPosition(IconPosition.NONE);
+		instLink.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				try {
+					new RequestBuilder(RequestBuilder.GET, "pages/institution_information.html").sendRequest("", new RequestCallback() {
+						@Override
+						public void onResponseReceived(Request req, Response resp) {
+							HTML html = new HTML(resp.getText());
+							MaterialModal aboutModal = ModalCreator.createWidgetModal("Institution Information", html);
+							RootPanel.get().add(aboutModal);
+							aboutModal.open();
+						}
+
+						@Override
+						public void onError(Request res, Throwable throwable) {
+							MaterialModal errorModal = ModalCreator.createModal(throwable);
+							RootPanel.get().add(errorModal);
+							errorModal.open();
+						}
+					});
+				} catch (RequestException e) {
+					MaterialModal errorModal = ModalCreator.createModal(e);
+					RootPanel.get().add(errorModal);
+					errorModal.open();
+				}
+			}
+		});
+		MaterialTooltip instTooltip = new MaterialTooltip(instLink, "Institution Information");
+		instTooltip.setPosition(Position.BOTTOM);
 
 		/** Contact Information **/
 		MaterialLink contactLink = new MaterialLink();
@@ -275,8 +310,9 @@ public class UserPanel extends Composite implements UserView {
 
 		materialNavSection.add(homeLink);
 		materialNavSection.add(contactLink);
+		materialNavSection.add(instLink);
 		materialNavSection.add(aboutLink);
-		materialNavSection.add(searchLink);
+		materialNavSection.add(logoutLink);
 
 		materialNavBar.add(materialNavSection);
 
