@@ -23,7 +23,7 @@ import com.andreiolar.abms.client.rpc.DBRegisterUserAsync;
 import com.andreiolar.abms.client.view.LoginView;
 import com.andreiolar.abms.client.widgets.ModalCreator;
 import com.andreiolar.abms.shared.Email;
-import com.andreiolar.abms.shared.UserInfo;
+import com.andreiolar.abms.shared.UserDetails;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Float;
 import com.google.gwt.dom.client.Style.FontStyle;
@@ -832,18 +832,21 @@ public class LoginViewImpl extends Composite implements LoginView {
 						String cnp = cnpBox.getText();
 						String personalNumber = personalNumberBox.getText();
 
+						continueStepThreeButton.setEnabled(false);
+
 						DBRegisterUserAsync rpcService = (DBRegisterUserAsync) GWT.create(DBRegisterUser.class);
 						ServiceDefTarget target = (ServiceDefTarget) rpcService;
 						String moduleRelativeURL = GWT.getModuleBaseURL() + "DBRegisterUserImpl";
 						target.setServiceEntryPoint(moduleRelativeURL);
 
-						UserInfo userInfo = new UserInfo(firstName, lastName, dateOfBirth, email, mobileNumber, gender, address, city, country, cnp,
-								personalNumber, username, password, null);
+						UserDetails userDetails = new UserDetails(firstName, lastName, dateOfBirth, email, mobileNumber, gender, address, city,
+								country, cnp, personalNumber, username, password, null);
 
-						rpcService.registerUser(userInfo, new AsyncCallback<Boolean>() {
+						rpcService.registerUser(userDetails, new AsyncCallback<Boolean>() {
 
 							@Override
 							public void onSuccess(Boolean result) {
+								continueStepThreeButton.setEnabled(true);
 								stepper.setSuccess("");
 								RootPanel.get().remove(registerPanel);
 								registerPanel.close();
@@ -852,6 +855,7 @@ public class LoginViewImpl extends Composite implements LoginView {
 
 							@Override
 							public void onFailure(Throwable caught) {
+								continueStepThreeButton.setEnabled(true);
 								if (caught instanceof UsernameUnavailableException) {
 									usernameBox.setError(caught.getMessage());
 								} else {
@@ -899,26 +903,26 @@ public class LoginViewImpl extends Composite implements LoginView {
 		String moduleRelativeURL = GWT.getModuleBaseURL() + "DBConnectionImpl";
 		target.setServiceEntryPoint(moduleRelativeURL);
 
-		rpcService.authenticateUser(username, password, new AsyncCallback<UserInfo>() {
+		rpcService.authenticateUser(username, password, new AsyncCallback<UserDetails>() {
 
 			@Override
-			public void onSuccess(UserInfo userInfo) {
+			public void onSuccess(UserDetails userDetails) {
 				loginButton.setEnabled(true);
 
 				JSONObject userInfoObject = new JSONObject();
-				userInfoObject.put("firstName", new JSONString(userInfo.getFirstName()));
-				userInfoObject.put("lastName", new JSONString(userInfo.getLastName()));
-				userInfoObject.put("dateOfBirth", new JSONString(userInfo.getDateOfBirth().toString()));
-				userInfoObject.put("email", new JSONString(userInfo.getEmail()));
-				userInfoObject.put("mobileNumber", new JSONString(userInfo.getMobileNumber()));
-				userInfoObject.put("gender", new JSONString(userInfo.getGender()));
-				userInfoObject.put("address", new JSONString(userInfo.getAddress()));
-				userInfoObject.put("city", new JSONString(userInfo.getCity()));
-				userInfoObject.put("country", new JSONString(userInfo.getCountry()));
-				userInfoObject.put("personalNumber", new JSONString(userInfo.getPersonalNumber()));
-				userInfoObject.put("idSeries", new JSONString(userInfo.getIdSeries()));
-				userInfoObject.put("apartmentNumber", new JSONString(userInfo.getApartmentNumber()));
-				userInfoObject.put("username", new JSONString(userInfo.getUsername()));
+				userInfoObject.put("firstName", new JSONString(userDetails.getFirstName()));
+				userInfoObject.put("lastName", new JSONString(userDetails.getLastName()));
+				userInfoObject.put("dateOfBirth", new JSONString(userDetails.getDateOfBirth().toString()));
+				userInfoObject.put("email", new JSONString(userDetails.getEmail()));
+				userInfoObject.put("mobileNumber", new JSONString(userDetails.getMobileNumber()));
+				userInfoObject.put("gender", new JSONString(userDetails.getGender()));
+				userInfoObject.put("address", new JSONString(userDetails.getAddress()));
+				userInfoObject.put("city", new JSONString(userDetails.getCity()));
+				userInfoObject.put("country", new JSONString(userDetails.getCountry()));
+				userInfoObject.put("personalNumber", new JSONString(userDetails.getPersonalNumber()));
+				userInfoObject.put("idSeries", new JSONString(userDetails.getIdSeries()));
+				userInfoObject.put("apartmentNumber", new JSONString(userDetails.getApartmentNumber()));
+				userInfoObject.put("username", new JSONString(userDetails.getUsername()));
 
 				if (loggedIn.getValue()) {
 					final long DURATION = 1000 * 60 * 60 * 24 * 1; // 1 day
@@ -930,9 +934,9 @@ public class LoginViewImpl extends Composite implements LoginView {
 					Cookies.setCookie("sid", userInfoObject.toString(), expires, null, "/", false);
 				}
 
-				if (userInfo.getType().equals("User")) {
+				if (userDetails.getType().equals("User")) {
 					presenter.goTo(new UserPlace(userInfoObject.toString()));
-				} else if (userInfo.getType().equals("Admin")) {
+				} else if (userDetails.getType().equals("Admin")) {
 					presenter.goTo(new AdminPlace(username));
 				}
 			}

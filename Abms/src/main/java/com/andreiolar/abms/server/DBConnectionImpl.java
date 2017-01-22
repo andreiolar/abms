@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import com.andreiolar.abms.client.exception.InvalidCredentialsException;
 import com.andreiolar.abms.client.rpc.DBConnection;
 import com.andreiolar.abms.security.BCrypt;
-import com.andreiolar.abms.shared.UserInfo;
+import com.andreiolar.abms.shared.UserDetails;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class DBConnectionImpl extends RemoteServiceServlet implements DBConnection {
@@ -20,8 +20,8 @@ public class DBConnectionImpl extends RemoteServiceServlet implements DBConnecti
 	}
 
 	@Override
-	public UserInfo authenticateUser(String username, String password) throws InvalidCredentialsException {
-		UserInfo userInfo = null;
+	public UserDetails authenticateUser(String username, String password) throws InvalidCredentialsException {
+		UserDetails userDetails = null;
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
@@ -52,9 +52,9 @@ public class DBConnectionImpl extends RemoteServiceServlet implements DBConnecti
 				String type = rs.getString("type");
 
 				if (BCrypt.checkpw(password, pass)) {
-					userInfo = new UserInfo(firstName, lastName, dateOfBirth, email, mobileNumber, gender, address, city, country, personalNumber,
-							idSeries, username, password, apartmentNumber);
-					userInfo.setType(type);
+					userDetails = new UserDetails(firstName, lastName, dateOfBirth, email, mobileNumber, gender, address, city, country,
+							personalNumber, idSeries, username, password, apartmentNumber);
+					userDetails.setType(type);
 
 					// HttpServletRequest threadLocalRequest = this.getThreadLocalRequest();
 					// HttpSession session = threadLocalRequest.getSession();
@@ -74,11 +74,11 @@ public class DBConnectionImpl extends RemoteServiceServlet implements DBConnecti
 			}
 		}
 
-		if (userInfo == null) {
+		if (userDetails == null) {
 			throw new InvalidCredentialsException("Login failed! Wrong username or password!");
 		}
 
-		return userInfo;
+		return userDetails;
 	}
 
 }
