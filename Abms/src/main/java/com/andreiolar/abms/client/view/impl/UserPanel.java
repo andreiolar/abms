@@ -36,6 +36,11 @@ import gwt.material.design.client.constants.IconPosition;
 import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.constants.Position;
 import gwt.material.design.client.constants.SideNavType;
+import gwt.material.design.client.constants.WavesType;
+import gwt.material.design.client.ui.MaterialCollapsible;
+import gwt.material.design.client.ui.MaterialCollapsibleBody;
+import gwt.material.design.client.ui.MaterialCollapsibleHeader;
+import gwt.material.design.client.ui.MaterialCollapsibleItem;
 import gwt.material.design.client.ui.MaterialContainer;
 import gwt.material.design.client.ui.MaterialDropDown;
 import gwt.material.design.client.ui.MaterialFooter;
@@ -51,6 +56,7 @@ import gwt.material.design.client.ui.MaterialSideNav;
 import gwt.material.design.client.ui.MaterialTooltip;
 import gwt.material.design.client.ui.html.Anchor;
 import gwt.material.design.client.ui.html.Header;
+import gwt.material.design.client.ui.html.UnorderedList;
 
 public class UserPanel extends Composite implements UserView {
 
@@ -351,6 +357,7 @@ public class UserPanel extends Composite implements UserView {
 
 		materialSideNav.add(profile);
 
+		/** Complaints **/
 		MaterialLink complaintsLink = new MaterialLink();
 		complaintsLink.setText("Complaints");
 		complaintsLink.setTextColor(Color.BLUE);
@@ -365,6 +372,56 @@ public class UserPanel extends Composite implements UserView {
 			}
 		});
 		materialSideNav.add(complaintsLink);
+
+		/** Administration **/
+		MaterialCollapsible administrationCollapsible = new MaterialCollapsible();
+		MaterialCollapsibleItem administrationCollapsibleItem = new MaterialCollapsibleItem();
+		MaterialCollapsibleHeader administrationCollapsibleHeader = new MaterialCollapsibleHeader();
+		administrationCollapsibleHeader.setWaves(WavesType.DEFAULT);
+
+		MaterialLink administrationLink = new MaterialLink();
+		administrationLink.setText("Administration");
+		administrationLink.setIconType(IconType.LOCATION_CITY);
+		administrationLink.setTextColor(Color.BLUE);
+		administrationCollapsibleHeader.add(administrationLink);
+		administrationCollapsibleItem.add(administrationCollapsibleHeader);
+
+		MaterialCollapsibleBody administrationBody = new MaterialCollapsibleBody();
+		UnorderedList administrationListItems = new UnorderedList();
+
+		/** Contact Information **/
+		MaterialLink contactInformationLink = new MaterialLink();
+		contactInformationLink.setText("Contact Information");
+		contactInformationLink.setTextColor(Color.BLUE_DARKEN_2);
+		contactInformationLink.setWaves(WavesType.DEFAULT);
+		administrationListItems.add(contactInformationLink);
+
+		/** Self Readings **/
+		MaterialLink selfReadingsLink = new MaterialLink();
+		selfReadingsLink.setText("Self Readings");
+		selfReadingsLink.setTextColor(Color.BLUE_DARKEN_2);
+		selfReadingsLink.setWaves(WavesType.DEFAULT);
+		administrationListItems.add(selfReadingsLink);
+
+		/** General Costs View **/
+		MaterialLink generalCostsViewLink = new MaterialLink();
+		generalCostsViewLink.setText("General Costs View");
+		generalCostsViewLink.setTextColor(Color.BLUE_DARKEN_2);
+		generalCostsViewLink.setWaves(WavesType.DEFAULT);
+		administrationListItems.add(generalCostsViewLink);
+
+		/** Personal Costs View **/
+		MaterialLink personalCostsViewLink = new MaterialLink();
+		personalCostsViewLink.setText("Personal Costs View");
+		personalCostsViewLink.setTextColor(Color.BLUE_DARKEN_2);
+		personalCostsViewLink.setWaves(WavesType.DEFAULT);
+		administrationListItems.add(personalCostsViewLink);
+
+		administrationBody.add(administrationListItems);
+		administrationCollapsibleItem.add(administrationBody);
+		administrationCollapsible.add(administrationCollapsibleItem);
+
+		materialSideNav.add(administrationCollapsible);
 
 		header.add(materialSideNav);
 

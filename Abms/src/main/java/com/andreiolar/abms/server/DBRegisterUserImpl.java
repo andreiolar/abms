@@ -1,5 +1,8 @@
 package com.andreiolar.abms.server;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -126,8 +129,24 @@ public class DBRegisterUserImpl extends RemoteServiceServlet implements DBRegist
 						+ "Administration" + "</p>";
 
 				MailSender.sendMail(subject, to, message, null);
-			}
 
+				String femalePicture = System.getProperty("user.dir") + "/images/icons/female.png";
+				String malePicture = System.getProperty("user.dir") + "/images/icons/male.png";
+
+				String userDirectory = userDetails.getUsername().replaceAll("\\.", "");
+				String destination = System.getProperty("user.dir") + "/files/profile_pictures/" + userDirectory + ".png";
+
+				File destinationFile = new File(destination);
+				if (destinationFile.getParentFile() != null) {
+					destinationFile.getParentFile().mkdirs();
+				}
+
+				if (userDetails.getGender().equals("Female")) {
+					Files.copy(new File(femalePicture).toPath(), new File(destination).toPath(), StandardCopyOption.REPLACE_EXISTING);
+				} else {
+					Files.copy(new File(malePicture).toPath(), new File(destination).toPath(), StandardCopyOption.REPLACE_EXISTING);
+				}
+			}
 		} catch (Exception ex) {
 			throw new RuntimeException("Something went wrong: " + ex.getMessage(), ex);
 		} finally {
