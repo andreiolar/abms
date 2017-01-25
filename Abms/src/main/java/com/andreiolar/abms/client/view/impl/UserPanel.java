@@ -11,6 +11,8 @@ import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.dom.client.Style.Float;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.ErrorEvent;
+import com.google.gwt.event.dom.client.ErrorHandler;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
@@ -335,12 +337,22 @@ public class UserPanel extends Composite implements UserView {
 		MaterialSideProfile profile = new MaterialSideProfile();
 		profile.setUrl("images/icons/profile.png");
 
-		String url = "images/icons/male.png";
-		if (userDetails.getGender().equals("Female")) {
-			url = "images/icons/female.png";
-		}
+		String profilePictureUsername = userDetails.getUsername().replaceAll("\\.", "");
 
-		MaterialImage materialImage = new MaterialImage(url);
+		MaterialImage materialImage = new MaterialImage();
+		materialImage.setUrl("http://res.cloudinary.com/andreiolar/image/upload/" + profilePictureUsername + ".png");
+		materialImage.addErrorHandler(new ErrorHandler() {
+
+			@Override
+			public void onError(ErrorEvent event) {
+				if (userDetails.getGender().equals("Female")) {
+					materialImage.setUrl("images/icons/female.png");
+				} else {
+					materialImage.setUrl("images/icons/male.png");
+				}
+			}
+		});
+
 		profile.add(materialImage);
 
 		MaterialLabel label = new MaterialLabel("Logged in as: " + userDetails.getFirstName() + " " + userDetails.getLastName());
