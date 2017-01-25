@@ -25,6 +25,8 @@ public class Abms implements EntryPoint {
 	@SuppressWarnings("deprecation")
 	@Override
 	public void onModuleLoad() {
+		com.google.gwt.core.client.GWT.setUncaughtExceptionHandler(e -> GWT.log(e.getMessage(), e));
+
 		ClientFactory clientFactory = GWT.create(ClientFactory.class);
 		EventBus eventBus = clientFactory.getEventBus();
 		PlaceController placeController = clientFactory.getPlaceController();

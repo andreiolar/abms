@@ -1,0 +1,229 @@
+package com.andreiolar.abms.client.widgets;
+
+import java.util.Comparator;
+import java.util.List;
+
+import com.andreiolar.abms.client.rpc.DBGetContactInfo;
+import com.andreiolar.abms.client.rpc.DBGetContactInfoAsync;
+import com.andreiolar.abms.shared.ContactInfo;
+import com.andreiolar.abms.shared.UserDetails;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style.FontWeight;
+import com.google.gwt.event.dom.client.ErrorEvent;
+import com.google.gwt.event.dom.client.ErrorHandler;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.ServiceDefTarget;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.Widget;
+
+import gwt.material.design.client.constants.Color;
+import gwt.material.design.client.constants.TextAlign;
+import gwt.material.design.client.data.SelectionType;
+import gwt.material.design.client.data.component.RowComponent;
+import gwt.material.design.client.data.factory.CategoryComponentFactory;
+import gwt.material.design.client.data.factory.RowComponentFactory;
+import gwt.material.design.client.ui.MaterialImage;
+import gwt.material.design.client.ui.MaterialLabel;
+import gwt.material.design.client.ui.MaterialPanel;
+import gwt.material.design.client.ui.html.Hr;
+import gwt.material.design.client.ui.table.MaterialDataTable;
+import gwt.material.design.client.ui.table.cell.TextColumn;
+import gwt.material.design.client.ui.table.cell.WidgetColumn;
+
+public class ContactInformationWidget extends Composite implements CustomWidget {
+
+	private UserDetails userDetails;
+
+	public ContactInformationWidget(UserDetails userDetails) {
+		this.userDetails = userDetails;
+
+		initWidget(initializeWidget());
+	}
+
+	@Override
+	public Widget initializeWidget() {
+		MaterialPanel panel = new MaterialPanel();
+
+		MaterialLabel title = new MaterialLabel("Contact Information");
+		title.setTextColor(Color.BLUE);
+		title.setTextAlign(TextAlign.CENTER);
+		title.setFontSize("36px");
+		title.setFontWeight(FontWeight.BOLD);
+		panel.add(title);
+
+		panel.add(new Hr());
+
+		MaterialDataTable<ContactInfo> table = new MaterialDataTable<ContactInfo>();
+		table.setHeight("90%");
+		table.setUseStickyHeader(true);
+		table.setUseCategories(false);
+		table.setUseRowExpansion(false);
+		table.setSelectionType(SelectionType.NONE);
+		table.setRedraw(true);
+
+		table.setRowFactory(new RowComponentFactory<ContactInfo>());
+		table.setCategoryFactory(new CategoryComponentFactory());
+
+		table.addColumn(new WidgetColumn<ContactInfo, MaterialImage>() {
+
+			@Override
+			public MaterialImage getValue(ContactInfo object) {
+				String profilePictureUsername = userDetails.getUsername().replaceAll("\\.", "");
+
+				MaterialImage materialImage = new MaterialImage();
+				materialImage.setUrl("http://res.cloudinary.com/andreiolar/image/upload/" + profilePictureUsername + ".png");
+				materialImage.addErrorHandler(new ErrorHandler() {
+
+					@Override
+					public void onError(ErrorEvent event) {
+						if (userDetails.getGender().equals("Female")) {
+							materialImage.setUrl("images/icons/female.png");
+						} else {
+							materialImage.setUrl("images/icons/male.png");
+						}
+
+					}
+				});
+
+				materialImage.setWidth("40px");
+				materialImage.setHeight("40px");
+				materialImage.setPadding(4);
+				materialImage.setMarginTop(8);
+				materialImage.setBackgroundColor(Color.GREY_LIGHTEN_2);
+				materialImage.setCircle(true);
+
+				return materialImage;
+			}
+
+			@Override
+			public String getHeaderWidth() {
+				return "10%";
+			}
+
+		});
+
+		table.addColumn(new TextColumn<ContactInfo>() {
+
+			@Override
+			public String getHeaderWidth() {
+				return "20%";
+			}
+
+			@Override
+			public Comparator<? super RowComponent<ContactInfo>> getSortComparator() {
+				return (o1, o2) -> o1.getData().getFamilyName().compareTo(o2.getData().getFamilyName());
+			}
+
+			@Override
+			public String getValue(ContactInfo object) {
+				return object.getFamilyName();
+			}
+		}, "Family Name");
+
+		table.addColumn(new TextColumn<ContactInfo>() {
+
+			@Override
+			public String getHeaderWidth() {
+				return "30%";
+			}
+
+			@Override
+			public Comparator<? super RowComponent<ContactInfo>> getSortComparator() {
+				return (o1, o2) -> o1.getData().getContactPerson().compareTo(o2.getData().getContactPerson());
+			}
+
+			@Override
+			public String getValue(ContactInfo object) {
+				return object.getContactPerson();
+			}
+		}, "Contact Person");
+
+		table.addColumn(new TextColumn<ContactInfo>() {
+
+			@Override
+			public String getHeaderWidth() {
+				return "10%";
+			}
+
+			@Override
+			public Comparator<? super RowComponent<ContactInfo>> getSortComparator() {
+				return (o1, o2) -> Integer.compare(Integer.parseInt(o1.getData().getApartmentNumber()),
+						Integer.parseInt(o2.getData().getApartmentNumber()));
+			}
+
+			@Override
+			public String getValue(ContactInfo object) {
+				return object.getApartmentNumber();
+			}
+		}, "Apartment Number");
+
+		table.addColumn(new TextColumn<ContactInfo>() {
+
+			@Override
+			public String getHeaderWidth() {
+				return "20%";
+			}
+
+			@Override
+			public Comparator<? super RowComponent<ContactInfo>> getSortComparator() {
+				return (o1, o2) -> o1.getData().getEmail().compareTo(o2.getData().getEmail());
+			}
+
+			@Override
+			public String getValue(ContactInfo object) {
+				return object.getEmail();
+			}
+		}, "E-Mail Address");
+
+		table.addColumn(new TextColumn<ContactInfo>() {
+
+			@Override
+			public String getHeaderWidth() {
+				return "10%";
+			}
+
+			@Override
+			public Comparator<? super RowComponent<ContactInfo>> getSortComparator() {
+				return (o1, o2) -> o1.getData().getPhoneNumber().compareTo(o2.getData().getPhoneNumber());
+			}
+
+			@Override
+			public String getValue(ContactInfo object) {
+				return object.getPhoneNumber();
+			}
+		}, "Phone Number");
+
+		DBGetContactInfoAsync rpcService = (DBGetContactInfoAsync) GWT.create(DBGetContactInfo.class);
+		ServiceDefTarget target = (ServiceDefTarget) rpcService;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "DBGetContactInfoImpl";
+		target.setServiceEntryPoint(moduleRelativeURL);
+
+		rpcService.getContacts(new AsyncCallback<List<ContactInfo>>() {
+
+			@Override
+			public void onSuccess(List<ContactInfo> result) {
+				table.setRowData(0, result);
+				table.setRowCount(result.size());
+				table.refreshView();
+			}
+
+			@Override
+			public void onFailure(Throwable caught) {
+				// DialogBox dialogBox = DialogBoxCreator.createDialogBox(UserMenuConstants.DIALOG_BOX_FAILED_RETRIEVING_CONTACTS_TITLE,
+				// UserMenuConstants.DIALOG_BOX_FAILED_RETRIEVING_CONTACTS_MESSAGE + ": " + caught.getMessage(), DialogBoxConstants.CLOSE_BUTTON,
+				// false, false);
+				// dialogBox.setGlassEnabled(true);
+				// dialogBox.setAnimationEnabled(true);
+				// dialogBox.center();
+				// dialogBox.show();
+				Window.alert("Error");
+			}
+		});
+
+		panel.add(table);
+
+		return panel;
+	}
+
+}
