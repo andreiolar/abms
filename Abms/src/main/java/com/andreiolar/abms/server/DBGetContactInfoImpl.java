@@ -58,8 +58,10 @@ public class DBGetContactInfoImpl extends RemoteServiceServlet implements DBGetC
 					String apartmentNumber = rs.getString("apartment_number");
 					String email = rs.getString("email");
 					String mobileNumber = rs.getString("mobile_number");
+					String username = rs.getString("username");
+					String gender = rs.getString("gender");
 
-					ContactInfo contactInfo = new ContactInfo(familyName, contactPerson, apartmentNumber, email, mobileNumber);
+					ContactInfo contactInfo = new ContactInfo(familyName, contactPerson, apartmentNumber, email, mobileNumber, username, gender);
 					contacts.add(contactInfo);
 				}
 			} catch (Exception ex) {

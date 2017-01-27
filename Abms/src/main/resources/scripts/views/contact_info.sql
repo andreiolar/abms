@@ -5,5 +5,7 @@ AS SELECT
 	concat(first_name, ' ', last_name) AS contact_person,
 	apartment_number,
 	email,
-	mobile_number
+	mobile_number,
+    username,
+    gender
 FROM user_info;

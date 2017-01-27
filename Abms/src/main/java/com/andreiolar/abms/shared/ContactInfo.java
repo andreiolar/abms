@@ -9,16 +9,21 @@ public class ContactInfo implements IsSerializable {
 	private String apartmentNumber;
 	private String email;
 	private String phoneNumber;
+	private String username;
+	private String gender;
 
 	public ContactInfo() {
 	}
 
-	public ContactInfo(String familyName, String contactPerson, String apartmentNumber, String email, String phoneNumber) {
+	public ContactInfo(String familyName, String contactPerson, String apartmentNumber, String email, String phoneNumber, String username,
+			String gender) {
 		this.familyName = familyName;
 		this.contactPerson = contactPerson;
 		this.apartmentNumber = apartmentNumber;
 		this.email = email;
 		this.phoneNumber = phoneNumber;
+		this.username = username;
+		this.gender = gender;
 	}
 
 	public String getFamilyName() {
@@ -61,4 +66,19 @@ public class ContactInfo implements IsSerializable {
 		this.phoneNumber = phoneNumber;
 	}
 
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
 }

@@ -37,7 +37,6 @@ import com.andreiolar.abms.client.utils.DialogBoxCreator;
 import com.andreiolar.abms.client.utils.WidgetUtils;
 import com.andreiolar.abms.client.view.AdminView;
 import com.andreiolar.abms.client.widgets.AboutWidget;
-import com.andreiolar.abms.client.widgets.ContactViewWidget;
 import com.andreiolar.abms.client.widgets.CustomTexBox;
 import com.andreiolar.abms.client.widgets.InstInfoWidget;
 import com.andreiolar.abms.client.widgets.VotingResultsWidget;
@@ -199,8 +198,8 @@ public class AdminViewImpl extends Composite implements AdminView {
 			@Override
 			public void execute() {
 				scroller.clear();
-				Widget contactViewWidget = new ContactViewWidget(userInfo);
-				scroller.add(contactViewWidget);
+				// Widget contactViewWidget = new ContactViewWidget(userInfo);
+				// scroller.add(contactViewWidget);
 			}
 		});
 

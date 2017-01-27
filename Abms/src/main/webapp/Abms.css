@@ -531,7 +531,7 @@ header, main, footer {
 	padding-left: 280px;
 }
 
-footer{
+footer {
 	z-index: 996;
 }
 
@@ -619,28 +619,38 @@ strong {
 	font-weight: bold !important;
 }
 
-.comboboxInst{
+.comboboxInst {
 	width: 30%;
 	margin-top: 25px !important;
 	margin: auto;
 }
 
-.complaintsComponent{
+.complaintsComponent {
 	width: 30%;
 	margin-top: 25px !important;
 	margin-left: 25px !important;
 }
 
-.complaintsEditor{
+.complaintsEditor {
 	width: 95%;
 	margin: auto;
 	margin-top: 25px !important;
 	margin-bottom: 25px !important;
 }
 
-.twoButtons{
+.twoButtons {
 	display: flex;
 	margin-left: 25px !important;
 	margin-top: 25px !important;
 	margin-bottom: 75px !important;
+}
+
+.contact-info-table {
+	width: 95%;
+	margin: auto;
+	margin-top: 25px !important;
+}
+
+.top-panel {
+	background-color: #2196f3 !important;
 }
