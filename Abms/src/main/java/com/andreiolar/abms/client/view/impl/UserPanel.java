@@ -8,6 +8,7 @@ import com.andreiolar.abms.client.rpc.DBGetContactInfo;
 import com.andreiolar.abms.client.rpc.DBGetContactInfoAsync;
 import com.andreiolar.abms.client.view.UserView;
 import com.andreiolar.abms.client.widgets.ComplaintsWidget;
+import com.andreiolar.abms.client.widgets.ConsumptionWidget;
 import com.andreiolar.abms.client.widgets.ModalCreator;
 import com.andreiolar.abms.shared.ContactInfo;
 import com.andreiolar.abms.shared.UserDetails;
@@ -438,9 +439,18 @@ public class UserPanel extends Composite implements UserView {
 
 		/** Self Readings **/
 		MaterialLink selfReadingsLink = new MaterialLink();
-		selfReadingsLink.setText("Self Readings");
+		selfReadingsLink.setText("Consumption Reading");
 		selfReadingsLink.setTextColor(Color.BLUE_DARKEN_2);
 		selfReadingsLink.setWaves(WavesType.DEFAULT);
+		selfReadingsLink.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				container.clear();
+				ConsumptionWidget consumptionWidget = new ConsumptionWidget(userDetails);
+				container.add(consumptionWidget);
+			}
+		});
 		administrationListItems.add(selfReadingsLink);
 
 		/** General Costs View **/

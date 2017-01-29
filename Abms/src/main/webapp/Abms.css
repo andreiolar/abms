@@ -654,3 +654,9 @@ strong {
 .top-panel {
 	background-color: #2196f3 !important;
 }
+
+.consumption-stepper {
+	width: 80%;
+	margin: auto;
+	margin-top: 25px !important;
+}
