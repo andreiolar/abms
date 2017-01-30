@@ -1,0 +1,67 @@
+package com.andreiolar.abms.server;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
+import com.andreiolar.abms.client.exception.ConsumptionReportNotFoundException;
+import com.andreiolar.abms.client.rpc.DBSearchForConsumptionReport;
+import com.andreiolar.abms.shared.SelfReading;
+import com.andreiolar.abms.shared.UserDetails;
+import com.google.gwt.user.server.rpc.RemoteServiceServlet;
+
+public class DBSearchForConsumptionReportImpl extends RemoteServiceServlet implements DBSearchForConsumptionReport {
+
+	private static final long serialVersionUID = 3882952232018953915L;
+
+	@Override
+	public SelfReading searchForConsumptionReport(UserDetails userDetails, String date) throws Exception {
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+
+		SelfReading reading = null;
+
+		boolean submitted = false;
+
+		try {
+			conn = MyConnection.getConnection();
+
+			try {
+				String q = "select * from self_readings where apartment_number=? and month=?";
+				stmt = conn.prepareStatement(q);
+				stmt.setString(1, userDetails.getApartmentNumber());
+				stmt.setString(2, date);
+
+				rs = stmt.executeQuery();
+
+				if (rs.next()) {
+					submitted = true;
+
+					String aptNumber = rs.getString("apartment_number");
+					String coldWater = rs.getString("cold_water");
+					String hotWater = rs.getString("hot_water");
+					String electricity = rs.getString("electricity");
+					String gaz = rs.getString("gaz");
+
+					reading = new SelfReading(aptNumber, coldWater, hotWater, electricity, gaz, date);
+				}
+			} catch (Exception ex) {
+				throw new RuntimeException("Something went wrong: " + ex.getMessage(), ex);
+			} finally {
+				rs.close();
+				stmt.close();
+			}
+		} catch (Exception ex) {
+			throw new RuntimeException("Something went wrong: " + ex.getMessage(), ex);
+		} finally {
+			conn.close();
+		}
+
+		if (!submitted) {
+			throw new ConsumptionReportNotFoundException();
+		}
+
+		return reading;
+	}
+}

@@ -9,18 +9,18 @@ public class SelfReading implements IsSerializable {
 	private String hotWater;
 	private String electricity;
 	private String gaz;
-	private String month;
+	private String date;
 
 	public SelfReading() {
 	}
 
-	public SelfReading(String aptNumber, String coldWater, String hotWater, String electricity, String gaz, String month) {
+	public SelfReading(String aptNumber, String coldWater, String hotWater, String electricity, String gaz, String date) {
 		this.aptNumber = aptNumber;
 		this.coldWater = coldWater;
 		this.hotWater = hotWater;
 		this.electricity = electricity;
 		this.gaz = gaz;
-		this.month = month;
+		this.date = date;
 	}
 
 	public String getAptNumber() {
@@ -63,12 +63,12 @@ public class SelfReading implements IsSerializable {
 		this.gaz = gaz;
 	}
 
-	public String getMonth() {
-		return month;
+	public String getDate() {
+		return date;
 	}
 
-	public void setMonth(String month) {
-		this.month = month;
+	public void setDate(String date) {
+		this.date = date;
 	}
 
 	@Override
@@ -77,10 +77,10 @@ public class SelfReading implements IsSerializable {
 		int result = 1;
 		result = prime * result + ((aptNumber == null) ? 0 : aptNumber.hashCode());
 		result = prime * result + ((coldWater == null) ? 0 : coldWater.hashCode());
+		result = prime * result + ((date == null) ? 0 : date.hashCode());
 		result = prime * result + ((electricity == null) ? 0 : electricity.hashCode());
 		result = prime * result + ((gaz == null) ? 0 : gaz.hashCode());
 		result = prime * result + ((hotWater == null) ? 0 : hotWater.hashCode());
-		result = prime * result + ((month == null) ? 0 : month.hashCode());
 		return result;
 	}
 
@@ -103,6 +103,11 @@ public class SelfReading implements IsSerializable {
 				return false;
 		} else if (!coldWater.equals(other.coldWater))
 			return false;
+		if (date == null) {
+			if (other.date != null)
+				return false;
+		} else if (!date.equals(other.date))
+			return false;
 		if (electricity == null) {
 			if (other.electricity != null)
 				return false;
@@ -118,12 +123,6 @@ public class SelfReading implements IsSerializable {
 				return false;
 		} else if (!hotWater.equals(other.hotWater))
 			return false;
-		if (month == null) {
-			if (other.month != null)
-				return false;
-		} else if (!month.equals(other.month))
-			return false;
 		return true;
 	}
-
 }

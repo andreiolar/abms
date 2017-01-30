@@ -12,7 +12,6 @@ import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
@@ -87,41 +86,41 @@ public class SelfReadingWidget extends Composite implements CustomWidget {
 					String moduleRelativeURL = GWT.getModuleBaseURL() + "DBSelfReadingImpl";
 					target.setServiceEntryPoint(moduleRelativeURL);
 
-					rpcService.insertReading(userInfo.getUsername(), reading, new AsyncCallback<Boolean>() {
-
-						@Override
-						public void onSuccess(Boolean result) {
-							DOM.getElementById("loading").getStyle().setDisplay(Display.NONE);
-							DialogBox dialogBox = DialogBoxCreator.createDialogBox(UserMenuConstants.DIALOG_BOX_SUCCESSFUL_SUBMIT_READING_TITLE,
-									UserMenuConstants.DIALOG_BOX_SUCCESSFUL_SUBMT_READING_MESSAGE, DialogBoxConstants.CLOSE_BUTTON, false, false);
-							dialogBox.setGlassEnabled(true);
-							dialogBox.setAnimationEnabled(true);
-							dialogBox.center();
-							dialogBox.show();
-
-							coldWaterBox.setText(null);
-							hotWaterBox.setText(null);
-							electicityBox.setText(null);
-							gazBox.setText(null);
-						}
-
-						@Override
-						public void onFailure(Throwable caught) {
-							DOM.getElementById("loading").getStyle().setDisplay(Display.NONE);
-							DialogBox dialogBox = DialogBoxCreator.createDialogBox(UserMenuConstants.DIALOG_BOX_FAILED_SUBMIT_READING_TITLE,
-									UserMenuConstants.DIALOG_BOX_FAILED_SUBMT_READING_MESSAGE + ": " + caught.getMessage(),
-									DialogBoxConstants.CLOSE_BUTTON, false, false);
-							dialogBox.setGlassEnabled(true);
-							dialogBox.setAnimationEnabled(true);
-							dialogBox.center();
-							dialogBox.show();
-
-							coldWaterBox.setText(null);
-							hotWaterBox.setText(null);
-							electicityBox.setText(null);
-							gazBox.setText(null);
-						}
-					});
+					// rpcService.insertReading(userInfo.getUsername(), reading, new AsyncCallback<Boolean>() {
+					//
+					// @Override
+					// public void onSuccess(Boolean result) {
+					// DOM.getElementById("loading").getStyle().setDisplay(Display.NONE);
+					// DialogBox dialogBox = DialogBoxCreator.createDialogBox(UserMenuConstants.DIALOG_BOX_SUCCESSFUL_SUBMIT_READING_TITLE,
+					// UserMenuConstants.DIALOG_BOX_SUCCESSFUL_SUBMT_READING_MESSAGE, DialogBoxConstants.CLOSE_BUTTON, false, false);
+					// dialogBox.setGlassEnabled(true);
+					// dialogBox.setAnimationEnabled(true);
+					// dialogBox.center();
+					// dialogBox.show();
+					//
+					// coldWaterBox.setText(null);
+					// hotWaterBox.setText(null);
+					// electicityBox.setText(null);
+					// gazBox.setText(null);
+					// }
+					//
+					// @Override
+					// public void onFailure(Throwable caught) {
+					// DOM.getElementById("loading").getStyle().setDisplay(Display.NONE);
+					// DialogBox dialogBox = DialogBoxCreator.createDialogBox(UserMenuConstants.DIALOG_BOX_FAILED_SUBMIT_READING_TITLE,
+					// UserMenuConstants.DIALOG_BOX_FAILED_SUBMT_READING_MESSAGE + ": " + caught.getMessage(),
+					// DialogBoxConstants.CLOSE_BUTTON, false, false);
+					// dialogBox.setGlassEnabled(true);
+					// dialogBox.setAnimationEnabled(true);
+					// dialogBox.center();
+					// dialogBox.show();
+					//
+					// coldWaterBox.setText(null);
+					// hotWaterBox.setText(null);
+					// electicityBox.setText(null);
+					// gazBox.setText(null);
+					// }
+					// });
 				} else {
 					String message = "Please fill all the fields before submitting!";
 

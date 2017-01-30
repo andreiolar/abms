@@ -4,7 +4,7 @@ import com.andreiolar.abms.shared.SelfReading;
 import com.andreiolar.abms.shared.UserDetails;
 import com.google.gwt.user.client.rpc.RemoteService;
 
-public interface DBSelfReading extends RemoteService {
+public interface DBSearchForConsumptionReport extends RemoteService {
 
-	boolean insertReading(UserDetails userDetails, SelfReading reading) throws Exception;
+	public SelfReading searchForConsumptionReport(UserDetails userDetails, String date) throws Exception;
 }

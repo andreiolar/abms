@@ -403,6 +403,15 @@
         <url-pattern>/abms/DBCodeCheckerImpl</url-pattern>
     </servlet-mapping>
     
+    <servlet>
+        <servlet-name>searchConsumptionReport</servlet-name>
+        <servlet-class>com.andreiolar.abms.server.DBSearchForConsumptionReportImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>searchConsumptionReport</servlet-name>
+        <url-pattern>/abms/DBSearchForConsumptionReportImpl</url-pattern>
+    </servlet-mapping>
+    
   
   <!-- Default page to serve -->
   <welcome-file-list>
