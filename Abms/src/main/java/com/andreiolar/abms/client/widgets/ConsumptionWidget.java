@@ -175,6 +175,7 @@ public class ConsumptionWidget extends Composite implements CustomWidget {
 
 			@Override
 			public void onFailure(Throwable caught) {
+				MaterialLoader.showLoading(false);
 				if (caught instanceof ConsumptionReportNotFoundException) {
 					// If no consumption submitted.
 					MaterialLabel label = new MaterialLabel("Please submit the monthly consumption for " + previousMonth + " " + year + ".");
