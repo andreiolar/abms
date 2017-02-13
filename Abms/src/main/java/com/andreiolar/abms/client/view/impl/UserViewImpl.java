@@ -1,7 +1,6 @@
 package com.andreiolar.abms.client.view.impl;
 
 import com.andreiolar.abms.client.constants.AdministrareBlocConstants;
-import com.andreiolar.abms.client.constants.DialogBoxConstants;
 import com.andreiolar.abms.client.constants.UserMenuConstants;
 import com.andreiolar.abms.client.place.LoginPlace;
 import com.andreiolar.abms.client.rpc.DBGetUserInfo;
@@ -10,7 +9,6 @@ import com.andreiolar.abms.client.rpc.DBPersonalCosts;
 import com.andreiolar.abms.client.rpc.DBPersonalCostsAsync;
 import com.andreiolar.abms.client.rpc.DateGetter;
 import com.andreiolar.abms.client.rpc.DateGetterAsync;
-import com.andreiolar.abms.client.utils.DialogBoxCreator;
 import com.andreiolar.abms.client.utils.WidgetUtils;
 import com.andreiolar.abms.client.view.UserView;
 import com.andreiolar.abms.client.widgets.AboutWidget;
@@ -20,10 +18,8 @@ import com.andreiolar.abms.client.widgets.GeneralCostWidget;
 import com.andreiolar.abms.client.widgets.InstInfoWidget;
 import com.andreiolar.abms.client.widgets.MessageDialogBox;
 import com.andreiolar.abms.client.widgets.PasswordChangeWidget;
-import com.andreiolar.abms.client.widgets.PersonalCostWidget;
 import com.andreiolar.abms.client.widgets.VotingResultsWidget;
 import com.andreiolar.abms.client.widgets.VotingWidget;
-import com.andreiolar.abms.shared.PersonalUpkeepInformation;
 import com.andreiolar.abms.shared.UserInfo;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Display;
@@ -377,50 +373,50 @@ public class UserViewImpl extends Composite implements UserView {
 				String moduleRelativeURL = GWT.getModuleBaseURL() + "DBPersonalCostsImpl";
 				target.setServiceEntryPoint(moduleRelativeURL);
 
-				rpcService.getPersonalUpkeepInformation(username, currentMonth, new AsyncCallback<PersonalUpkeepInformation>() {
-
-					@Override
-					public void onFailure(Throwable caught) {
-						DOM.getElementById("loading").getStyle().setDisplay(Display.NONE);
-						DialogBox dialogBox = DialogBoxCreator.createDialogBox(UserMenuConstants.DIALOG_BOX_FAILED_GETTING_PERSONAL_COSTS_TITLE,
-								UserMenuConstants.DIALOG_BOX_FAILED_GETTING_PERSONAL_COSTS_MESSAGE + ": " + caught.getMessage(),
-								DialogBoxConstants.CLOSE_BUTTON, false, false);
-						dialogBox.setGlassEnabled(true);
-						dialogBox.setAnimationEnabled(true);
-						dialogBox.center();
-						dialogBox.show();
-					}
-
-					@Override
-					public void onSuccess(PersonalUpkeepInformation result) {
-						DOM.getElementById("loading").getStyle().setDisplay(Display.NONE);
-						Widget personalViewWidget = new PersonalCostWidget(result);
-
-						final PopupPanel contextMenu = new PopupPanel(true);
-						Widget contextMenuWidget = createPersonalViewContextMenu();
-						contextMenu.add(contextMenuWidget);
-						contextMenu.hide();
-
-						personalViewWidget.sinkEvents(Event.ONCONTEXTMENU);
-						personalViewWidget.addHandler(new ContextMenuHandler() {
-
-							@Override
-							public void onContextMenu(ContextMenuEvent event) {
-								event.preventDefault();
-								event.stopPropagation();
-
-								int x = event.getNativeEvent().getClientX();
-								int y = event.getNativeEvent().getClientY();
-
-								contextMenu.setPopupPosition(x, y);
-								contextMenu.show();
-
-							}
-						}, ContextMenuEvent.getType());
-
-						scroller.add(personalViewWidget);
-					}
-				});
+				// rpcService.getPersonalUpkeepInformation(username, currentMonth, new AsyncCallback<PersonalUpkeepInformation>() {
+				//
+				// @Override
+				// public void onFailure(Throwable caught) {
+				// DOM.getElementById("loading").getStyle().setDisplay(Display.NONE);
+				// DialogBox dialogBox = DialogBoxCreator.createDialogBox(UserMenuConstants.DIALOG_BOX_FAILED_GETTING_PERSONAL_COSTS_TITLE,
+				// UserMenuConstants.DIALOG_BOX_FAILED_GETTING_PERSONAL_COSTS_MESSAGE + ": " + caught.getMessage(),
+				// DialogBoxConstants.CLOSE_BUTTON, false, false);
+				// dialogBox.setGlassEnabled(true);
+				// dialogBox.setAnimationEnabled(true);
+				// dialogBox.center();
+				// dialogBox.show();
+				// }
+				//
+				// @Override
+				// public void onSuccess(PersonalUpkeepInformation result) {
+				// DOM.getElementById("loading").getStyle().setDisplay(Display.NONE);
+				// Widget personalViewWidget = new PersonalCostWidget(result);
+				//
+				// final PopupPanel contextMenu = new PopupPanel(true);
+				// Widget contextMenuWidget = createPersonalViewContextMenu();
+				// contextMenu.add(contextMenuWidget);
+				// contextMenu.hide();
+				//
+				// personalViewWidget.sinkEvents(Event.ONCONTEXTMENU);
+				// personalViewWidget.addHandler(new ContextMenuHandler() {
+				//
+				// @Override
+				// public void onContextMenu(ContextMenuEvent event) {
+				// event.preventDefault();
+				// event.stopPropagation();
+				//
+				// int x = event.getNativeEvent().getClientX();
+				// int y = event.getNativeEvent().getClientY();
+				//
+				// contextMenu.setPopupPosition(x, y);
+				// contextMenu.show();
+				//
+				// }
+				// }, ContextMenuEvent.getType());
+				//
+				// scroller.add(personalViewWidget);
+				// }
+				// });
 
 			}
 		});

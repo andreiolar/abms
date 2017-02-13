@@ -1,25 +1,25 @@
 package com.andreiolar.abms.shared;
 
 import com.andreiolar.abms.client.constants.PriceConstants;
-import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class ConsumptionPayment implements IsSerializable {
+public class ConsumptionPayment implements Payment {
 
-	private double totalCost = 0;
+	private SelfReading reading;
 
 	public ConsumptionPayment() {
-		// TODO Auto-generated constructor stub
 	}
 
 	public ConsumptionPayment(SelfReading reading) {
+		this.reading = reading;
+
+	}
+
+	@Override
+	public double getTotalCost() {
 		int gas = Integer.parseInt(reading.getGaz());
 		int electricity = Integer.parseInt(reading.getElectricity());
 
-		this.totalCost = gas * PriceConstants.GAS_PRICE + electricity * PriceConstants.ELECTRICITY_PRICE;
-	}
-
-	public double getTotalCost() {
-		return totalCost;
+		return gas * PriceConstants.GAS_PRICE + electricity * PriceConstants.ELECTRICITY_PRICE;
 	}
 
 }

@@ -412,6 +412,15 @@
         <url-pattern>/abms/DBSearchForConsumptionReportImpl</url-pattern>
     </servlet-mapping>
     
+    <servlet>
+        <servlet-name>generatePersonalUpkeepPdf</servlet-name>
+        <servlet-class>com.andreiolar.abms.server.GeneratePersonalUpkeepPdfImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>generatePersonalUpkeepPdf</servlet-name>
+        <url-pattern>/abms/GeneratePersonalUpkeepPdfImpl</url-pattern>
+    </servlet-mapping>
+    
   
   <!-- Default page to serve -->
   <welcome-file-list>

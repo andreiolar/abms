@@ -11,6 +11,7 @@ import com.andreiolar.abms.client.widgets.ComplaintsWidget;
 import com.andreiolar.abms.client.widgets.ConsumptionWidget;
 import com.andreiolar.abms.client.widgets.GeneralCostsWidget;
 import com.andreiolar.abms.client.widgets.ModalCreator;
+import com.andreiolar.abms.client.widgets.PersonalCostsWidget;
 import com.andreiolar.abms.shared.ContactInfo;
 import com.andreiolar.abms.shared.UserDetails;
 import com.google.gwt.core.client.GWT;
@@ -475,6 +476,15 @@ public class UserPanel extends Composite implements UserView {
 		personalCostsViewLink.setText("Personal Costs View");
 		personalCostsViewLink.setTextColor(Color.BLUE_DARKEN_2);
 		personalCostsViewLink.setWaves(WavesType.DEFAULT);
+		personalCostsViewLink.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				container.clear();
+				PersonalCostsWidget personalCostsWidget = new PersonalCostsWidget(userDetails);
+				container.add(personalCostsWidget);
+			}
+		});
 		administrationListItems.add(personalCostsViewLink);
 
 		administrationBody.add(administrationListItems);

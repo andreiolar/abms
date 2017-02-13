@@ -10,6 +10,7 @@ import com.andreiolar.abms.client.rpc.DBSelfReading;
 import com.andreiolar.abms.client.rpc.DBSelfReadingAsync;
 import com.andreiolar.abms.client.utils.DateUtil;
 import com.andreiolar.abms.shared.ConsumptionPayment;
+import com.andreiolar.abms.shared.Payment;
 import com.andreiolar.abms.shared.SelfReading;
 import com.andreiolar.abms.shared.UserDetails;
 import com.google.gwt.core.client.GWT;
@@ -85,7 +86,7 @@ public class ConsumptionWidget extends Composite implements CustomWidget {
 			public void onSuccess(SelfReading result) {
 				MaterialLoader.showLoading(false);
 
-				ConsumptionPayment consumptionPayment = new ConsumptionPayment(result);
+				Payment consumptionPayment = new ConsumptionPayment(result);
 
 				MaterialLabel label = new MaterialLabel("You have already submitted the consuption report for " + previousMonth + " " + year
 						+ ". Below you will find all information from your consumption report.");
@@ -130,16 +131,6 @@ public class ConsumptionWidget extends Composite implements CustomWidget {
 				descriptionLabel.setMarginTop(25.0);
 				descriptionLabel.setMarginLeft(25.0);
 				rightMoneyDescriptionPanel.add(descriptionLabel);
-
-				// MaterialPanel buttonPanel = new MaterialPanel();
-				// buttonPanel.setWidth("100%");
-				//
-				// MaterialButton payNowButton = new MaterialButton();
-				// payNowButton.setWaves(WavesType.LIGHT);
-				// payNowButton.setText("PAY NOW");
-				// payNowButton.setTextColor(Color.WHITE);
-				// payNowButton.addStyleName("consumption-pay-center-button");
-				// buttonPanel.add(payNowButton);
 
 				moneyDescriptionPanel.add(leftMoneyDescriptionPanel);
 				moneyDescriptionPanel.add(rightMoneyDescriptionPanel);

@@ -1,52 +1,36 @@
 package com.andreiolar.abms.server;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.Properties;
 
+import com.andreiolar.abms.client.exception.PersonalUpkeepInformationNotFoundException;
 import com.andreiolar.abms.client.rpc.DBPersonalCosts;
 import com.andreiolar.abms.shared.PersonalUpkeepInformation;
+import com.andreiolar.abms.shared.UserDetails;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class DBPersonalCostsImpl extends RemoteServiceServlet implements DBPersonalCosts {
 
 	private static final long serialVersionUID = 1L;
 
-	private String URL = new String("jdbc:mysql://localhost:3306");
-	private String user = "root";
-	private String pass = "andrei";
-	private String schema = "administrare_bloc";
-
 	public DBPersonalCostsImpl() {
 	}
 
-	private Connection getConnection() throws Exception {
-		Properties props = new Properties();
-		props.setProperty("user", user);
-		props.setProperty("password", pass);
-		props.setProperty("zeroDateTimeBehavior", "convertToNull");
-		Class.forName("com.mysql.jdbc.Driver").newInstance();
-		Connection conn = DriverManager.getConnection(URL + "/" + schema, props);
-
-		return conn;
-	}
-
 	@Override
-	public PersonalUpkeepInformation getPersonalUpkeepInformation(String username, String month) throws Exception {
+	public PersonalUpkeepInformation getPersonalUpkeepInformation(UserDetails userDetails, String month) throws Exception {
 		PersonalUpkeepInformation personalUpkeepInformation = null;
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
 
 		try {
-			conn = getConnection();
+			conn = MyConnection.getConnection();
 
 			try {
-				String q = "select * from personal_upkeep_information where aptNumber=(select apartment_number from user_info where username=?) and luna=?";
+				String q = "select * from personal_upkeep_information where aptNumber=? and luna=?";
 				stmt = conn.prepareStatement(q);
-				stmt.setString(1, username);
+				stmt.setString(1, userDetails.getApartmentNumber());
 				stmt.setString(2, month);
 
 				rs = stmt.executeQuery();
@@ -73,11 +57,11 @@ public class DBPersonalCostsImpl extends RemoteServiceServlet implements DBPerso
 				}
 
 			} catch (Exception ex) {
-				ex.printStackTrace();
+				throw new RuntimeException("Something went wrong: " + ex.getMessage(), ex);
 			}
 
 		} catch (Exception ex) {
-			ex.printStackTrace();
+			throw new RuntimeException("Something went wrong: " + ex.getMessage(), ex);
 		} finally {
 			rs.close();
 			stmt.close();
@@ -85,7 +69,7 @@ public class DBPersonalCostsImpl extends RemoteServiceServlet implements DBPerso
 		}
 
 		if (personalUpkeepInformation == null) {
-			throw new Exception("Failed getting specific user upkeep costs information!");
+			throw new PersonalUpkeepInformationNotFoundException();
 		}
 
 		return personalUpkeepInformation;

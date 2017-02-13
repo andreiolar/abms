@@ -683,3 +683,19 @@ strong {
 	margin: auto;
 	margin-top: 25px !important;
 }
+
+.pay-personal-costs-view{
+	width: 60%;
+	margin: auto;
+	margin-top: 25px !important;
+	border-radius: 3px;
+	box-shadow: 0 10px 10px -2px rgba(180,185,201,0.5);
+	border-top: 1px solid #f0f1f4;
+}
+
+.personal-costs-pay-center-button{
+	width: 60%;
+	margin: auto;
+	margin-top: 25px !important;
+	margin-bottom: 100px !important;
+}
