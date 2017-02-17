@@ -7,8 +7,6 @@ import java.util.Date;
 import com.andreiolar.abms.client.exception.PersonalUpkeepInformationNotFoundException;
 import com.andreiolar.abms.client.rpc.DBPersonalCosts;
 import com.andreiolar.abms.client.rpc.DBPersonalCostsAsync;
-import com.andreiolar.abms.client.rpc.GeneratePersonalUpkeepPdf;
-import com.andreiolar.abms.client.rpc.GeneratePersonalUpkeepPdfAsync;
 import com.andreiolar.abms.client.utils.DateUtil;
 import com.andreiolar.abms.shared.PersonalUpkeepInformation;
 import com.andreiolar.abms.shared.UserDetails;
@@ -38,7 +36,6 @@ import gwt.material.design.client.ui.MaterialLink;
 import gwt.material.design.client.ui.MaterialLoader;
 import gwt.material.design.client.ui.MaterialModal;
 import gwt.material.design.client.ui.MaterialPanel;
-import gwt.material.design.client.ui.MaterialToast;
 import gwt.material.design.client.ui.html.Div;
 import gwt.material.design.client.ui.html.Hr;
 
@@ -98,88 +95,89 @@ public class PersonalCostsWidget extends Composite implements CustomWidget {
 				costsDescriptionPanel.setStyleName("pay-personal-costs-view");
 
 				MaterialLabel month = new MaterialLabel();
-				month.getElement().setInnerHTML(
-						"Raport personalizat al intretinerii aferent lunii <span style=\"color: #9e9e9e\">" + result.getLuna() + "</span>");
+				month.getElement().setInnerHTML("Personalized upkeep report for <span style=\"color: #9e9e9e\">" + result.getLuna() + "</span>");
 				month.setMarginTop(25.0);
 				month.setMarginLeft(25.0);
 				costsDescriptionPanel.add(month);
 
 				MaterialLabel nameAndAptNumber = new MaterialLabel();
 				nameAndAptNumber.getElement()
-						.setInnerHTML("Raport aferent apartamentului cu numarul: <span style=\"color: #9e9e9e\">" + result.getAptNumber() + "</span>"
-								+ "<br/>" + "Persoana responsabila: <span style=\"color: #9e9e9e\">" + result.getNume() + "</span>" + "<br/>"
-								+ "Numar persoane: <span style=\"color: #9e9e9e\">" + result.getNumarPersoane() + "</span>");
+						.setInnerHTML("Upkeep report for apartment: <span style=\"color: #9e9e9e\">" + result.getAptNumber() + "</span>" + "<br/>"
+								+ "Responsible person: <span style=\"color: #9e9e9e\">" + result.getNume() + "</span>" + "<br/>"
+								+ "Number of persons: <span style=\"color: #9e9e9e\">" + result.getNumarPersoane() + "</span>");
 				nameAndAptNumber.setMarginTop(25.0);
 				nameAndAptNumber.setMarginLeft(25.0);
 				costsDescriptionPanel.add(nameAndAptNumber);
 
 				MaterialLabel spatiuComun = new MaterialLabel();
-				spatiuComun.getElement().setInnerHTML("Spatiul comun: <span style=\"color: #9e9e9e\">" + result.getSpatiuComun() + " mp</span>"
-						+ "<br/>Note: Se va reflecta la incalzire.");
+				spatiuComun.getElement().setInnerHTML("Common space: <span style=\"color: #9e9e9e\">" + result.getSpatiuComun() + " mp</span>"
+						+ "<br/>Note: It will be reflected within the heating costs.");
 				spatiuComun.setMarginTop(25.0);
 				spatiuComun.setMarginLeft(25.0);
 				costsDescriptionPanel.add(spatiuComun);
 
 				MaterialLabel suprafataApt = new MaterialLabel();
-				suprafataApt.getElement().setInnerHTML("Suprafata apartamentului: <span style=\"color: #9e9e9e\">" + result.getSuprafataApt()
-						+ " mp</span>" + "<br/>" + "Note: Se va reflecta la incalzire." + "<br/>"
-						+ "Note: Va fi 0 pentru locatarii cu centrala proprie, respectiv suprafata apartamentului pentru locatarii fara centrala proprie.");
+				suprafataApt.getElement()
+						.setInnerHTML("Apartment surface: <span style=\"color: #9e9e9e\">" + result.getSuprafataApt() + " mp</span>" + "<br/>"
+								+ "Note: It will be reflected within the heating costs." + "<br/>"
+								+ "Note: It will be 0 for tenants with own heating plants, otherwise the whole apartment surface will be displayed.");
 				suprafataApt.setMarginTop(25.0);
 				suprafataApt.setMarginLeft(25.0);
 				costsDescriptionPanel.add(suprafataApt);
 
 				MaterialLabel incalzire = new MaterialLabel();
-				incalzire.getElement().setInnerHTML("Incalzire: <span style=\"color: #9e9e9e\">" + result.getIncalzire() + " RON</span>" + "<br/>"
-						+ "Note: Se calculeaza in functie de spatiul comun si suprafata apartamentului.");
+				incalzire.getElement().setInnerHTML("Heating: <span style=\"color: #9e9e9e\">" + result.getIncalzire() + " RON</span>" + "<br/>"
+						+ "Note: It is calculated based on the common space and the apartment surface.");
 				incalzire.setMarginTop(25.0);
 				incalzire.setMarginLeft(25.0);
 				costsDescriptionPanel.add(incalzire);
 
 				MaterialLabel apaCaldaMenajera = new MaterialLabel();
-				apaCaldaMenajera.getElement().setInnerHTML("Apa calda menajera: <span style=\"color: #9e9e9e\">" + result.getApaCaldaMenajera()
-						+ " RON</span><br>Note: Se calculeaza TERMO-ACM + AR din ACM.<br>Note: Va fi 0 pentru locatarii cu centrala proprie.");
+				apaCaldaMenajera.getElement().setInnerHTML("Hot water: <span style=\"color: #9e9e9e\">" + result.getApaCaldaMenajera()
+						+ " RON</span><br>Note: It is calculated as following: TERMO-ACM + AR din ACM.<br>Note: It will be 0 for tenants with own heating plants.");
 				apaCaldaMenajera.setMarginTop(25.0);
 				apaCaldaMenajera.setMarginLeft(25.0);
 				costsDescriptionPanel.add(apaCaldaMenajera);
 
 				MaterialLabel apaReceSiCanalizare = new MaterialLabel();
 				apaReceSiCanalizare.getElement()
-						.setInnerHTML("Apa rece si canalizare: <span style=\"color: #9e9e9e\">" + result.getApaReceSiCanalizare() + " RON</span>");
+						.setInnerHTML("Cold water and sewerage: <span style=\"color: #9e9e9e\">" + result.getApaReceSiCanalizare() + " RON</span>");
 				apaReceSiCanalizare.setMarginTop(25.0);
 				apaReceSiCanalizare.setMarginLeft(25.0);
 				costsDescriptionPanel.add(apaReceSiCanalizare);
 
 				MaterialLabel gunoi = new MaterialLabel();
-				gunoi.getElement().setInnerHTML("Gunoi: <span style=\"color: #9e9e9e\">" + result.getGunoi() + " RON</span>" + "<br/>"
-						+ "Note: Se calculeaza: <span style=\"color: #9e9e9e\">10.43 RON * Numar persoane</span>.");
+				gunoi.getElement().setInnerHTML("Garbage: <span style=\"color: #9e9e9e\">" + result.getGunoi() + " RON</span>" + "<br/>"
+						+ "Note: It is calculated as following: <span style=\"color: #9e9e9e\">10.43 RON * Number of persons</span>.");
 				gunoi.setMarginTop(25.0);
 				gunoi.setMarginLeft(25.0);
 				costsDescriptionPanel.add(gunoi);
 
 				MaterialLabel curent = new MaterialLabel();
 				curent.getElement()
-						.setInnerHTML("Curent: <span style=\"color: #9e9e9e\">" + result.getCurent() + " RON</span>" + "<br/>"
-								+ "Note: Curentul comun pe scara. <br/>"
-								+ "Note: Se calculeaza: <span style=\"color: #9e9e9e\">1 RON * Numar persoane</span>.");
+						.setInnerHTML("Electricity: <span style=\"color: #9e9e9e\">" + result.getCurent() + " RON</span>" + "<br/>"
+								+ "Note: Common apartment building consumpion. <br/>"
+								+ "Note: It is calculated as following: <span style=\"color: #9e9e9e\">1 RON * Number of persons</span>.");
 				curent.setMarginTop(25.0);
 				curent.setMarginLeft(25.0);
 				costsDescriptionPanel.add(curent);
 
 				MaterialLabel gaz = new MaterialLabel();
-				gaz.getElement().setInnerHTML("Gaz: <span style=\"color: #9e9e9e\">" + result.getGaz() + " RON</span>");
+				gaz.getElement().setInnerHTML("Gas: <span style=\"color: #9e9e9e\">" + result.getGaz() + " RON</span>");
 				gaz.setMarginTop(25.0);
 				gaz.setMarginLeft(25.0);
 				costsDescriptionPanel.add(gaz);
 
 				MaterialLabel servicii = new MaterialLabel();
-				servicii.getElement().setInnerHTML("Servicii: <span style=\"color: #9e9e9e\">" + result.getServicii() + " RON</span>" + "<br/>"
-						+ "Note: Consta in serviciile comune scarii de bloc. De exemplu: Curatenia.");
+				servicii.getElement().setInnerHTML("Other services: <span style=\"color: #9e9e9e\">" + result.getServicii() + " RON</span>" + "<br/>"
+						+ "Note: Common services for the apartment building. For example: Cleaning.");
 				servicii.setMarginTop(25.0);
 				servicii.setMarginLeft(25.0);
 				costsDescriptionPanel.add(servicii);
 
 				MaterialLabel gospodaresti = new MaterialLabel();
-				gospodaresti.getElement().setInnerHTML("Gospodaresti: <span style=\"color: #9e9e9e\">" + result.getGospodaresti() + " RON</span>");
+				gospodaresti.getElement()
+						.setInnerHTML("Other apartment costs: <span style=\"color: #9e9e9e\">" + result.getGospodaresti() + " RON</span>");
 				gospodaresti.setMarginTop(25.0);
 				gospodaresti.setMarginLeft(25.0);
 				costsDescriptionPanel.add(gospodaresti);
@@ -219,39 +217,11 @@ public class PersonalCostsWidget extends Composite implements CustomWidget {
 
 					@Override
 					public void onClick(ClickEvent event) {
-						GeneratePersonalUpkeepPdfAsync pdfGen = (GeneratePersonalUpkeepPdfAsync) GWT.create(GeneratePersonalUpkeepPdf.class);
-						ServiceDefTarget pdfTarget = (ServiceDefTarget) pdfGen;
-						String moduleRelativeURL = GWT.getModuleBaseURL() + "GeneratePersonalUpkeepPdfImpl";
-						pdfTarget.setServiceEntryPoint(moduleRelativeURL);
-
-						MaterialLoader.showLoading(true);
-
-						pdfGen.generatePdf(userDetails, previousMonth + year, costsDescriptionPanel.getElement().getInnerHTML(),
-								new AsyncCallback<Void>() {
-
-									@Override
-									public void onFailure(Throwable caught) {
-										MaterialLoader.showLoading(false);
-										if (caught instanceof RuntimeException) {
-											MaterialToast.fireToast(caught.getMessage(), "rounded");
-										} else {
-											MaterialModal materialModal = ModalCreator.createErrorModal("Something went wrong", caught);
-											RootPanel.get().add(materialModal);
-											materialModal.open();
-										}
-									}
-
-									@Override
-									public void onSuccess(Void result) {
-										MaterialLoader.showLoading(false);
-										String usernameForFileName = userDetails.getUsername().replaceAll("\\.", "");
-										String url = GWT.getModuleBaseURL() + "files/personal/" + usernameForFileName + "/" + usernameForFileName
-												+ "_" + previousMonth + year + ".pdf";
-										Window.alert(url);
-										Window.open(url, "_blank", "status=0,toolbar=0,menubar=0,location=0");
-									}
-								});
+						String url = GWT.getModuleBaseURL() + "pdfGenerator?username=" + userDetails.getUsername() + "&month=" + previousMonth + " "
+								+ year;
+						Window.open(url, "_blank", "status=0,toolbar=0,menubar=0,location=0");
 					}
+
 				});
 
 				contextMenu.add(pdfLink);
