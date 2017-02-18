@@ -9,6 +9,7 @@ import java.util.List;
 import com.andreiolar.abms.client.exception.VoteOptionsNotFoundException;
 import com.andreiolar.abms.client.exception.VoteSessionNotActiveException;
 import com.andreiolar.abms.client.rpc.DBGetVotingSession;
+import com.andreiolar.abms.shared.UserDetails;
 import com.andreiolar.abms.shared.Vote;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -17,11 +18,15 @@ public class DBGetVotingSessionImpl extends RemoteServiceServlet implements DBGe
 	private static final long serialVersionUID = 2843484355908749745L;
 
 	@Override
-	public Vote getVotingSession() throws Exception {
+	public Vote getVotingSession(UserDetails userDetails) throws Exception {
 		Vote vote = new Vote();
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
+
+		String option = null;
+
+		boolean alreadyVoted = false;
 
 		try {
 			conn = MyConnection.getConnection();
@@ -50,6 +55,25 @@ public class DBGetVotingSessionImpl extends RemoteServiceServlet implements DBGe
 			}
 
 			if (vote.getVoteId() != null) {
+
+				try {
+					String q = "select * from user_votes where vote_id=? and apartment_number=? group by vote_id";
+					stmt = conn.prepareStatement(q);
+					stmt.setString(1, vote.getVoteId());
+					stmt.setString(2, userDetails.getApartmentNumber());
+					rs = stmt.executeQuery();
+
+					if (rs.next()) {
+						alreadyVoted = true;
+						option = rs.getString("vote_option");
+					}
+				} catch (Exception e) {
+					throw new RuntimeException("Something went wrong: " + e.getMessage(), e);
+				} finally {
+					rs.close();
+					stmt.close();
+				}
+
 				try {
 					String q = "select vote_option from votes where vote_id = ?";
 					stmt = conn.prepareStatement(q);
@@ -78,6 +102,10 @@ public class DBGetVotingSessionImpl extends RemoteServiceServlet implements DBGe
 
 		if (vote.getVoteId() == null) {
 			throw new VoteSessionNotActiveException();
+		}
+
+		if (alreadyVoted) {
+			return new Vote(null, option, null, false, null);
 		}
 
 		if (vote.getVoteOptions() == null || vote.getVoteOptions().isEmpty()) {

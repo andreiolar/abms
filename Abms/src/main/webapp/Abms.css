@@ -699,3 +699,25 @@ strong {
 	margin-top: 25px !important;
 	margin-bottom: 100px !important;
 }
+.vote-description-panel{
+	width: 60%;
+	margin: auto;
+	margin-top: 25px !important;
+	border-radius: 3px;
+	box-shadow: 0 10px 10px -2px rgba(180,185,201,0.5);
+	border-top: 1px solid #f0f1f4;
+}
+
+.vote-descriptions-buttons{
+	width: 60%;
+	margin: auto;
+	margin-top: 25px !important;
+	margin-bottom: 100px !important;
+}
+
+.blue-border{
+	border: 1px solid #2196f3 !important;
+}
+.margin-right-percent{
+	margin-right: 4% !important;
+}

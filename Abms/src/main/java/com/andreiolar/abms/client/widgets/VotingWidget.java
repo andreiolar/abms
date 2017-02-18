@@ -127,31 +127,31 @@ public class VotingWidget extends Composite implements CustomWidget {
 							String moduleRelativeURL = GWT.getModuleBaseURL() + "DBSubmitVoteImpl";
 							target.setServiceEntryPoint(moduleRelativeURL);
 
-							rpcService.submitVoteToDB(votedOption, userInfo.getUsername(), new AsyncCallback<Void>() {
-
-								@Override
-								public void onFailure(Throwable caught) {
-									DOM.getElementById("loading").getStyle().setDisplay(Display.NONE);
-									DialogBox dialogBox = DialogBoxCreator.createDialogBox(UserMenuConstants.DIALOG_BOX_FAILED_SUBMIT_VOTE_TITLE,
-											UserMenuConstants.DIALOG_BOX_FAILED_SUBMIT_VOTE_MESSAGE + ": " + caught.getMessage(),
-											DialogBoxConstants.CLOSE_BUTTON, false, false);
-									dialogBox.setGlassEnabled(true);
-									dialogBox.setAnimationEnabled(true);
-									dialogBox.center();
-									dialogBox.show();
-								}
-
-								@Override
-								public void onSuccess(Void result) {
-									DOM.getElementById("loading").getStyle().setDisplay(Display.NONE);
-									DialogBox dialogBox = DialogBoxCreator.createDialogBox(UserMenuConstants.DIALOG_BOX_SUCCESS_SUBMIT_VOTE_TITLE,
-											UserMenuConstants.DIALOG_BOX_SUCCESS_SUBMIT_VOTE_MESSAGE, DialogBoxConstants.CLOSE_BUTTON, false, true);
-									dialogBox.setGlassEnabled(true);
-									dialogBox.setAnimationEnabled(true);
-									dialogBox.center();
-									dialogBox.show();
-								}
-							});
+							// rpcService.submitVoteToDB(votedOption, userInfo.getUsername(), new AsyncCallback<Void>() {
+							//
+							// @Override
+							// public void onFailure(Throwable caught) {
+							// DOM.getElementById("loading").getStyle().setDisplay(Display.NONE);
+							// DialogBox dialogBox = DialogBoxCreator.createDialogBox(UserMenuConstants.DIALOG_BOX_FAILED_SUBMIT_VOTE_TITLE,
+							// UserMenuConstants.DIALOG_BOX_FAILED_SUBMIT_VOTE_MESSAGE + ": " + caught.getMessage(),
+							// DialogBoxConstants.CLOSE_BUTTON, false, false);
+							// dialogBox.setGlassEnabled(true);
+							// dialogBox.setAnimationEnabled(true);
+							// dialogBox.center();
+							// dialogBox.show();
+							// }
+							//
+							// @Override
+							// public void onSuccess(Void result) {
+							// DOM.getElementById("loading").getStyle().setDisplay(Display.NONE);
+							// DialogBox dialogBox = DialogBoxCreator.createDialogBox(UserMenuConstants.DIALOG_BOX_SUCCESS_SUBMIT_VOTE_TITLE,
+							// UserMenuConstants.DIALOG_BOX_SUCCESS_SUBMIT_VOTE_MESSAGE, DialogBoxConstants.CLOSE_BUTTON, false, true);
+							// dialogBox.setGlassEnabled(true);
+							// dialogBox.setAnimationEnabled(true);
+							// dialogBox.center();
+							// dialogBox.show();
+							// }
+							// });
 
 						} else {
 							DialogBox dialogBox = DialogBoxCreator.createDialogBox(UserMenuConstants.DIALOG_BOX_FAILED_CHECK_SUBMIT_VOTE_TITLE,
