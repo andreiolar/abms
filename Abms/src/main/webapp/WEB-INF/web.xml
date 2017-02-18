@@ -411,6 +411,15 @@
         <servlet-name>searchConsumptionReport</servlet-name>
         <url-pattern>/abms/DBSearchForConsumptionReportImpl</url-pattern>
     </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>getVotingSession</servlet-name>
+        <servlet-class>com.andreiolar.abms.server.DBGetVotingSessionImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>getVotingSession</servlet-name>
+        <url-pattern>/abms/DBGetVotingSessionImpl</url-pattern>
+    </servlet-mapping>
   
   <!-- Default page to serve -->
   <welcome-file-list>

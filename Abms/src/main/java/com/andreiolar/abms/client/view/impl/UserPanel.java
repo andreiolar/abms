@@ -12,6 +12,7 @@ import com.andreiolar.abms.client.widgets.ConsumptionWidget;
 import com.andreiolar.abms.client.widgets.GeneralCostsWidget;
 import com.andreiolar.abms.client.widgets.ModalCreator;
 import com.andreiolar.abms.client.widgets.PersonalCostsWidget;
+import com.andreiolar.abms.client.widgets.VoteWidget;
 import com.andreiolar.abms.shared.ContactInfo;
 import com.andreiolar.abms.shared.UserDetails;
 import com.google.gwt.core.client.GWT;
@@ -492,6 +493,58 @@ public class UserPanel extends Composite implements UserView {
 		administrationCollapsible.add(administrationCollapsibleItem);
 
 		materialSideNav.add(administrationCollapsible);
+
+		/** Voting **/
+		MaterialCollapsible votingCollapsible = new MaterialCollapsible();
+		MaterialCollapsibleItem votingCollapsibleItem = new MaterialCollapsibleItem();
+		MaterialCollapsibleHeader votingCollapsibleHeader = new MaterialCollapsibleHeader();
+		votingCollapsibleHeader.setWaves(WavesType.DEFAULT);
+
+		MaterialLink votingLink = new MaterialLink();
+		votingLink.setText("Voting");
+		votingLink.setIconType(IconType.ACCOUNT_BALANCE);
+		votingLink.setTextColor(Color.BLUE);
+		votingCollapsibleHeader.add(votingLink);
+		votingCollapsibleItem.add(votingCollapsibleHeader);
+
+		MaterialCollapsibleBody votingBody = new MaterialCollapsibleBody();
+		UnorderedList votingListItems = new UnorderedList();
+
+		/** Vote **/
+		MaterialLink voteLink = new MaterialLink();
+		voteLink.setText("Vote");
+		voteLink.setTextColor(Color.BLUE_DARKEN_2);
+		voteLink.setWaves(WavesType.DEFAULT);
+		voteLink.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				container.clear();
+				VoteWidget voteWidget = new VoteWidget(userDetails);
+				container.add(voteWidget);
+			}
+		});
+		votingListItems.add(voteLink);
+
+		/** View Vote Results **/
+		MaterialLink viewVoteResultsLink = new MaterialLink();
+		viewVoteResultsLink.setText("View Vote Results");
+		viewVoteResultsLink.setTextColor(Color.BLUE_DARKEN_2);
+		viewVoteResultsLink.setWaves(WavesType.DEFAULT);
+		viewVoteResultsLink.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+
+			}
+		});
+		votingListItems.add(viewVoteResultsLink);
+
+		votingBody.add(votingListItems);
+		votingCollapsibleItem.add(votingBody);
+		votingCollapsible.add(votingCollapsibleItem);
+
+		materialSideNav.add(votingCollapsible);
 
 		header.add(materialSideNav);
 

@@ -27,8 +27,6 @@ import com.andreiolar.abms.client.rpc.DBGetUserInfo;
 import com.andreiolar.abms.client.rpc.DBGetUserInfoAsync;
 import com.andreiolar.abms.client.rpc.DBInsertEmail;
 import com.andreiolar.abms.client.rpc.DBInsertEmailAsync;
-import com.andreiolar.abms.client.rpc.DBInsertVote;
-import com.andreiolar.abms.client.rpc.DBInsertVoteAsync;
 import com.andreiolar.abms.client.rpc.DBUpdateUser;
 import com.andreiolar.abms.client.rpc.DBUpdateUserAsync;
 import com.andreiolar.abms.client.rpc.DateGetter;
@@ -47,7 +45,6 @@ import com.andreiolar.abms.shared.MobileNumberValidator;
 import com.andreiolar.abms.shared.NameValidator;
 import com.andreiolar.abms.shared.SelfReading;
 import com.andreiolar.abms.shared.UserInfo;
-import com.andreiolar.abms.shared.Vote;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.dom.client.Style.FontWeight;
@@ -1251,65 +1248,65 @@ public class AdminViewImpl extends Composite implements AdminView {
 							target.setServiceEntryPoint(moduleRelativeURL);
 
 							DOM.getElementById("loading").getStyle().setDisplay(Display.BLOCK);
-							rpcService.ckeckForActiveVotingSession(new AsyncCallback<Boolean>() {
-
-								@Override
-								public void onFailure(Throwable caught) {
-									DOM.getElementById("loading").getStyle().setDisplay(Display.NONE);
-									DialogBox dialogBox = DialogBoxCreator.createDialogBox(AdminMenuConstants.DIALOG_BOX_FAILED_ACTIVE_VOTE_EXISTS,
-											caught.getMessage(), DialogBoxConstants.CLOSE_BUTTON, false, false);
-									dialogBox.setGlassEnabled(true);
-									dialogBox.setAnimationEnabled(true);
-									dialogBox.center();
-									dialogBox.show();
-
-								}
-
-								@Override
-								public void onSuccess(Boolean result) {
-									DOM.getElementById("loading").getStyle().setDisplay(Display.NONE);
-									Vote vote = new Vote(options, voteID, "true");
-									DOM.getElementById("loading").getStyle().setDisplay(Display.BLOCK);
-									DBInsertVoteAsync rpcService = (DBInsertVoteAsync) GWT.create(DBInsertVote.class);
-									ServiceDefTarget target = (ServiceDefTarget) rpcService;
-									String moduleRelativeURL = GWT.getModuleBaseURL() + "DBInsertVoteImpl";
-									target.setServiceEntryPoint(moduleRelativeURL);
-
-									rpcService.insertVote(vote, text, new AsyncCallback<Boolean>() {
-
-										@Override
-										public void onFailure(Throwable caught) {
-											DOM.getElementById("loading").getStyle().setDisplay(Display.NONE);
-											DialogBox dialogBox = DialogBoxCreator.createDialogBox(
-													AdminMenuConstants.DIALOG_BOX_FAILED_INSERT_VOTE_TITLE, caught.getMessage(),
-													DialogBoxConstants.CLOSE_BUTTON, false, false);
-											dialogBox.setGlassEnabled(true);
-											dialogBox.setAnimationEnabled(true);
-											dialogBox.center();
-											dialogBox.show();
-
-										}
-
-										@Override
-										public void onSuccess(Boolean result) {
-											DOM.getElementById("loading").getStyle().setDisplay(Display.NONE);
-											DialogBox dialogBox = DialogBoxCreator.createDialogBox(
-													AdminMenuConstants.DIALOG_BOX_SUCCESS_INSERT_VOTE_TITLE,
-													AdminMenuConstants.DIALOG_BOX_SUCCESS_INSERT_VOTE_MESSAGE, DialogBoxConstants.CLOSE_BUTTON, false,
-													false);
-											dialogBox.setGlassEnabled(true);
-											dialogBox.setAnimationEnabled(true);
-											dialogBox.center();
-											dialogBox.show();
-
-											textArea.setText(null);
-											voteIDBox.setText(null);
-											removeAllRows(flexTable);
-
-										}
-									});
-								}
-							});
+							// rpcService.ckeckForActiveVotingSession(new AsyncCallback<Boolean>() {
+							//
+							// @Override
+							// public void onFailure(Throwable caught) {
+							// DOM.getElementById("loading").getStyle().setDisplay(Display.NONE);
+							// DialogBox dialogBox = DialogBoxCreator.createDialogBox(AdminMenuConstants.DIALOG_BOX_FAILED_ACTIVE_VOTE_EXISTS,
+							// caught.getMessage(), DialogBoxConstants.CLOSE_BUTTON, false, false);
+							// dialogBox.setGlassEnabled(true);
+							// dialogBox.setAnimationEnabled(true);
+							// dialogBox.center();
+							// dialogBox.show();
+							//
+							// }
+							//
+							// @Override
+							// public void onSuccess(Boolean result) {
+							// DOM.getElementById("loading").getStyle().setDisplay(Display.NONE);
+							// Vote vote = new Vote(options, voteID, "true");
+							// DOM.getElementById("loading").getStyle().setDisplay(Display.BLOCK);
+							// DBInsertVoteAsync rpcService = (DBInsertVoteAsync) GWT.create(DBInsertVote.class);
+							// ServiceDefTarget target = (ServiceDefTarget) rpcService;
+							// String moduleRelativeURL = GWT.getModuleBaseURL() + "DBInsertVoteImpl";
+							// target.setServiceEntryPoint(moduleRelativeURL);
+							//
+							// rpcService.insertVote(vote, text, new AsyncCallback<Boolean>() {
+							//
+							// @Override
+							// public void onFailure(Throwable caught) {
+							// DOM.getElementById("loading").getStyle().setDisplay(Display.NONE);
+							// DialogBox dialogBox = DialogBoxCreator.createDialogBox(
+							// AdminMenuConstants.DIALOG_BOX_FAILED_INSERT_VOTE_TITLE, caught.getMessage(),
+							// DialogBoxConstants.CLOSE_BUTTON, false, false);
+							// dialogBox.setGlassEnabled(true);
+							// dialogBox.setAnimationEnabled(true);
+							// dialogBox.center();
+							// dialogBox.show();
+							//
+							// }
+							//
+							// @Override
+							// public void onSuccess(Boolean result) {
+							// DOM.getElementById("loading").getStyle().setDisplay(Display.NONE);
+							// DialogBox dialogBox = DialogBoxCreator.createDialogBox(
+							// AdminMenuConstants.DIALOG_BOX_SUCCESS_INSERT_VOTE_TITLE,
+							// AdminMenuConstants.DIALOG_BOX_SUCCESS_INSERT_VOTE_MESSAGE, DialogBoxConstants.CLOSE_BUTTON, false,
+							// false);
+							// dialogBox.setGlassEnabled(true);
+							// dialogBox.setAnimationEnabled(true);
+							// dialogBox.center();
+							// dialogBox.show();
+							//
+							// textArea.setText(null);
+							// voteIDBox.setText(null);
+							// removeAllRows(flexTable);
+							//
+							// }
+							// });
+							// }
+							// });
 						}
 					});
 				} else {

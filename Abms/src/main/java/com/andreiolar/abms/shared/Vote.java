@@ -6,40 +6,60 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class Vote implements IsSerializable {
 
-	private List<String> voteOption;
 	private String voteId;
-	private String active;
+	private String title;
+	private String description;
+	private boolean active;
+	private List<String> voteOptions;
 
 	public Vote() {
 	}
 
-	public Vote(List<String> voteOption, String voteId, String active) {
-		this.voteOption = voteOption;
+	public Vote(String voteId, String title, String description, boolean active, List<String> voteOptions) {
 		this.voteId = voteId;
+		this.title = title;
+		this.description = description;
 		this.active = active;
-	}
-
-	public List<String> getVoteOption() {
-		return voteOption;
+		this.voteOptions = voteOptions;
 	}
 
 	public String getVoteId() {
 		return voteId;
 	}
 
-	public String getActive() {
-		return active;
+	public List<String> getVoteOptions() {
+		return voteOptions;
 	}
 
-	public void setVoteOption(List<String> voteOption) {
-		this.voteOption = voteOption;
+	public void setVoteOptions(List<String> voteOptions) {
+		this.voteOptions = voteOptions;
 	}
 
 	public void setVoteId(String voteId) {
 		this.voteId = voteId;
 	}
 
-	public void setActive(String active) {
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
 		this.active = active;
 	}
 
@@ -47,9 +67,11 @@ public class Vote implements IsSerializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((active == null) ? 0 : active.hashCode());
+		result = prime * result + (active ? 1231 : 1237);
+		result = prime * result + ((description == null) ? 0 : description.hashCode());
+		result = prime * result + ((title == null) ? 0 : title.hashCode());
 		result = prime * result + ((voteId == null) ? 0 : voteId.hashCode());
-		result = prime * result + ((voteOption == null) ? 0 : voteOption.hashCode());
+		result = prime * result + ((voteOptions == null) ? 0 : voteOptions.hashCode());
 		return result;
 	}
 
@@ -62,22 +84,34 @@ public class Vote implements IsSerializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Vote other = (Vote) obj;
-		if (active == null) {
-			if (other.active != null)
+		if (active != other.active)
+			return false;
+		if (description == null) {
+			if (other.description != null)
 				return false;
-		} else if (!active.equals(other.active))
+		} else if (!description.equals(other.description))
+			return false;
+		if (title == null) {
+			if (other.title != null)
+				return false;
+		} else if (!title.equals(other.title))
 			return false;
 		if (voteId == null) {
 			if (other.voteId != null)
 				return false;
 		} else if (!voteId.equals(other.voteId))
 			return false;
-		if (voteOption == null) {
-			if (other.voteOption != null)
+		if (voteOptions == null) {
+			if (other.voteOptions != null)
 				return false;
-		} else if (!voteOption.equals(other.voteOption))
+		} else if (!voteOptions.equals(other.voteOptions))
 			return false;
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		return "Vote [voteId=" + voteId + ", title=" + title + ", description=" + description + ", active=" + active + ", voteOptions=" + voteOptions
+				+ "]";
+	}
 }

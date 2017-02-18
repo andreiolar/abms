@@ -30,8 +30,8 @@ public class DBInsertVoteImpl extends RemoteServiceServlet implements DBInsertVo
 			try {
 
 				String voteId = vote.getVoteId();
-				String active = vote.getActive();
-				List<String> voteOptions = vote.getVoteOption();
+				String active = null;
+				List<String> voteOptions = null;
 				size = voteOptions.size();
 
 				String q = "insert into votes(vote_option, vote_id, active) values(?,?,?)";
