@@ -12,6 +12,7 @@ import com.andreiolar.abms.client.widgets.ConsumptionWidget;
 import com.andreiolar.abms.client.widgets.GeneralCostsWidget;
 import com.andreiolar.abms.client.widgets.ModalCreator;
 import com.andreiolar.abms.client.widgets.PersonalCostsWidget;
+import com.andreiolar.abms.client.widgets.VoteResultsWidget;
 import com.andreiolar.abms.client.widgets.VoteWidget;
 import com.andreiolar.abms.shared.ContactInfo;
 import com.andreiolar.abms.shared.UserDetails;
@@ -535,7 +536,9 @@ public class UserPanel extends Composite implements UserView {
 
 			@Override
 			public void onClick(ClickEvent event) {
-
+				container.clear();
+				VoteResultsWidget voteResultsWidget = new VoteResultsWidget(userDetails);
+				container.add(voteResultsWidget);
 			}
 		});
 		votingListItems.add(viewVoteResultsLink);

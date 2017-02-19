@@ -23,14 +23,19 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+import gwt.material.design.client.constants.ButtonType;
 import gwt.material.design.client.constants.Color;
+import gwt.material.design.client.constants.ModalType;
 import gwt.material.design.client.constants.TextAlign;
 import gwt.material.design.client.constants.WavesType;
 import gwt.material.design.client.ui.MaterialButton;
 import gwt.material.design.client.ui.MaterialLabel;
 import gwt.material.design.client.ui.MaterialLoader;
 import gwt.material.design.client.ui.MaterialModal;
+import gwt.material.design.client.ui.MaterialModalContent;
+import gwt.material.design.client.ui.MaterialModalFooter;
 import gwt.material.design.client.ui.MaterialPanel;
+import gwt.material.design.client.ui.MaterialTitle;
 import gwt.material.design.client.ui.MaterialToast;
 import gwt.material.design.client.ui.html.Div;
 import gwt.material.design.client.ui.html.Hr;
@@ -144,36 +149,80 @@ public class VoteWidget extends Composite implements CustomWidget {
 
 							@Override
 							public void onClick(ClickEvent event) {
-								DBSubmitVoteAsync submitVote = (DBSubmitVoteAsync) GWT.create(DBSubmitVote.class);
-								ServiceDefTarget submitVoteTar = (ServiceDefTarget) submitVote;
-								String moduleURL = GWT.getModuleBaseURL() + "DBSubmitVoteImpl";
-								submitVoteTar.setServiceEntryPoint(moduleURL);
+								MaterialModal materialModal = new MaterialModal();
+								materialModal.setType(ModalType.DEFAULT);
+								materialModal.setDismissible(false);
+								materialModal.setInDuration(500);
+								materialModal.setOutDuration(500);
 
-								MaterialLoader.showLoading(true);
+								MaterialModalContent materialModalContent = new MaterialModalContent();
+								MaterialTitle materialTitle = new MaterialTitle("Your selected option");
+								materialTitle.setTextColor(Color.BLUE);
+								materialTitle.setTextAlign(TextAlign.CENTER);
 
-								submitVote.submitVoteToDB(result.getVoteId(), voteOption, result.getTitle(), result.getDescription(), userDetails,
-										new AsyncCallback<Void>() {
+								materialModalContent.add(materialTitle);
 
-											@Override
-											public void onFailure(Throwable caught) {
-												MaterialLoader.showLoading(false);
-												if (caught instanceof VoteSubmissionException) {
-													MaterialToast.fireToast(caught.getMessage(), "rounded");
-												} else {
-													MaterialModal materialModal = ModalCreator.createErrorModal("Something went wrong", caught);
-													RootPanel.get().add(materialModal);
-													materialModal.open();
+								MaterialLabel label = new MaterialLabel();
+								label.getElement().setInnerHTML(
+										"Selected option: <span style=\"color: #2196f3;\">" + voteOption + "</span><br/><br/>Are you sure?");
+								label.setFontSize("18px");
+								materialModalContent.add(label);
+
+								MaterialModalFooter materialModalFooter = new MaterialModalFooter();
+								MaterialButton submitButton = new MaterialButton();
+								submitButton.setText("Yes");
+								submitButton.addClickHandler(h -> {
+									DBSubmitVoteAsync submitVote = (DBSubmitVoteAsync) GWT.create(DBSubmitVote.class);
+									ServiceDefTarget submitVoteTar = (ServiceDefTarget) submitVote;
+									String moduleURL = GWT.getModuleBaseURL() + "DBSubmitVoteImpl";
+									submitVoteTar.setServiceEntryPoint(moduleURL);
+
+									MaterialLoader.showLoading(true);
+
+									materialModal.close();
+									RootPanel.get().remove(materialModal);
+
+									submitVote.submitVoteToDB(result.getVoteId(), voteOption, result.getTitle(), result.getDescription(), userDetails,
+											new AsyncCallback<Void>() {
+
+												@Override
+												public void onFailure(Throwable caught) {
+													MaterialLoader.showLoading(false);
+													if (caught instanceof VoteSubmissionException) {
+														MaterialToast.fireToast(caught.getMessage(), "rounded");
+													} else {
+														MaterialModal materialModal = ModalCreator.createErrorModal("Something went wrong", caught);
+														RootPanel.get().add(materialModal);
+														materialModal.open();
+													}
 												}
-											}
 
-											@Override
-											public void onSuccess(Void result) {
-												MaterialLoader.showLoading(false);
-												panel.clear();
-												panel.add(new VoteWidget(userDetails));
-												MaterialToast.fireToast("Vote submitted successfully.", "rounded");
-											}
-										});
+												@Override
+												public void onSuccess(Void result) {
+													MaterialLoader.showLoading(false);
+													panel.clear();
+													panel.add(new VoteWidget(userDetails));
+													MaterialToast.fireToast("Vote submitted successfully.", "rounded");
+												}
+											});
+								});
+
+								materialModalFooter.add(submitButton);
+
+								MaterialButton closeButton = new MaterialButton();
+								closeButton.setText("No");
+								closeButton.setType(ButtonType.FLAT);
+								closeButton.addClickHandler(h -> {
+									materialModal.close();
+									RootPanel.get().remove(materialModal);
+								});
+
+								materialModalFooter.add(closeButton);
+								materialModal.add(materialModalContent);
+								materialModal.add(materialModalFooter);
+
+								RootPanel.get().add(materialModal);
+								materialModal.open();
 							}
 						});
 

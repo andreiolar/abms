@@ -420,6 +420,15 @@
         <servlet-name>getVotingSession</servlet-name>
         <url-pattern>/abms/DBGetVotingSessionImpl</url-pattern>
     </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>getFinishedVoteSessions</servlet-name>
+        <servlet-class>com.andreiolar.abms.server.DBGetFinishedVoteSessionsImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>getFinishedVoteSessions</servlet-name>
+        <url-pattern>/abms/DBGetFinishedVoteSessionsImpl</url-pattern>
+    </servlet-mapping>
   
   <!-- Default page to serve -->
   <welcome-file-list>
