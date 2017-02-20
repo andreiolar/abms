@@ -17,7 +17,7 @@ import org.moxieapps.gwt.highcharts.client.plotOptions.ColumnPlotOptions;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.Widget;
 
-public class ChartDrawer {
+public final class ChartDrawer {
 
 	public static Widget createColumnChart(String categories[], Number results[]) {
 

@@ -721,3 +721,8 @@ strong {
 .margin-right-percent{
 	margin-right: 4% !important;
 }
+
+.chart-panel{
+	width: 95%;
+	margin: auto;
+}

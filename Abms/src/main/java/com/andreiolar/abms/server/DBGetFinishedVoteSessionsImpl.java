@@ -3,14 +3,13 @@ package com.andreiolar.abms.server;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.andreiolar.abms.client.exception.NoFinishedVotingSessionFound;
 import com.andreiolar.abms.client.rpc.DBGetFinishedVoteSessions;
 import com.andreiolar.abms.shared.FinishedVoteSession;
-import com.google.gwt.dev.util.collect.HashMap;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class DBGetFinishedVoteSessionsImpl extends RemoteServiceServlet implements DBGetFinishedVoteSessions {
@@ -18,11 +17,11 @@ public class DBGetFinishedVoteSessionsImpl extends RemoteServiceServlet implemen
 	private static final long serialVersionUID = 6649289418019191897L;
 
 	@Override
-	public List<FinishedVoteSession> getFinishedVoteSessions() throws Exception {
+	public Map<String, FinishedVoteSession> getFinishedVoteSessions() throws Exception {
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
-		List<FinishedVoteSession> result = null;
+		Map<String, FinishedVoteSession> result = null;
 
 		try {
 			conn = MyConnection.getConnection();
@@ -32,7 +31,7 @@ public class DBGetFinishedVoteSessionsImpl extends RemoteServiceServlet implemen
 				stmt = conn.prepareStatement(q);
 				rs = stmt.executeQuery();
 
-				result = new ArrayList<>();
+				result = new LinkedHashMap<>();
 				while (rs.next()) {
 					int voteId = rs.getInt("vote_id");
 					String title = rs.getString("title");
@@ -56,7 +55,7 @@ public class DBGetFinishedVoteSessionsImpl extends RemoteServiceServlet implemen
 					stmt2.close();
 
 					FinishedVoteSession finishedVoteSession = new FinishedVoteSession(String.valueOf(voteId), title, description, results);
-					result.add(finishedVoteSession);
+					result.put(String.valueOf(voteId), finishedVoteSession);
 				}
 			} catch (Exception e) {
 				throw new RuntimeException("Something went wrong: " + e.getMessage(), e);
