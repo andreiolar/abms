@@ -429,6 +429,15 @@
         <servlet-name>getFinishedVoteSessions</servlet-name>
         <url-pattern>/abms/DBGetFinishedVoteSessionsImpl</url-pattern>
     </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>conversationDetails</servlet-name>
+        <servlet-class>com.andreiolar.abms.server.DBConversationDetailsImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>conversationDetails</servlet-name>
+        <url-pattern>/abms/DBConversationDetailsImpl</url-pattern>
+    </servlet-mapping>
   
   <!-- Default page to serve -->
   <welcome-file-list>

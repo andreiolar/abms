@@ -726,3 +726,11 @@ strong {
 	width: 95%;
 	margin: auto;
 }
+
+.right-border{
+	border-right: 1px solid #000;
+}
+
+.border-bottom{
+	border-bottom: 1px solid #999;
+}

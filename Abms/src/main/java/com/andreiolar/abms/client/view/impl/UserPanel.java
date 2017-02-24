@@ -10,6 +10,7 @@ import com.andreiolar.abms.client.view.UserView;
 import com.andreiolar.abms.client.widgets.ComplaintsWidget;
 import com.andreiolar.abms.client.widgets.ConsumptionWidget;
 import com.andreiolar.abms.client.widgets.GeneralCostsWidget;
+import com.andreiolar.abms.client.widgets.MessengerWidget;
 import com.andreiolar.abms.client.widgets.ModalCreator;
 import com.andreiolar.abms.client.widgets.PersonalCostsWidget;
 import com.andreiolar.abms.client.widgets.VoteResultsWidget;
@@ -548,6 +549,22 @@ public class UserPanel extends Composite implements UserView {
 		votingCollapsible.add(votingCollapsibleItem);
 
 		materialSideNav.add(votingCollapsible);
+
+		/** Messenger **/
+		MaterialLink messengerLink = new MaterialLink();
+		messengerLink.setText("Messenger");
+		messengerLink.setTextColor(Color.BLUE);
+		messengerLink.setIconType(IconType.MESSAGE);
+		messengerLink.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				container.clear();
+				MessengerWidget widget = new MessengerWidget(userDetails);
+				container.add(widget);
+			}
+		});
+		materialSideNav.add(messengerLink);
 
 		header.add(materialSideNav);
 
