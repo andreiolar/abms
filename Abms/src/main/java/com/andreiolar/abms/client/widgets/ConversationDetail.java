@@ -1,6 +1,7 @@
 package com.andreiolar.abms.client.widgets;
 
 import com.andreiolar.abms.shared.ConversationDetails;
+import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.dom.client.Style.FontWeight;
 import com.google.gwt.event.dom.client.ErrorEvent;
 import com.google.gwt.event.dom.client.ErrorHandler;
@@ -28,6 +29,7 @@ public class ConversationDetail extends Composite implements CustomWidget {
 		MaterialPanel panel = new MaterialPanel();
 		panel.addStyleName("border-bottom");
 		panel.setDisplay(Display.FLEX);
+		panel.getElement().getStyle().setCursor(Cursor.POINTER);
 
 		// Picture
 		String profilePictureUsername = conversationDetails.getConversationWith().replaceAll("\\.", "");
@@ -61,7 +63,7 @@ public class ConversationDetail extends Composite implements CustomWidget {
 
 		MaterialLabel conversationWithLabel = new MaterialLabel();
 		conversationWithLabel.setText(conversationDetails.getConversationWithFirstName() + " " + conversationDetails.getConversationWithLastName());
-		conversationWithLabel.setTextColor(Color.WHITE);
+		conversationWithLabel.setTextColor(Color.BLACK);
 		conversationWithLabel.setFontWeight(FontWeight.BOLD);
 		conversationWithLabel.setMarginLeft(12);
 		conversationWithLabel.setMarginTop(15);
@@ -70,7 +72,7 @@ public class ConversationDetail extends Composite implements CustomWidget {
 		MaterialLabel text = new MaterialLabel();
 		text.setText(conversationDetails.getLastMessage());
 		text.setMarginLeft(12);
-		text.setTextColor(Color.GREY);
+		text.setTextColor(Color.WHITE);
 		subPanel.add(text);
 
 		panel.add(materialImage);

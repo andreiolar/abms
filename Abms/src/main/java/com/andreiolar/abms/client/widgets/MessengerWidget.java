@@ -55,8 +55,7 @@ public class MessengerWidget extends Composite implements CustomWidget {
 
 		conversationDetailPanel.setWidth("20%");
 		conversationDetailPanel.setHeight("500px");
-		conversationDetailPanel.setBackgroundColor(Color.BLUE_DARKEN_2);
-		conversationDetailPanel.addStyleName("right-border");
+		conversationDetailPanel.setBackgroundColor(Color.BLUE);
 
 		conversationPanel.setWidth("60%");
 		conversationPanel.setHeight("500px");
