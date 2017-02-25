@@ -14,7 +14,10 @@ import com.google.gwt.i18n.client.DateTimeFormat;
 public final class DateUtil {
 
 	private static final String DATE_FORMAT = "yyyy-M-dd";
+	private static final String CONVERSATION_DATE_FORMAT = "E, dd/MM/yyyy HH:mm:ss";
 	private static final String DATE_SEPARATOR = "-";
+
+	public final static long MILLIS_PER_DAY = 24 * 60 * 60 * 1000L;
 
 	private static List<String> months = Arrays.asList("January", "February", "March", "April", "May", "June", "July", "August", "September",
 			"October", "November", "December");
@@ -126,5 +129,40 @@ public final class DateUtil {
 		}
 
 		return String.valueOf(year);
+	}
+
+	/**
+	 * Used to get the date from a String representing a conversation date.
+	 * 
+	 * @param date
+	 *            A String representation of the date.
+	 * 
+	 * @return Returns the date if parsing is successful, null otherwise.
+	 **/
+	public static Date getConversationDate(String date) {
+		Date retVal = null;
+		try {
+			retVal = DateTimeFormat.getFormat(CONVERSATION_DATE_FORMAT).parse(date);
+		} catch (Exception e) {
+			retVal = null;
+		}
+
+		return retVal;
+	}
+
+	public static String getDisplayDate(Date conversationDate) {
+		String displayDate = conversationDate.toString();
+
+		Date today = new Date();
+
+		if (conversationDate.getTime() - today.getTime() > MILLIS_PER_DAY) {
+			return DateTimeFormat.getFormat("HH:mm").format(conversationDate);
+		}
+
+		if (conversationDate.getTime() - today.getTime() < MILLIS_PER_DAY) {
+			return DateTimeFormat.getFormat("EEEE").format(conversationDate);
+		}
+
+		return displayDate;
 	}
 }

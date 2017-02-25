@@ -1,8 +1,12 @@
 package com.andreiolar.abms.client.widgets;
 
+import java.util.Date;
+
+import com.andreiolar.abms.client.utils.DateUtil;
 import com.andreiolar.abms.shared.ConversationDetails;
 import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.dom.client.Style.FontWeight;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ErrorEvent;
 import com.google.gwt.event.dom.client.ErrorHandler;
 import com.google.gwt.user.client.ui.Composite;
@@ -60,6 +64,7 @@ public class ConversationDetail extends Composite implements CustomWidget {
 
 		// Panel with first name, last name and reply
 		MaterialPanel subPanel = new MaterialPanel();
+		subPanel.setWidth("52%");
 
 		MaterialLabel conversationWithLabel = new MaterialLabel();
 		conversationWithLabel.setText(conversationDetails.getConversationWithFirstName() + " " + conversationDetails.getConversationWithLastName());
@@ -75,8 +80,18 @@ public class ConversationDetail extends Composite implements CustomWidget {
 		text.setTextColor(Color.WHITE);
 		subPanel.add(text);
 
+		Date conversationDate = DateUtil.getConversationDate(conversationDetails.getLastMessageDate());
+		String displayDate = DateUtil.getDisplayDate(conversationDate);
+
+		MaterialLabel dateLabel = new MaterialLabel();
+		dateLabel.setText(displayDate);
+		dateLabel.setTextColor(Color.WHITE);
+		dateLabel.getElement().getStyle().setMarginLeft(10, Unit.PCT);
+		dateLabel.setMarginTop(35);
+
 		panel.add(materialImage);
 		panel.add(subPanel);
+		panel.add(dateLabel);
 
 		return panel;
 	}
