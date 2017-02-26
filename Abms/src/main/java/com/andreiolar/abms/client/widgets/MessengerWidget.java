@@ -1,10 +1,14 @@
 package com.andreiolar.abms.client.widgets;
 
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 import com.andreiolar.abms.client.exception.NoConversationsFoundException;
 import com.andreiolar.abms.client.rpc.DBConversationDetails;
 import com.andreiolar.abms.client.rpc.DBConversationDetailsAsync;
+import com.andreiolar.abms.client.utils.DateUtil;
 import com.andreiolar.abms.shared.ConversationDetails;
 import com.andreiolar.abms.shared.UserDetails;
 import com.google.gwt.core.client.GWT;
@@ -75,6 +79,17 @@ public class MessengerWidget extends Composite implements CustomWidget {
 			@Override
 			public void onSuccess(List<ConversationDetails> result) {
 				conversationDetailPanel.setTextAlign(TextAlign.LEFT);
+
+				Collections.sort(result, new Comparator<ConversationDetails>() {
+
+					@Override
+					public int compare(ConversationDetails o1, ConversationDetails o2) {
+						Date conversationDate1 = DateUtil.getConversationDate(o1.getLastMessageDate());
+						Date conversationDate2 = DateUtil.getConversationDate(o2.getLastMessageDate());
+
+						return -Long.compare(conversationDate1.getTime(), conversationDate2.getTime());
+					}
+				});
 
 				for (ConversationDetails conversationDetails : result) {
 					ConversationDetail conversationDetail = new ConversationDetail(conversationDetails);

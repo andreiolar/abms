@@ -18,6 +18,7 @@ public final class DateUtil {
 	private static final String DATE_SEPARATOR = "-";
 
 	public final static long MILLIS_PER_DAY = 24 * 60 * 60 * 1000L;
+	public final static long MILLIS_PER_WEEK = 7 * 24 * 60 * 60 * 1000L;
 
 	private static List<String> months = Arrays.asList("January", "February", "March", "April", "May", "June", "July", "August", "September",
 			"October", "November", "December");
@@ -150,19 +151,27 @@ public final class DateUtil {
 		return retVal;
 	}
 
-	public static String getDisplayDate(Date conversationDate) {
-		String displayDate = conversationDate.toString();
-
+	/**
+	 * Used to get the date represented as a String to be displayed in the UI.
+	 * 
+	 * @param conversationDate
+	 *            The date.
+	 * 
+	 * @return A String representation of the given date, in a format that can depend on some factors.
+	 **/
+	public static String getConversationDisplayDate(Date conversationDate) {
 		Date today = new Date();
+		long todayTime = today.getTime();
+		long conversationTime = conversationDate.getTime();
 
-		if (conversationDate.getTime() - today.getTime() > MILLIS_PER_DAY) {
+		if (todayTime - conversationTime < MILLIS_PER_DAY) {
 			return DateTimeFormat.getFormat("HH:mm").format(conversationDate);
 		}
 
-		if (conversationDate.getTime() - today.getTime() < MILLIS_PER_DAY) {
+		if (todayTime - conversationTime > MILLIS_PER_DAY && todayTime - conversationTime < MILLIS_PER_WEEK) {
 			return DateTimeFormat.getFormat("EEEE").format(conversationDate);
 		}
 
-		return displayDate;
+		return DateTimeFormat.getFormat("dd/MM/yyyy").format(conversationDate);
 	}
 }

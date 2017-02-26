@@ -9,6 +9,10 @@ import com.google.gwt.dom.client.Style.FontWeight;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ErrorEvent;
 import com.google.gwt.event.dom.client.ErrorHandler;
+import com.google.gwt.event.dom.client.MouseOutEvent;
+import com.google.gwt.event.dom.client.MouseOutHandler;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -64,7 +68,7 @@ public class ConversationDetail extends Composite implements CustomWidget {
 
 		// Panel with first name, last name and reply
 		MaterialPanel subPanel = new MaterialPanel();
-		subPanel.setWidth("52%");
+		subPanel.setWidth("50%");
 
 		MaterialLabel conversationWithLabel = new MaterialLabel();
 		conversationWithLabel.setText(conversationDetails.getConversationWithFirstName() + " " + conversationDetails.getConversationWithLastName());
@@ -81,7 +85,7 @@ public class ConversationDetail extends Composite implements CustomWidget {
 		subPanel.add(text);
 
 		Date conversationDate = DateUtil.getConversationDate(conversationDetails.getLastMessageDate());
-		String displayDate = DateUtil.getDisplayDate(conversationDate);
+		String displayDate = DateUtil.getConversationDisplayDate(conversationDate);
 
 		MaterialLabel dateLabel = new MaterialLabel();
 		dateLabel.setText(displayDate);
@@ -92,6 +96,28 @@ public class ConversationDetail extends Composite implements CustomWidget {
 		panel.add(materialImage);
 		panel.add(subPanel);
 		panel.add(dateLabel);
+
+		panel.addMouseOverHandler(new MouseOverHandler() {
+
+			@Override
+			public void onMouseOver(MouseOverEvent event) {
+				panel.setBackgroundColor(Color.GREY_LIGHTEN_3);
+				conversationWithLabel.setTextColor(Color.BLUE);
+				text.setTextColor(Color.BLACK);
+				dateLabel.setTextColor(Color.BLACK);
+			}
+		});
+
+		panel.addMouseOutHandler(new MouseOutHandler() {
+
+			@Override
+			public void onMouseOut(MouseOutEvent event) {
+				panel.setBackgroundColor(Color.BLUE);
+				conversationWithLabel.setTextColor(Color.BLACK);
+				text.setTextColor(Color.WHITE);
+				dateLabel.setTextColor(Color.WHITE);
+			}
+		});
 
 		return panel;
 	}
