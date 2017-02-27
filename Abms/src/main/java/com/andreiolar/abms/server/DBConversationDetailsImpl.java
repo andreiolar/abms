@@ -62,6 +62,7 @@ public class DBConversationDetailsImpl extends RemoteServiceServlet implements D
 
 							ConversationDetails conversationDetail = new ConversationDetails(conversationWith, firstName, lastName, reply, date,
 									gender);
+							conversationDetail.setId(id);
 							conversationDetails.add(conversationDetail);
 						}
 

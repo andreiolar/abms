@@ -438,6 +438,24 @@
         <servlet-name>conversationDetails</servlet-name>
         <url-pattern>/abms/DBConversationDetailsImpl</url-pattern>
     </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>conversationMessages</servlet-name>
+        <servlet-class>com.andreiolar.abms.server.DBGetConversationMessagesImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>conversationMessages</servlet-name>
+        <url-pattern>/abms/DBGetConversationMessagesImpl</url-pattern>
+    </servlet-mapping>
+    
+     <servlet>
+        <servlet-name>userDetails</servlet-name>
+        <servlet-class>com.andreiolar.abms.server.DBGetUserDetailsImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>userDetails</servlet-name>
+        <url-pattern>/abms/DBGetUserDetailsImpl</url-pattern>
+    </servlet-mapping>
   
   <!-- Default page to serve -->
   <welcome-file-list>

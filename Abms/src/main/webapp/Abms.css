@@ -732,5 +732,14 @@ strong {
 }
 
 .border-bottom{
-	border-bottom: 1px solid #999;
+	border-bottom: 1px solid #cfd8dc;
+}
+
+.conversation-with-panel{
+	width: 80%;
+	margin: auto;
+}
+
+.margin-left-auto{
+	margin-left: auto;
 }

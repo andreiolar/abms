@@ -5,14 +5,23 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+import com.andreiolar.abms.client.exception.MessagesNotFoundException;
 import com.andreiolar.abms.client.exception.NoConversationsFoundException;
+import com.andreiolar.abms.client.exception.UserDetailsNotFoundException;
 import com.andreiolar.abms.client.rpc.DBConversationDetails;
 import com.andreiolar.abms.client.rpc.DBConversationDetailsAsync;
+import com.andreiolar.abms.client.rpc.DBGetConversationMessages;
+import com.andreiolar.abms.client.rpc.DBGetConversationMessagesAsync;
+import com.andreiolar.abms.client.rpc.DBGetUserDetails;
+import com.andreiolar.abms.client.rpc.DBGetUserDetailsAsync;
 import com.andreiolar.abms.client.utils.DateUtil;
 import com.andreiolar.abms.shared.ConversationDetails;
+import com.andreiolar.abms.shared.ConversationMessage;
 import com.andreiolar.abms.shared.UserDetails;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.FontWeight;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.Composite;
@@ -57,17 +66,32 @@ public class MessengerWidget extends Composite implements CustomWidget {
 		MaterialPanel conversationPanel = new MaterialPanel();
 		MaterialPanel conversationWithPanel = new MaterialPanel();
 
-		conversationDetailPanel.setWidth("20%");
-		conversationDetailPanel.setHeight("500px");
+		conversationDetailPanel.setWidth("22%");
+		conversationDetailPanel.setHeight("700px");
 		conversationDetailPanel.setBackgroundColor(Color.BLUE);
 
-		conversationPanel.setWidth("60%");
-		conversationPanel.setHeight("500px");
-		conversationPanel.setBackgroundColor(Color.GREY_LIGHTEN_3);
-		conversationPanel.addStyleName("right-border");
+		conversationPanel.setWidth("58%");
+		conversationPanel.setHeight("700px");
+		conversationPanel.setBackgroundColor(Color.GREY_LIGHTEN_4);
+
+		MaterialLabel noConversationSelectedLabel = new MaterialLabel();
+		noConversationSelectedLabel.setText("No conversation selected.");
+		noConversationSelectedLabel.setFontSize("18px");
+		noConversationSelectedLabel.setMarginTop(25.0);
+
+		conversationPanel.setTextAlign(TextAlign.CENTER);
+		conversationPanel.add(noConversationSelectedLabel);
 
 		conversationWithPanel.setWidth("20%");
-		conversationWithPanel.setHeight("500px");
+		conversationWithPanel.setHeight("700px");
+
+		MaterialLabel noConversationSelectedLabel2 = new MaterialLabel();
+		noConversationSelectedLabel2.setText("No conversation selected.");
+		noConversationSelectedLabel2.setFontSize("18px");
+		noConversationSelectedLabel2.setMarginTop(25.0);
+
+		conversationWithPanel.setTextAlign(TextAlign.CENTER);
+		conversationWithPanel.add(noConversationSelectedLabel2);
 
 		DBConversationDetailsAsync rpc = (DBConversationDetailsAsync) GWT.create(DBConversationDetails.class);
 		ServiceDefTarget tar = (ServiceDefTarget) rpc;
@@ -93,6 +117,84 @@ public class MessengerWidget extends Composite implements CustomWidget {
 
 				for (ConversationDetails conversationDetails : result) {
 					ConversationDetail conversationDetail = new ConversationDetail(conversationDetails);
+					conversationDetail.addClickHandler(new ClickHandler() {
+
+						@Override
+						public void onClick(ClickEvent event) {
+							conversationPanel.clear();
+							conversationPanel.setTextAlign(TextAlign.DEFAULT);
+
+							DBGetConversationMessagesAsync conversationMessageRpc = (DBGetConversationMessagesAsync) GWT
+									.create(DBGetConversationMessages.class);
+							ServiceDefTarget conversationMessageTar = (ServiceDefTarget) conversationMessageRpc;
+							String moduleURL = GWT.getModuleBaseURL() + "DBGetConversationMessagesImpl";
+							conversationMessageTar.setServiceEntryPoint(moduleURL);
+
+							conversationMessageRpc.getConversationMessages(String.valueOf(conversationDetails.getId()),
+									new AsyncCallback<List<ConversationMessage>>() {
+
+										@Override
+										public void onFailure(Throwable caught) {
+											if (caught instanceof MessagesNotFoundException) {
+												MaterialLabel errorLabel = new MaterialLabel();
+												errorLabel.setText("No messages to display. Send a message instead.");
+												errorLabel.setFontSize("18px");
+												errorLabel.setMarginTop(25.0);
+
+												conversationPanel.setTextAlign(TextAlign.CENTER);
+												conversationPanel.add(errorLabel);
+											} else {
+												MaterialModal errorModal = ModalCreator.createModal(caught);
+												RootPanel.get().add(errorModal);
+												errorModal.open();
+											}
+										}
+
+										@Override
+										public void onSuccess(List<ConversationMessage> result) {
+											for (ConversationMessage message : result) {
+												Message messageWidget = new Message(message, userDetails.getUsername());
+												conversationPanel.add(messageWidget);
+											}
+										}
+									});
+
+							conversationWithPanel.clear();
+							conversationWithPanel.setTextAlign(TextAlign.DEFAULT);
+
+							DBGetUserDetailsAsync userDetailsRpc = (DBGetUserDetailsAsync) GWT.create(DBGetUserDetails.class);
+							ServiceDefTarget userDetailsTar = (ServiceDefTarget) userDetailsRpc;
+							String userDeatilsURL = GWT.getModuleBaseURL() + "DBGetUserDetailsImpl";
+							userDetailsTar.setServiceEntryPoint(userDeatilsURL);
+
+							userDetailsRpc.geUserDetails(conversationDetails.getConversationWith(), new AsyncCallback<UserDetails>() {
+
+								@Override
+								public void onFailure(Throwable caught) {
+									if (caught instanceof UserDetailsNotFoundException) {
+										MaterialLabel errorLabel = new MaterialLabel();
+										errorLabel.setText(caught.getMessage());
+										errorLabel.setFontSize("18px");
+										errorLabel.setMarginTop(25.0);
+
+										conversationWithPanel.setTextAlign(TextAlign.CENTER);
+										conversationWithPanel.add(errorLabel);
+									} else {
+										MaterialModal errorModal = ModalCreator.createModal(caught);
+										RootPanel.get().add(errorModal);
+										errorModal.open();
+									}
+								}
+
+								@Override
+								public void onSuccess(UserDetails result) {
+									ConversationWithWidget conversationWithWidget = new ConversationWithWidget(result);
+									conversationWithPanel.add(conversationWithWidget);
+								}
+							});
+						}
+					});
+
 					conversationDetailPanel.add(conversationDetail);
 				}
 
