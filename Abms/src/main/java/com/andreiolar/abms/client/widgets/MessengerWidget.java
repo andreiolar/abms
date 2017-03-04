@@ -1,5 +1,6 @@
 package com.andreiolar.abms.client.widgets;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -14,14 +15,20 @@ import com.andreiolar.abms.client.rpc.DBGetConversationMessages;
 import com.andreiolar.abms.client.rpc.DBGetConversationMessagesAsync;
 import com.andreiolar.abms.client.rpc.DBGetUserDetails;
 import com.andreiolar.abms.client.rpc.DBGetUserDetailsAsync;
+import com.andreiolar.abms.client.rpc.DBReplyToConversation;
+import com.andreiolar.abms.client.rpc.DBReplyToConversationAsync;
 import com.andreiolar.abms.client.utils.DateUtil;
 import com.andreiolar.abms.shared.ConversationDetails;
 import com.andreiolar.abms.shared.ConversationMessage;
+import com.andreiolar.abms.shared.ReplyMessage;
 import com.andreiolar.abms.shared.UserDetails;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.FontWeight;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.Composite;
@@ -34,11 +41,16 @@ import gwt.material.design.client.constants.TextAlign;
 import gwt.material.design.client.ui.MaterialLabel;
 import gwt.material.design.client.ui.MaterialModal;
 import gwt.material.design.client.ui.MaterialPanel;
+import gwt.material.design.client.ui.MaterialTextBox;
 import gwt.material.design.client.ui.html.Hr;
 
 public class MessengerWidget extends Composite implements CustomWidget {
 
 	private UserDetails userDetails;
+
+	private List<ConversationDetail> conversationDetailWidgets = new ArrayList<ConversationDetail>();
+
+	private ConversationDetails selectedConversation;
 
 	public MessengerWidget(UserDetails userDetails) {
 		this.userDetails = userDetails;
@@ -64,6 +76,8 @@ public class MessengerWidget extends Composite implements CustomWidget {
 
 		MaterialPanel conversationDetailPanel = new MaterialPanel();
 		MaterialPanel conversationPanel = new MaterialPanel();
+		MaterialPanel conversationDisplayPanel = new MaterialPanel();
+		MaterialPanel conversationMessagePanel = new MaterialPanel();
 		MaterialPanel conversationWithPanel = new MaterialPanel();
 
 		conversationDetailPanel.setWidth("22%");
@@ -72,15 +86,28 @@ public class MessengerWidget extends Composite implements CustomWidget {
 
 		conversationPanel.setWidth("58%");
 		conversationPanel.setHeight("700px");
-		conversationPanel.setBackgroundColor(Color.GREY_LIGHTEN_4);
+		conversationPanel.setBackgroundColor(Color.GREY_LIGHTEN_5);
+		conversationDisplayPanel.setBackgroundColor(Color.GREY_LIGHTEN_4);
 
 		MaterialLabel noConversationSelectedLabel = new MaterialLabel();
 		noConversationSelectedLabel.setText("No conversation selected.");
 		noConversationSelectedLabel.setFontSize("18px");
-		noConversationSelectedLabel.setMarginTop(25.0);
+		noConversationSelectedLabel.setPaddingTop(25.0);
 
-		conversationPanel.setTextAlign(TextAlign.CENTER);
-		conversationPanel.add(noConversationSelectedLabel);
+		conversationDisplayPanel.setHeight("90%");
+		conversationDisplayPanel.setTextAlign(TextAlign.CENTER);
+		conversationDisplayPanel.add(noConversationSelectedLabel);
+
+		conversationMessagePanel.setHeight("8%");
+		MaterialTextBox textArea = new MaterialTextBox();
+		textArea.setPlaceholder("Type a message...");
+		textArea.setPaddingTop(10.0);
+		textArea.setPaddingRight(20.0);
+		textArea.setPaddingLeft(20.0);
+		textArea.setEnabled(false);
+
+		conversationMessagePanel.setBackgroundColor(Color.GREY_LIGHTEN_5);
+		conversationMessagePanel.add(textArea);
 
 		conversationWithPanel.setWidth("20%");
 		conversationWithPanel.setHeight("700px");
@@ -116,13 +143,19 @@ public class MessengerWidget extends Composite implements CustomWidget {
 				});
 
 				for (ConversationDetails conversationDetails : result) {
-					ConversationDetail conversationDetail = new ConversationDetail(conversationDetails);
+					ConversationDetail conversationDetail = new ConversationDetail(conversationDetails, false);
+					conversationDetailWidgets.add(conversationDetail);
 					conversationDetail.addClickHandler(new ClickHandler() {
 
 						@Override
 						public void onClick(ClickEvent event) {
-							conversationPanel.clear();
-							conversationPanel.setTextAlign(TextAlign.DEFAULT);
+							conversationDetailWidgets.stream().forEach(cdw -> cdw.setSelected(false));
+							conversationDetail.setSelected(true);
+							selectedConversation = conversationDetails;
+
+							conversationDisplayPanel.clear();
+							conversationDisplayPanel.setTextAlign(TextAlign.DEFAULT);
+							textArea.setEnabled(true);
 
 							DBGetConversationMessagesAsync conversationMessageRpc = (DBGetConversationMessagesAsync) GWT
 									.create(DBGetConversationMessages.class);
@@ -139,10 +172,10 @@ public class MessengerWidget extends Composite implements CustomWidget {
 												MaterialLabel errorLabel = new MaterialLabel();
 												errorLabel.setText("No messages to display. Send a message instead.");
 												errorLabel.setFontSize("18px");
-												errorLabel.setMarginTop(25.0);
+												errorLabel.setPaddingTop(25.0);
 
-												conversationPanel.setTextAlign(TextAlign.CENTER);
-												conversationPanel.add(errorLabel);
+												conversationDisplayPanel.setTextAlign(TextAlign.CENTER);
+												conversationDisplayPanel.add(errorLabel);
 											} else {
 												MaterialModal errorModal = ModalCreator.createModal(caught);
 												RootPanel.get().add(errorModal);
@@ -154,7 +187,7 @@ public class MessengerWidget extends Composite implements CustomWidget {
 										public void onSuccess(List<ConversationMessage> result) {
 											for (ConversationMessage message : result) {
 												Message messageWidget = new Message(message, userDetails.getUsername());
-												conversationPanel.add(messageWidget);
+												conversationDisplayPanel.add(messageWidget);
 											}
 										}
 									});
@@ -198,6 +231,39 @@ public class MessengerWidget extends Composite implements CustomWidget {
 					conversationDetailPanel.add(conversationDetail);
 				}
 
+				textArea.addKeyDownHandler(new KeyDownHandler() {
+
+					@Override
+					public void onKeyDown(KeyDownEvent event) {
+						if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+							String messageText = textArea.getText();
+
+							ReplyMessage replyMessage = new ReplyMessage(messageText, userDetails.getUsername(), selectedConversation.getId());
+
+							DBReplyToConversationAsync replyToConvRpc = (DBReplyToConversationAsync) GWT.create(DBReplyToConversation.class);
+							ServiceDefTarget replyToConvTar = (ServiceDefTarget) replyToConvRpc;
+							String replyToConvUrl = GWT.getModuleBaseURL() + "DBReplyToConversationImpl";
+							replyToConvTar.setServiceEntryPoint(replyToConvUrl);
+
+							replyToConvRpc.replyToConversation(replyMessage, new AsyncCallback<Void>() {
+
+								@Override
+								public void onSuccess(Void result) {
+									textArea.clear();
+								}
+
+								@Override
+								public void onFailure(Throwable caught) {
+									textArea.clear();
+									MaterialModal errorModal = ModalCreator.createModal(caught);
+									RootPanel.get().add(errorModal);
+									errorModal.open();
+								}
+							});
+						}
+					}
+				});
+
 			}
 
 			@Override
@@ -218,6 +284,9 @@ public class MessengerWidget extends Composite implements CustomWidget {
 			}
 		});
 
+		conversationPanel.add(conversationDisplayPanel);
+		conversationPanel.add(conversationMessagePanel);
+
 		mainPanel.add(conversationDetailPanel);
 		mainPanel.add(conversationPanel);
 		mainPanel.add(conversationWithPanel);
@@ -226,5 +295,4 @@ public class MessengerWidget extends Composite implements CustomWidget {
 
 		return panel;
 	}
-
 }

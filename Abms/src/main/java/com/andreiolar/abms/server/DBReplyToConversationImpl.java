@@ -18,9 +18,6 @@ public class DBReplyToConversationImpl extends RemoteServiceServlet implements D
 	public void replyToConversation(ReplyMessage message) throws Exception {
 		Connection conn = null;
 		PreparedStatement stmt = null;
-		int executed = 0;
-
-		String ip = getThreadLocalRequest().getRemoteAddr();
 
 		DateFormat dateFormat = new SimpleDateFormat("E, dd/MM/yyyy HH:mm:ss");
 		Date date = new Date();
@@ -30,32 +27,24 @@ public class DBReplyToConversationImpl extends RemoteServiceServlet implements D
 			conn = MyConnection.getConnection();
 
 			try {
-				String q = "insert into conversation_reply(reply, username, ip, date, conv_id_fk) values(?,?,?,?,?)";
+				String q = "insert into conversation_reply(reply, username, date, conv_id_fk) values(?,?,?,?)";
 				stmt = conn.prepareStatement(q);
 				stmt.setString(1, message.getText());
 				stmt.setString(2, message.getUsername());
-				stmt.setString(3, ip);
-				stmt.setString(4, formattedDate);
-				stmt.setInt(5, message.getConvId());
+				stmt.setString(3, formattedDate);
+				stmt.setInt(4, message.getConvId());
 
-				executed = stmt.executeUpdate();
-
+				stmt.executeUpdate();
 			} catch (Exception ex) {
-				ex.printStackTrace();
+				throw new RuntimeException("Something went wrong: " + ex.getMessage(), ex);
 			} finally {
 				stmt.close();
 			}
 
 		} catch (Exception ex) {
-			ex.printStackTrace();
+			throw new RuntimeException("Something went wrong: " + ex.getMessage(), ex);
 		} finally {
 			conn.close();
 		}
-
-		if (executed == 0) {
-			throw new Exception("Error submitting reply to conversation with ID: " + message.getConvId());
-		}
-
 	}
-
 }

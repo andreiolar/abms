@@ -29,16 +29,22 @@ import gwt.material.design.client.ui.MaterialPanel;
 public class ConversationDetail extends Composite implements CustomWidget, HasClickHandlers {
 
 	private ConversationDetails conversationDetails;
+	private boolean selected;
 
-	public ConversationDetail(ConversationDetails conversationDetails) {
+	MaterialPanel panel = new MaterialPanel();
+	MaterialLabel conversationWithLabel = new MaterialLabel();
+	MaterialLabel text = new MaterialLabel();
+	MaterialLabel dateLabel = new MaterialLabel();
+
+	public ConversationDetail(ConversationDetails conversationDetails, boolean selected) {
 		this.conversationDetails = conversationDetails;
+		this.selected = selected;
 
 		initWidget(initializeWidget());
 	}
 
 	@Override
 	public Widget initializeWidget() {
-		MaterialPanel panel = new MaterialPanel();
 		panel.addStyleName("border-bottom");
 		panel.setDisplay(Display.FLEX);
 		panel.getElement().getStyle().setCursor(Cursor.POINTER);
@@ -74,7 +80,6 @@ public class ConversationDetail extends Composite implements CustomWidget, HasCl
 		MaterialPanel subPanel = new MaterialPanel();
 		subPanel.setWidth("50%");
 
-		MaterialLabel conversationWithLabel = new MaterialLabel();
 		conversationWithLabel.setText(conversationDetails.getConversationWithFirstName() + " " + conversationDetails.getConversationWithLastName());
 		conversationWithLabel.setTextColor(Color.BLACK);
 		conversationWithLabel.setFontWeight(FontWeight.BOLD);
@@ -82,7 +87,6 @@ public class ConversationDetail extends Composite implements CustomWidget, HasCl
 		conversationWithLabel.setMarginTop(15);
 		subPanel.add(conversationWithLabel);
 
-		MaterialLabel text = new MaterialLabel();
 		text.setText(conversationDetails.getLastMessage());
 		text.setMarginLeft(12);
 		text.setTextColor(Color.WHITE);
@@ -91,7 +95,6 @@ public class ConversationDetail extends Composite implements CustomWidget, HasCl
 		Date conversationDate = DateUtil.getConversationDate(conversationDetails.getLastMessageDate());
 		String displayDate = DateUtil.getConversationDisplayDate(conversationDate);
 
-		MaterialLabel dateLabel = new MaterialLabel();
 		dateLabel.setText(displayDate);
 		dateLabel.setTextColor(Color.WHITE);
 		dateLabel.getElement().getStyle().setMarginLeft(10, Unit.PCT);
@@ -116,12 +119,27 @@ public class ConversationDetail extends Composite implements CustomWidget, HasCl
 
 			@Override
 			public void onMouseOut(MouseOutEvent event) {
-				panel.setBackgroundColor(Color.BLUE);
-				conversationWithLabel.setTextColor(Color.BLACK);
-				text.setTextColor(Color.WHITE);
-				dateLabel.setTextColor(Color.WHITE);
+				if (!selected) {
+					panel.setBackgroundColor(Color.BLUE);
+					conversationWithLabel.setTextColor(Color.BLACK);
+					text.setTextColor(Color.WHITE);
+					dateLabel.setTextColor(Color.WHITE);
+				}
+
 			}
 		});
+
+		if (selected) {
+			panel.setBackgroundColor(Color.GREY_LIGHTEN_4);
+			conversationWithLabel.setTextColor(Color.BLUE);
+			text.setTextColor(Color.BLACK);
+			dateLabel.setTextColor(Color.BLACK);
+		} else {
+			panel.setBackgroundColor(Color.BLUE);
+			conversationWithLabel.setTextColor(Color.BLACK);
+			text.setTextColor(Color.WHITE);
+			dateLabel.setTextColor(Color.WHITE);
+		}
 
 		return panel;
 	}
@@ -129,5 +147,25 @@ public class ConversationDetail extends Composite implements CustomWidget, HasCl
 	@Override
 	public HandlerRegistration addClickHandler(ClickHandler handler) {
 		return addDomHandler(handler, ClickEvent.getType());
+	}
+
+	public boolean isSelected() {
+		return selected;
+	}
+
+	public void setSelected(boolean selected) {
+		this.selected = selected;
+
+		if (selected) {
+			panel.setBackgroundColor(Color.GREY_LIGHTEN_4);
+			conversationWithLabel.setTextColor(Color.BLUE);
+			text.setTextColor(Color.BLACK);
+			dateLabel.setTextColor(Color.BLACK);
+		} else {
+			panel.setBackgroundColor(Color.BLUE);
+			conversationWithLabel.setTextColor(Color.BLACK);
+			text.setTextColor(Color.WHITE);
+			dateLabel.setTextColor(Color.WHITE);
+		}
 	}
 }

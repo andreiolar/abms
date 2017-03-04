@@ -743,3 +743,8 @@ strong {
 .margin-left-auto{
 	margin-left: auto;
 }
+
+.center-panel-95{
+	margin: auto;
+	width: 95%;
+}
