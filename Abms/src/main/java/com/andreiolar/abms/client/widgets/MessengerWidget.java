@@ -30,6 +30,11 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.event.dom.client.MouseOutEvent;
+import com.google.gwt.event.dom.client.MouseOutHandler;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.Composite;
@@ -82,15 +87,48 @@ public class MessengerWidget extends Composite implements CustomWidget {
 		MaterialPanel mainPanel = new MaterialPanel();
 		mainPanel.setDisplay(Display.FLEX);
 
+		MaterialPanel leftConversationPanel = new MaterialPanel();
+		MaterialPanel newConversationPanel = new MaterialPanel();
 		MaterialPanel conversationDetailPanel = new MaterialPanel();
 		MaterialPanel conversationPanel = new MaterialPanel();
 		MaterialPanel conversationDisplayPanel = new MaterialPanel();
 		MaterialPanel conversationMessagePanel = new MaterialPanel();
 		MaterialPanel conversationWithPanel = new MaterialPanel();
 
-		conversationDetailPanel.setWidth("22%");
-		conversationDetailPanel.setHeight("700px");
-		conversationDetailPanel.setBackgroundColor(Color.BLUE);
+		newConversationPanel.setHeight("10%");
+		newConversationPanel.setPaddingTop(25.0);
+		newConversationPanel.setTextAlign(TextAlign.CENTER);
+		MaterialLink newConversationLink = new MaterialLink();
+		newConversationLink.setText("START A NEW CONVERSATION");
+		newConversationLink.setTextColor(Color.WHITE);
+		newConversationLink.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				Window.alert("New Concersation");
+			}
+		});
+		newConversationLink.addMouseOverHandler(new MouseOverHandler() {
+
+			@Override
+			public void onMouseOver(MouseOverEvent event) {
+				newConversationLink.setTextColor(Color.GREY);
+			}
+		});
+
+		newConversationLink.addMouseOutHandler(new MouseOutHandler() {
+
+			@Override
+			public void onMouseOut(MouseOutEvent event) {
+				newConversationLink.setTextColor(Color.WHITE);
+			}
+		});
+
+		newConversationPanel.add(newConversationLink);
+
+		leftConversationPanel.setWidth("22%");
+		leftConversationPanel.setHeight("700px");
+		leftConversationPanel.setBackgroundColor(Color.BLUE);
 
 		conversationPanel.setWidth("58%");
 		conversationPanel.setHeight("700px");
@@ -213,7 +251,10 @@ public class MessengerWidget extends Composite implements CustomWidget {
 		conversationPanel.add(conversationDisplayPanel);
 		conversationPanel.add(conversationMessagePanel);
 
-		mainPanel.add(conversationDetailPanel);
+		leftConversationPanel.add(newConversationPanel);
+		leftConversationPanel.add(conversationDetailPanel);
+
+		mainPanel.add(leftConversationPanel);
 		mainPanel.add(conversationPanel);
 		mainPanel.add(conversationWithPanel);
 
