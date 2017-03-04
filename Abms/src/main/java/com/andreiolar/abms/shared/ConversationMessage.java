@@ -21,6 +21,13 @@ public class ConversationMessage implements IsSerializable {
 		this.date = date;
 	}
 
+	public ConversationMessage(String id, String username, String message, String date) {
+		this.id = id;
+		this.username = username;
+		this.message = message;
+		this.date = date;
+	}
+
 	public String getId() {
 		return id;
 	}

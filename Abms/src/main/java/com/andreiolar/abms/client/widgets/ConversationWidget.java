@@ -547,28 +547,28 @@ public class ConversationWidget extends Composite implements CustomWidget {
 					String moduleURL = GWT.getModuleBaseURL() + "DBReplyToConversationImpl";
 					tar.setServiceEntryPoint(moduleURL);
 
-					rpc.replyToConversation(message, new AsyncCallback<Void>() {
-
-						@Override
-						public void onFailure(Throwable caught) {
-							DOM.getElementById("loading").getStyle().setDisplay(Display.NONE);
-
-							DialogBox dialogBox = DialogBoxCreator.createDialogBox(ConversationWidgetConstants.DIALOG_BOX_EMPTY_REPLY_TITLE,
-									caught.getMessage(), DialogBoxConstants.CLOSE_BUTTON, false, false);
-							dialogBox.setGlassEnabled(true);
-							dialogBox.setAnimationEnabled(true);
-							dialogBox.center();
-							dialogBox.show();
-
-							viewConversation(lastId, convPanel);
-						}
-
-						@Override
-						public void onSuccess(Void result) {
-							DOM.getElementById("loading").getStyle().setDisplay(Display.NONE);
-							viewConversation(lastId, convPanel);
-						}
-					});
+					// rpc.replyToConversation(message, new AsyncCallback<Void>() {
+					//
+					// @Override
+					// public void onFailure(Throwable caught) {
+					// DOM.getElementById("loading").getStyle().setDisplay(Display.NONE);
+					//
+					// DialogBox dialogBox = DialogBoxCreator.createDialogBox(ConversationWidgetConstants.DIALOG_BOX_EMPTY_REPLY_TITLE,
+					// caught.getMessage(), DialogBoxConstants.CLOSE_BUTTON, false, false);
+					// dialogBox.setGlassEnabled(true);
+					// dialogBox.setAnimationEnabled(true);
+					// dialogBox.center();
+					// dialogBox.show();
+					//
+					// viewConversation(lastId, convPanel);
+					// }
+					//
+					// @Override
+					// public void onSuccess(Void result) {
+					// DOM.getElementById("loading").getStyle().setDisplay(Display.NONE);
+					// viewConversation(lastId, convPanel);
+					// }
+					// });
 				} else {
 					DialogBox dialogBox = DialogBoxCreator.createDialogBox(ConversationWidgetConstants.DIALOG_BOX_EMPTY_REPLY_TITLE,
 							ConversationWidgetConstants.DIALOG_BOX_EMPTY_REPLY_MESSAGE, DialogBoxConstants.CLOSE_BUTTON, false, false);
