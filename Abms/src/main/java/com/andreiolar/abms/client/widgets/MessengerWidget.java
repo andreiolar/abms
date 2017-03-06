@@ -8,11 +8,14 @@ import java.util.List;
 
 import com.andreiolar.abms.client.exception.MessagesNotFoundException;
 import com.andreiolar.abms.client.exception.NoConversationsFoundException;
+import com.andreiolar.abms.client.exception.OtherTenantsNotFoundException;
 import com.andreiolar.abms.client.exception.UserDetailsNotFoundException;
 import com.andreiolar.abms.client.rpc.DBConversationDetails;
 import com.andreiolar.abms.client.rpc.DBConversationDetailsAsync;
 import com.andreiolar.abms.client.rpc.DBGetConversationMessages;
 import com.andreiolar.abms.client.rpc.DBGetConversationMessagesAsync;
+import com.andreiolar.abms.client.rpc.DBGetOtherTenants;
+import com.andreiolar.abms.client.rpc.DBGetOtherTenantsAsync;
 import com.andreiolar.abms.client.rpc.DBGetUserDetails;
 import com.andreiolar.abms.client.rpc.DBGetUserDetailsAsync;
 import com.andreiolar.abms.client.rpc.DBReplyToConversation;
@@ -34,27 +37,37 @@ import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+import gwt.material.design.addins.client.combobox.MaterialComboBox;
+import gwt.material.design.client.constants.ButtonType;
 import gwt.material.design.client.constants.Color;
 import gwt.material.design.client.constants.Display;
 import gwt.material.design.client.constants.IconPosition;
 import gwt.material.design.client.constants.IconSize;
 import gwt.material.design.client.constants.IconType;
+import gwt.material.design.client.constants.ModalType;
 import gwt.material.design.client.constants.Position;
 import gwt.material.design.client.constants.TextAlign;
+import gwt.material.design.client.ui.MaterialButton;
 import gwt.material.design.client.ui.MaterialLabel;
 import gwt.material.design.client.ui.MaterialLink;
 import gwt.material.design.client.ui.MaterialModal;
+import gwt.material.design.client.ui.MaterialModalContent;
+import gwt.material.design.client.ui.MaterialModalFooter;
 import gwt.material.design.client.ui.MaterialPanel;
+import gwt.material.design.client.ui.MaterialTextArea;
 import gwt.material.design.client.ui.MaterialTextBox;
+import gwt.material.design.client.ui.MaterialTitle;
+import gwt.material.design.client.ui.MaterialToast;
 import gwt.material.design.client.ui.MaterialTooltip;
+import gwt.material.design.client.ui.html.Div;
 import gwt.material.design.client.ui.html.Hr;
+import gwt.material.design.client.ui.html.Option;
 
 public class MessengerWidget extends Composite implements CustomWidget {
 
@@ -105,7 +118,99 @@ public class MessengerWidget extends Composite implements CustomWidget {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				Window.alert("New Concersation");
+
+				DBGetOtherTenantsAsync otherTenantsRpc = (DBGetOtherTenantsAsync) GWT.create(DBGetOtherTenants.class);
+				ServiceDefTarget otherTenantsTar = (ServiceDefTarget) otherTenantsRpc;
+				String otherTenantsUrl = GWT.getModuleBaseURL() + "DBGetOtherTenantsImpl";
+				otherTenantsTar.setServiceEntryPoint(otherTenantsUrl);
+
+				otherTenantsRpc.getOtherTenants(userDetails.getUsername(), new AsyncCallback<List<UserDetails>>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						if (caught instanceof OtherTenantsNotFoundException) {
+							MaterialToast.fireToast("No other tenants found. Please try again later.");
+						} else {
+							MaterialModal errorModal = ModalCreator.createModal(caught);
+							RootPanel.get().add(errorModal);
+							errorModal.open();
+						}
+					}
+
+					@Override
+					public void onSuccess(List<UserDetails> result) {
+						MaterialModal materialModal = new MaterialModal();
+						materialModal.setType(ModalType.DEFAULT);
+						materialModal.setDismissible(false);
+						materialModal.setInDuration(500);
+						materialModal.setOutDuration(500);
+
+						MaterialModalContent materialModalContent = new MaterialModalContent();
+
+						Div titleDiv = new Div();
+						titleDiv.setTextAlign(TextAlign.CENTER);
+
+						MaterialTitle materialTitle = new MaterialTitle("Start a conversation");
+						materialTitle.setTextColor(Color.BLUE);
+
+						titleDiv.add(materialTitle);
+						titleDiv.add(new Hr());
+
+						materialModalContent.add(titleDiv);
+
+						MaterialComboBox<UserDetails> allUsersBox = new MaterialComboBox<UserDetails>();
+						allUsersBox.add(new Option("Select tenant to chat with"));
+						for (UserDetails userDetails : result) {
+							allUsersBox.add(new Option(
+									userDetails.getFirstName() + " " + userDetails.getLastName() + " from Apt." + userDetails.getApartmentNumber()));
+						}
+
+						allUsersBox.setSelectedIndex(0);
+
+						allUsersBox.setMarginTop(50.0);
+						allUsersBox.addStyleName("center-panel-60");
+						allUsersBox.setTextAlign(TextAlign.CENTER);
+						materialModalContent.add(allUsersBox);
+
+						MaterialTextArea messageBox = new MaterialTextArea();
+						messageBox.setMarginTop(50.0);
+						messageBox.setPlaceholder("Type a message");
+						messageBox.addStyleName("center-panel-95");
+						materialModalContent.add(messageBox);
+
+						MaterialModalFooter materialModalFooter = new MaterialModalFooter();
+						MaterialButton sendButton = new MaterialButton();
+						sendButton.setText("Send");
+						sendButton.setTextColor(Color.BLUE);
+						sendButton.setType(ButtonType.FLAT);
+						sendButton.addClickHandler(h -> {
+							materialModal.close();
+							RootPanel.get().remove(materialModal);
+
+							panel.clear();
+							panel.add(new MessengerWidget(userDetails));
+						});
+
+						MaterialButton closeButton = new MaterialButton();
+						closeButton.setText("Close");
+						closeButton.setTextColor(Color.BLUE);
+						closeButton.setType(ButtonType.FLAT);
+						closeButton.addClickHandler(h -> {
+							materialModal.close();
+							RootPanel.get().remove(materialModal);
+						});
+
+						materialModalFooter.add(sendButton);
+						materialModalFooter.add(closeButton);
+						materialModal.add(materialModalContent);
+						materialModal.add(materialModalFooter);
+						materialModal.setWidth("600px");
+						materialModal.setHeight("500px");
+
+						RootPanel.get().add(materialModal);
+						materialModal.open();
+					}
+				});
 			}
 		});
 		newConversationLink.addMouseOverHandler(new MouseOverHandler() {

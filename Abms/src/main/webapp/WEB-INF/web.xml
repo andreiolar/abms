@@ -456,6 +456,15 @@
         <servlet-name>userDetails</servlet-name>
         <url-pattern>/abms/DBGetUserDetailsImpl</url-pattern>
     </servlet-mapping>
+    
+     <servlet>
+        <servlet-name>otherTenants</servlet-name>
+        <servlet-class>com.andreiolar.abms.server.DBGetOtherTenantsImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>otherTenants</servlet-name>
+        <url-pattern>/abms/DBGetOtherTenantsImpl</url-pattern>
+    </servlet-mapping>
   
   <!-- Default page to serve -->
   <welcome-file-list>
