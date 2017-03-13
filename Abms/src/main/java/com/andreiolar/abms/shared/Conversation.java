@@ -7,17 +7,15 @@ public class Conversation implements IsSerializable {
 	private int id; // Not to be initialized in Constructor, will be set by server
 	private String source;
 	private String destination;
-	private String subject;
 	private String message;
 	private String date; // Not to be initialized in Constructor, will be set by server.
 
 	public Conversation() {
 	}
 
-	public Conversation(String source, String destination, String subject, String message) {
+	public Conversation(String source, String destination, String message) {
 		this.source = source;
 		this.destination = destination;
-		this.subject = subject;
 		this.message = message;
 	}
 
@@ -37,10 +35,6 @@ public class Conversation implements IsSerializable {
 		return destination;
 	}
 
-	public String getSubject() {
-		return subject;
-	}
-
 	public String getMessage() {
 		return message;
 	}
@@ -51,10 +45,6 @@ public class Conversation implements IsSerializable {
 
 	public void setDestination(String destination) {
 		this.destination = destination;
-	}
-
-	public void setSubject(String subject) {
-		this.subject = subject;
 	}
 
 	public void setMessage(String message) {
@@ -78,7 +68,6 @@ public class Conversation implements IsSerializable {
 		result = prime * result + id;
 		result = prime * result + ((message == null) ? 0 : message.hashCode());
 		result = prime * result + ((source == null) ? 0 : source.hashCode());
-		result = prime * result + ((subject == null) ? 0 : subject.hashCode());
 		return result;
 	}
 
@@ -113,12 +102,6 @@ public class Conversation implements IsSerializable {
 				return false;
 		} else if (!source.equals(other.source))
 			return false;
-		if (subject == null) {
-			if (other.subject != null)
-				return false;
-		} else if (!subject.equals(other.subject))
-			return false;
 		return true;
 	}
-
 }

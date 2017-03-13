@@ -152,9 +152,9 @@ public class MessageDialogBox {
 					String moduleURL = GWT.getModuleBaseURL() + "DBSendMessageImpl";
 					tar.setServiceEntryPoint(moduleURL);
 
-					Conversation conversation = new Conversation(userInfo.getUsername(), aptNumber, subject, messageText);
+					Conversation conversation = new Conversation(userInfo.getUsername(), aptNumber, messageText);
 
-					rpc.sendMessage(conversation, new AsyncCallback<Boolean>() {
+					rpc.sendMessage(userInfo.getUsername(), "", "", new AsyncCallback<Boolean>() {
 
 						@Override
 						public void onSuccess(Boolean result) {

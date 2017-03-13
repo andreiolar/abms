@@ -9,15 +9,15 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import com.andreiolar.abms.client.exception.UnableToSendMessageException;
-import com.andreiolar.abms.client.rpc.DBSendMessage;
+import com.andreiolar.abms.client.rpc.DBStartConversation;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
-public class DBSendMessageImpl extends RemoteServiceServlet implements DBSendMessage {
+public class DBStartConversationImpl extends RemoteServiceServlet implements DBStartConversation {
 
-	private static final long serialVersionUID = -1768687964161046618L;
+	private static final long serialVersionUID = -606745218478180868L;
 
 	@Override
-	public Boolean sendMessage(String source, String destination, String message) throws Exception {
+	public void startConversation(String source, String destination, String message) throws Exception {
 		Boolean returnValue = false;
 		int executed = 0;
 		int lastInserted = 0;
@@ -75,8 +75,6 @@ public class DBSendMessageImpl extends RemoteServiceServlet implements DBSendMes
 		if (returnValue.booleanValue() == false) {
 			throw new UnableToSendMessageException();
 		}
-
-		return returnValue;
 	}
 
 }

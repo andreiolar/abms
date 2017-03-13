@@ -51,7 +51,6 @@ public class DBGetAllConversationsImpl extends RemoteServiceServlet implements D
 					conversation.setId(id);
 					conversation.setSource(source);
 					conversation.setDestination(destination);
-					conversation.setSubject(subject);
 					conversation.setDate(date);
 
 					conversations.add(conversation);

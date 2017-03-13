@@ -9,6 +9,7 @@ import java.util.List;
 import com.andreiolar.abms.client.exception.MessagesNotFoundException;
 import com.andreiolar.abms.client.exception.NoConversationsFoundException;
 import com.andreiolar.abms.client.exception.OtherTenantsNotFoundException;
+import com.andreiolar.abms.client.exception.UnableToSendMessageException;
 import com.andreiolar.abms.client.exception.UserDetailsNotFoundException;
 import com.andreiolar.abms.client.rpc.DBConversationDetails;
 import com.andreiolar.abms.client.rpc.DBConversationDetailsAsync;
@@ -20,6 +21,8 @@ import com.andreiolar.abms.client.rpc.DBGetUserDetails;
 import com.andreiolar.abms.client.rpc.DBGetUserDetailsAsync;
 import com.andreiolar.abms.client.rpc.DBReplyToConversation;
 import com.andreiolar.abms.client.rpc.DBReplyToConversationAsync;
+import com.andreiolar.abms.client.rpc.DBStartConversation;
+import com.andreiolar.abms.client.rpc.DBStartConversationAsync;
 import com.andreiolar.abms.client.utils.DateUtil;
 import com.andreiolar.abms.shared.ConversationDetails;
 import com.andreiolar.abms.shared.ConversationMessage;
@@ -67,7 +70,6 @@ import gwt.material.design.client.ui.MaterialToast;
 import gwt.material.design.client.ui.MaterialTooltip;
 import gwt.material.design.client.ui.html.Div;
 import gwt.material.design.client.ui.html.Hr;
-import gwt.material.design.client.ui.html.Option;
 
 public class MessengerWidget extends Composite implements CustomWidget {
 
@@ -159,10 +161,10 @@ public class MessengerWidget extends Composite implements CustomWidget {
 						materialModalContent.add(titleDiv);
 
 						MaterialComboBox<UserDetails> allUsersBox = new MaterialComboBox<UserDetails>();
-						allUsersBox.add(new Option("Select tenant to chat with"));
-						for (UserDetails userDetails : result) {
-							allUsersBox.add(new Option(
-									userDetails.getFirstName() + " " + userDetails.getLastName() + " from Apt." + userDetails.getApartmentNumber()));
+						allUsersBox.addItem("Select tenant to chat with", new UserDetails());
+
+						for (UserDetails ud : result) {
+							allUsersBox.addItem(ud.getFirstName() + " " + ud.getLastName() + " from Apt." + ud.getApartmentNumber(), ud);
 						}
 
 						allUsersBox.setSelectedIndex(0);
@@ -183,12 +185,70 @@ public class MessengerWidget extends Composite implements CustomWidget {
 						sendButton.setText("Send");
 						sendButton.setTextColor(Color.BLUE);
 						sendButton.setType(ButtonType.FLAT);
-						sendButton.addClickHandler(h -> {
-							materialModal.close();
-							RootPanel.get().remove(materialModal);
+						sendButton.addClickHandler(new ClickHandler() {
 
-							panel.clear();
-							panel.add(new MessengerWidget(userDetails));
+							@Override
+							public void onClick(ClickEvent event) {
+								String message = messageBox.getText();
+								String username = allUsersBox.getSelectedValue().getUsername();
+
+								boolean canProceed = true;
+
+								if (username == null) {
+									canProceed = false;
+									allUsersBox.setError("Please select a tenant to chat with.");
+								} else {
+									allUsersBox.setSuccess("");
+								}
+
+								if (message == null || message.isEmpty()) {
+									canProceed = false;
+									messageBox.setError("Message cannot be empty.");
+								} else {
+									messageBox.setSuccess("");
+								}
+
+								if (canProceed) {
+
+									// materialModal.close();
+									// RootPanel.get().remove(materialModal);
+									//
+									// panel.clear();
+									// panel.add(new MessengerWidget(userDetails));
+
+									DBStartConversationAsync sendMessageRpc = (DBStartConversationAsync) GWT.create(DBStartConversation.class);
+									ServiceDefTarget sendMessageTar = (ServiceDefTarget) sendMessageRpc;
+									String sendMessageUrl = GWT.getModuleBaseURL() + "DBStartConversationImpl";
+									sendMessageTar.setServiceEntryPoint(sendMessageUrl);
+
+									sendMessageRpc.startConversation(userDetails.getUsername(), username, message, new AsyncCallback<Void>() {
+
+										@Override
+										public void onFailure(Throwable caught) {
+											if (caught instanceof UnableToSendMessageException) {
+												MaterialToast.fireToast("Unable to send message. Please try again.", "rounded");
+											} else {
+												materialModal.close();
+												RootPanel.get().remove(materialModal);
+
+												MaterialModal errorModal = ModalCreator.createModal(caught);
+												RootPanel.get().add(errorModal);
+												errorModal.open();
+											}
+										}
+
+										@Override
+										public void onSuccess(Void result) {
+											materialModal.close();
+											RootPanel.get().remove(materialModal);
+
+											panel.clear();
+											panel.add(new MessengerWidget(userDetails));
+
+										}
+									});
+								}
+							}
 						});
 
 						MaterialButton closeButton = new MaterialButton();

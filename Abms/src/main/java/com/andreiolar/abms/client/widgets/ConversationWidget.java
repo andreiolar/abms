@@ -286,7 +286,7 @@ public class ConversationWidget extends Composite implements CustomWidget {
 
 					flexTable.setHTML(start, 2, source.equals(username) ? destination : source);
 
-					Anchor subjectAnchor = new Anchor(String.valueOf(conversation.getSubject()));
+					Anchor subjectAnchor = new Anchor(String.valueOf(""));
 					subjectAnchor.addClickHandler(new ClickHandler() {
 
 						@Override

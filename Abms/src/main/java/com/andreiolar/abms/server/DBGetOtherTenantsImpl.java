@@ -28,15 +28,18 @@ public class DBGetOtherTenantsImpl extends RemoteServiceServlet implements DBGet
 			conn = MyConnection.getConnection();
 
 			try {
-				String q = "select * from user_info where username != ?";
+				String q = "select * from user_info where username != ? and username not in (select user_one from conversation where user_two = ?) and username not in (select user_two from conversation where user_one = ?)";
 				stmt = conn.prepareStatement(q);
 				stmt.setString(1, username);
+				stmt.setString(2, username);
+				stmt.setString(3, username);
 				rs = stmt.executeQuery();
 
 				while (rs.next()) {
 					String firstName = rs.getString("first_name");
 					String lastName = rs.getString("last_name");
 					Date date = rs.getDate("date_of_birth");
+					String userName = rs.getString("username");
 					String email = rs.getString("email");
 					String mobileNumber = rs.getString("mobile_number");
 					String gender = rs.getString("gender");
@@ -48,7 +51,7 @@ public class DBGetOtherTenantsImpl extends RemoteServiceServlet implements DBGet
 					String apartmentNumber = rs.getString("apartment_number");
 
 					UserDetails userDetails = new UserDetails(firstName, lastName, date, email, mobileNumber, gender, address, city, country,
-							personalNumber, idSeries, username, null, apartmentNumber);
+							personalNumber, idSeries, userName, null, apartmentNumber);
 					otherTenants.add(userDetails);
 				}
 
