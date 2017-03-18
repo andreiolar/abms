@@ -13,6 +13,7 @@ import com.andreiolar.abms.client.widgets.GeneralCostsWidget;
 import com.andreiolar.abms.client.widgets.MessengerWidget;
 import com.andreiolar.abms.client.widgets.ModalCreator;
 import com.andreiolar.abms.client.widgets.PersonalCostsWidget;
+import com.andreiolar.abms.client.widgets.ProfileInfoWidget;
 import com.andreiolar.abms.client.widgets.VoteResultsWidget;
 import com.andreiolar.abms.client.widgets.VoteWidget;
 import com.andreiolar.abms.shared.ContactInfo;
@@ -566,14 +567,75 @@ public class UserPanel extends Composite implements UserView {
 		});
 		materialSideNav.add(messengerLink);
 
+		/** Financial **/
+		MaterialCollapsible financialCollapsible = new MaterialCollapsible();
+		MaterialCollapsibleItem financialCollapsibleItem = new MaterialCollapsibleItem();
+		MaterialCollapsibleHeader financialCollapsibleHeader = new MaterialCollapsibleHeader();
+		financialCollapsibleHeader.setWaves(WavesType.DEFAULT);
+
+		MaterialLink financialLink = new MaterialLink();
+		financialLink.setText("Financial");
+		financialLink.setIconType(IconType.EURO_SYMBOL);
+		financialLink.setTextColor(Color.BLUE);
+		financialCollapsibleHeader.add(financialLink);
+		financialCollapsibleItem.add(financialCollapsibleHeader);
+
+		MaterialCollapsibleBody financialBody = new MaterialCollapsibleBody();
+		UnorderedList financialListItems = new UnorderedList();
+
+		/** Pay **/
+		MaterialLink payLink = new MaterialLink();
+		payLink.setText("Pay");
+		payLink.setTextColor(Color.BLUE_DARKEN_2);
+		payLink.setWaves(WavesType.DEFAULT);
+		payLink.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				container.clear();
+
+			}
+		});
+		financialListItems.add(payLink);
+
+		/** View Payment History **/
+		MaterialLink viewPaymentHistoryLink = new MaterialLink();
+		viewPaymentHistoryLink.setText("View Payment History");
+		viewPaymentHistoryLink.setTextColor(Color.BLUE_DARKEN_2);
+		viewPaymentHistoryLink.setWaves(WavesType.DEFAULT);
+		viewPaymentHistoryLink.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				container.clear();
+
+			}
+		});
+		financialListItems.add(viewPaymentHistoryLink);
+
+		financialBody.add(financialListItems);
+		financialCollapsibleItem.add(financialBody);
+		financialCollapsible.add(financialCollapsibleItem);
+
+		materialSideNav.add(financialCollapsible);
+
 		header.add(materialSideNav);
 
 		/** Dropdown **/
 		MaterialDropDown dropDown = new MaterialDropDown("dropProfile");
 
 		MaterialLink editAccountSettingsLink = new MaterialLink();
-		editAccountSettingsLink.setText("Edit Account Settings");
+		editAccountSettingsLink.setText("View Profile Information");
 		editAccountSettingsLink.setFontSize("1em");
+		editAccountSettingsLink.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				container.clear();
+				ProfileInfoWidget profileInfoWidget = new ProfileInfoWidget(userDetails);
+				container.add(profileInfoWidget);
+			}
+		});
 		dropDown.add(editAccountSettingsLink);
 
 		header.add(dropDown);

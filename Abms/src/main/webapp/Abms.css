@@ -699,6 +699,7 @@ strong {
 	margin-top: 25px !important;
 	margin-bottom: 100px !important;
 }
+
 .vote-description-panel{
 	width: 60%;
 	margin: auto;
@@ -752,4 +753,18 @@ strong {
 .center-panel-60{
 	margin: auto;
 	width: 60%;
+}
+
+.center-panel-60-border{
+	margin: auto;
+	width: 60%;
+	border-radius: 3px;
+	box-shadow: 0 10px 10px -2px rgba(180,185,201,0.5);
+	border-top: 1px solid #f0f1f4;
+}
+
+.center-button-60{
+	width: 60%;
+	margin: auto;
+	margin-top: 25px !important;
 }

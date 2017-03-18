@@ -94,6 +94,11 @@ public class LoginViewImpl extends Composite implements LoginView {
 			MaterialToast.fireToast(sessionExpired, "rounded");
 		}
 
+		String usernameChanged = Cookies.getCookie("usernameChanged");
+		if (usernameChanged != null) {
+			MaterialToast.fireToast(usernameChanged, "rounded");
+		}
+
 		Widget loginForm = createLoginForm();
 		initWidget(loginForm);
 	}

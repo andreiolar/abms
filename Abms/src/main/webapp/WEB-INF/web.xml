@@ -474,6 +474,15 @@
         <servlet-name>startConversation</servlet-name>
         <url-pattern>/abms/DBStartConversationImpl</url-pattern>
     </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>updateProfile</servlet-name>
+        <servlet-class>com.andreiolar.abms.server.DBUpdateProfileImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>updateProfile</servlet-name>
+        <url-pattern>/abms/DBUpdateProfileImpl</url-pattern>
+    </servlet-mapping>
   
   <!-- Default page to serve -->
   <welcome-file-list>
