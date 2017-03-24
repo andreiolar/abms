@@ -207,11 +207,11 @@
     
     <servlet>
         <servlet-name>changePassword</servlet-name>
-        <servlet-class>com.andreiolar.abms.server.DBChangePasswordImpl</servlet-class>
+        <servlet-class>com.andreiolar.abms.server.ChangePasswordImpl</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>changePassword</servlet-name>
-        <url-pattern>/abms/DBChangePasswordImpl</url-pattern>
+        <url-pattern>/abms/ChangePasswordImpl</url-pattern>
     </servlet-mapping>
     
     <servlet>

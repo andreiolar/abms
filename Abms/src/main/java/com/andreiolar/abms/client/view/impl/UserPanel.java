@@ -4,6 +4,9 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+import com.andreiolar.abms.client.exception.OldPasswordNotCorrectException;
+import com.andreiolar.abms.client.rpc.ChangePassword;
+import com.andreiolar.abms.client.rpc.ChangePasswordAsync;
 import com.andreiolar.abms.client.rpc.DBGetContactInfo;
 import com.andreiolar.abms.client.rpc.DBGetContactInfoAsync;
 import com.andreiolar.abms.client.view.UserView;
@@ -53,6 +56,8 @@ import gwt.material.design.client.constants.Color;
 import gwt.material.design.client.constants.FooterType;
 import gwt.material.design.client.constants.IconPosition;
 import gwt.material.design.client.constants.IconType;
+import gwt.material.design.client.constants.InputType;
+import gwt.material.design.client.constants.ModalType;
 import gwt.material.design.client.constants.Position;
 import gwt.material.design.client.constants.SideNavType;
 import gwt.material.design.client.constants.TextAlign;
@@ -73,11 +78,15 @@ import gwt.material.design.client.ui.MaterialLabel;
 import gwt.material.design.client.ui.MaterialLink;
 import gwt.material.design.client.ui.MaterialLoader;
 import gwt.material.design.client.ui.MaterialModal;
+import gwt.material.design.client.ui.MaterialModalContent;
+import gwt.material.design.client.ui.MaterialModalFooter;
 import gwt.material.design.client.ui.MaterialNavBar;
 import gwt.material.design.client.ui.MaterialNavBrand;
 import gwt.material.design.client.ui.MaterialNavSection;
 import gwt.material.design.client.ui.MaterialPanel;
 import gwt.material.design.client.ui.MaterialSideNav;
+import gwt.material.design.client.ui.MaterialTextBox;
+import gwt.material.design.client.ui.MaterialTitle;
 import gwt.material.design.client.ui.MaterialToast;
 import gwt.material.design.client.ui.MaterialTooltip;
 import gwt.material.design.client.ui.html.Anchor;
@@ -638,6 +647,32 @@ public class UserPanel extends Composite implements UserView {
 		});
 		dropDown.add(editAccountSettingsLink);
 
+		MaterialLink changePasswordLink = new MaterialLink();
+		changePasswordLink.setText("Change Password");
+		changePasswordLink.setFontSize("1em");
+		changePasswordLink.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				MaterialModal changePasswordModal = createChangePasswordModal();
+				RootPanel.get().add(changePasswordModal);
+				changePasswordModal.open();
+			}
+		});
+		dropDown.add(changePasswordLink);
+
+		MaterialLink changeProfilePictureLink = new MaterialLink();
+		changeProfilePictureLink.setText("Change Profile Picture");
+		changeProfilePictureLink.setFontSize("1em");
+		changeProfilePictureLink.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				container.clear();
+			}
+		});
+		dropDown.add(changeProfilePictureLink);
+
 		header.add(dropDown);
 
 		htmlPanel.add(header);
@@ -668,6 +703,154 @@ public class UserPanel extends Composite implements UserView {
 		htmlPanel.add(footer);
 
 		return htmlPanel;
+	}
+
+	protected MaterialModal createChangePasswordModal() {
+		MaterialModal materialModal = new MaterialModal();
+		materialModal.setType(ModalType.DEFAULT);
+		materialModal.setDismissible(false);
+		materialModal.setInDuration(500);
+		materialModal.setOutDuration(500);
+
+		MaterialModalContent materialModalContent = new MaterialModalContent();
+		MaterialTitle materialTitle = new MaterialTitle("Change Password");
+		materialTitle.setTextColor(Color.BLUE);
+		materialTitle.setDescription("Please provide necessary information in order to change your password!");
+
+		materialModalContent.add(materialTitle);
+
+		// Content
+		MaterialTextBox oldPasswordBox = new MaterialTextBox();
+		oldPasswordBox.setMarginTop(25.0);
+		oldPasswordBox.setType(InputType.PASSWORD);
+		oldPasswordBox.setPlaceholder("Old Password");
+		oldPasswordBox.setLength(10);
+		oldPasswordBox.setMaxLength(10);
+		oldPasswordBox.setIconType(IconType.LOCK);
+		materialModalContent.add(oldPasswordBox);
+
+		MaterialTextBox newPasswordBox = new MaterialTextBox();
+		newPasswordBox.setType(InputType.PASSWORD);
+		newPasswordBox.setPlaceholder("New Password");
+		newPasswordBox.setLength(10);
+		newPasswordBox.setMaxLength(10);
+		newPasswordBox.setIconType(IconType.LOCK);
+		materialModalContent.add(newPasswordBox);
+
+		MaterialTextBox repeatPasswordBox = new MaterialTextBox();
+		repeatPasswordBox.setType(InputType.PASSWORD);
+		repeatPasswordBox.setPlaceholder("Repeat New Password");
+		repeatPasswordBox.setLength(10);
+		repeatPasswordBox.setMaxLength(10);
+		repeatPasswordBox.setIconType(IconType.LOCK);
+		materialModalContent.add(repeatPasswordBox);
+
+		MaterialModalFooter materialModalFooter = new MaterialModalFooter();
+
+		MaterialButton submitButton = new MaterialButton();
+		submitButton.setText("Change Password");
+		submitButton.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				String oldPassword = oldPasswordBox.getText();
+				String newPassword = newPasswordBox.getText();
+				String repeatedPassword = repeatPasswordBox.getText();
+
+				boolean canProceed = true;
+
+				if (!oldPassword.matches("[A-Za-z0-9]{5,10}")) {
+					canProceed = false;
+					oldPasswordBox.setError(
+							"Password can only contain uppercase, lowercase letters and 0-9 digits. Password has to be between 5 and 10 characters long.");
+				} else {
+					oldPasswordBox.setSuccess("");
+				}
+
+				if (!newPassword.matches("[A-Za-z0-9]{5,10}")) {
+					canProceed = false;
+					newPasswordBox.setError(
+							"Password can only contain uppercase, lowercase letters and 0-9 digits. Password has to be between 5 and 10 characters long.");
+				} else {
+					newPasswordBox.setSuccess("");
+				}
+
+				if (!repeatedPassword.matches("[A-Za-z0-9]{5,10}")) {
+					canProceed = false;
+					repeatPasswordBox.setError(
+							"Password can only contain uppercase, lowercase letters and 0-9 digits. Password has to be between 5 and 10 characters long.");
+				} else {
+					repeatPasswordBox.setSuccess("");
+				}
+
+				if (canProceed) {
+					if (newPassword.equals(repeatedPassword)) {
+						submitButton.setEnabled(false);
+
+						newPasswordBox.setSuccess("");
+						repeatPasswordBox.setSuccess("");
+
+						// Send to server
+						ChangePasswordAsync changePasswordRpc = (ChangePasswordAsync) GWT.create(ChangePassword.class);
+						ServiceDefTarget changePasswordTar = (ServiceDefTarget) changePasswordRpc;
+						String changePasswordUrl = GWT.getModuleBaseURL() + "ChangePasswordImpl";
+						changePasswordTar.setServiceEntryPoint(changePasswordUrl);
+
+						changePasswordRpc.changePassword(userDetails.getUsername(), oldPassword, newPassword, new AsyncCallback<Void>() {
+
+							@Override
+							public void onFailure(Throwable caught) {
+								submitButton.setEnabled(true);
+
+								if (caught instanceof OldPasswordNotCorrectException) {
+									oldPasswordBox.setError("Old password is not correct.");
+								} else {
+									materialModal.close();
+									RootPanel.get().remove(materialModal);
+									MaterialToast.fireToast("Error changing password: " + caught.getMessage() + ".", "rounded");
+								}
+							}
+
+							@Override
+							public void onSuccess(Void result) {
+								submitButton.setEnabled(true);
+
+								materialModal.close();
+								RootPanel.get().remove(materialModal);
+
+								Cookies.removeCookie("sid");
+
+								int cookieDuration = 5000;
+								Date expires = new Date(System.currentTimeMillis() + cookieDuration);
+								Cookies.setCookie("passwordChanged", "Password changed successfully. Log In required.", expires, null, "/", false);
+
+								Window.Location.replace(GWT.getHostPageBaseURL());
+							}
+						});
+
+					} else {
+						newPasswordBox.setError("Passwords do not match!");
+						repeatPasswordBox.setError("Passwords do not match!");
+					}
+				}
+
+			}
+		});
+
+		MaterialButton closeButton = new MaterialButton();
+		closeButton.setText("Close");
+		closeButton.setType(ButtonType.FLAT);
+		closeButton.addClickHandler(h -> {
+			materialModal.close();
+			RootPanel.get().remove(materialModal);
+		});
+
+		materialModalFooter.add(submitButton);
+		materialModalFooter.add(closeButton);
+		materialModal.add(materialModalContent);
+		materialModal.add(materialModalFooter);
+
+		return materialModal;
 	}
 
 	/**
