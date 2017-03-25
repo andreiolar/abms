@@ -50,6 +50,11 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+import gwt.material.design.addins.client.fileuploader.MaterialFileUploader;
+import gwt.material.design.addins.client.fileuploader.MaterialUploadLabel;
+import gwt.material.design.addins.client.fileuploader.base.UploadFile;
+import gwt.material.design.addins.client.fileuploader.events.SuccessEvent;
+import gwt.material.design.addins.client.fileuploader.events.SuccessEvent.SuccessHandler;
 import gwt.material.design.addins.client.sideprofile.MaterialSideProfile;
 import gwt.material.design.client.constants.ButtonType;
 import gwt.material.design.client.constants.Color;
@@ -668,7 +673,9 @@ public class UserPanel extends Composite implements UserView {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				container.clear();
+				MaterialModal changeProfilePictureModal = createChangeProfilePictureModal(materialImage);
+				RootPanel.get().add(changeProfilePictureModal);
+				changeProfilePictureModal.open();
 			}
 		});
 		dropDown.add(changeProfilePictureLink);
@@ -703,6 +710,82 @@ public class UserPanel extends Composite implements UserView {
 		htmlPanel.add(footer);
 
 		return htmlPanel;
+	}
+
+	protected MaterialModal createChangeProfilePictureModal(MaterialImage materialImage) {
+		MaterialModal materialModal = new MaterialModal();
+		materialModal.setType(ModalType.DEFAULT);
+		materialModal.setDismissible(false);
+		materialModal.setInDuration(500);
+		materialModal.setOutDuration(500);
+
+		MaterialModalContent materialModalContent = new MaterialModalContent();
+		MaterialTitle materialTitle = new MaterialTitle("Change Profile Picture");
+		materialTitle.setTextColor(Color.BLUE);
+		materialTitle.setDescription("Please choose a new profile picture.");
+
+		materialModalContent.add(materialTitle);
+
+		// Content
+		MaterialFileUploader fileUploader = new MaterialFileUploader();
+		fileUploader.setUrl(GWT.getModuleBaseURL() + "uploader");
+		fileUploader.setMaxFileSize(10);
+		fileUploader.setShadow(1);
+		fileUploader.addSuccessHandler(new SuccessHandler<UploadFile>() {
+
+			@Override
+			public void onSuccess(SuccessEvent<UploadFile> event) {
+				materialModal.close();
+				RootPanel.get().remove(materialModal);
+
+				MaterialToast.fireToast("Profile picture uploaded successfully!", "rounded");
+
+				String profilePictureUsername = userDetails.getUsername().replaceAll("\\.", "");
+
+				materialImage.setUrl("http://res.cloudinary.com/andreiolar/image/upload/" + profilePictureUsername + ".png");
+				materialImage.addErrorHandler(new ErrorHandler() {
+
+					@Override
+					public void onError(ErrorEvent event) {
+						if (userDetails.getGender().equals("Female")) {
+							materialImage.setUrl("images/icons/female.png");
+						} else {
+							materialImage.setUrl("images/icons/male.png");
+						}
+					}
+				});
+			}
+		});
+
+		fileUploader.addErrorHandler(new gwt.material.design.addins.client.fileuploader.events.ErrorEvent.ErrorHandler<UploadFile>() {
+
+			@Override
+			public void onError(gwt.material.design.addins.client.fileuploader.events.ErrorEvent<UploadFile> event) {
+				MaterialToast.fireToast("Error uploading profile picture: " + event.getResponse().getCode() + ": " + event.getResponse().getMessage(),
+						"rounded");
+			}
+		});
+
+		MaterialUploadLabel label = new MaterialUploadLabel("Profile Picture Uploader", "Selcect or drag and drop files to upload.");
+
+		fileUploader.add(label);
+		materialModalContent.add(fileUploader);
+
+		MaterialModalFooter materialModalFooter = new MaterialModalFooter();
+
+		MaterialButton closeButton = new MaterialButton();
+		closeButton.setText("Close");
+		closeButton.setType(ButtonType.FLAT);
+		closeButton.addClickHandler(h -> {
+			materialModal.close();
+			RootPanel.get().remove(materialModal);
+		});
+
+		materialModalFooter.add(closeButton);
+		materialModal.add(materialModalContent);
+		materialModal.add(materialModalFooter);
+
+		return materialModal;
 	}
 
 	protected MaterialModal createChangePasswordModal() {

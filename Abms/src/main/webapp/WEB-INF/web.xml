@@ -89,6 +89,15 @@
   	</servlet-mapping>
   	
   	<servlet>
+    	<servlet-name>fileUploader</servlet-name>
+    	<servlet-class>com.andreiolar.abms.server.FileUploader</servlet-class>
+  	</servlet>
+  	<servlet-mapping>
+    	<servlet-name>fileUploader</servlet-name>
+    	<url-pattern>/abms/uploader</url-pattern>
+  	</servlet-mapping>
+  	
+  	<servlet>
         <servlet-name>getTable</servlet-name>
         <servlet-class>com.andreiolar.abms.server.GetHtmlTableFromExelImpl</servlet-class>
     </servlet>
