@@ -81,7 +81,11 @@ public class LoginViewImpl extends Composite implements LoginView {
 	public LoginViewImpl() {
 		String loggedInUser = Cookies.getCookie("sid");
 		if (loggedInUser != null) {
-			Window.Location.replace(GWT.getHostPageBaseURL() + "#UserPlace:" + loggedInUser);
+			if (loggedInUser.contains("Admin")) {
+				Window.Location.replace(GWT.getHostPageBaseURL() + "#AdminPlace:" + loggedInUser);
+			} else {
+				Window.Location.replace(GWT.getHostPageBaseURL() + "#UserPlace:" + loggedInUser);
+			}
 		}
 
 		String cookieMessage = Cookies.getCookie("badUserInfo");
@@ -947,7 +951,7 @@ public class LoginViewImpl extends Composite implements LoginView {
 				if (userDetails.getType().equals("User")) {
 					presenter.goTo(new UserPlace(userInfoObject.toString()));
 				} else if (userDetails.getType().equals("Admin")) {
-					presenter.goTo(new AdminPlace(username));
+					presenter.goTo(new AdminPlace(userInfoObject.toString()));
 				}
 			}
 

@@ -768,3 +768,10 @@ strong {
 	margin: auto;
 	margin-top: 25px !important;
 }
+
+.submitted-complaints-table {
+	width: 95%;
+	margin: auto;
+	margin-top: 25px !important;
+	margin-bottom: 75px !important;
+}

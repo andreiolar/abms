@@ -492,6 +492,15 @@
         <servlet-name>updateProfile</servlet-name>
         <url-pattern>/abms/DBUpdateProfileImpl</url-pattern>
     </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>retreiveSubmittedComplaints</servlet-name>
+        <servlet-class>com.andreiolar.abms.server.DBRetreiveSubmittedComplaintsImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>retreiveSubmittedComplaints</servlet-name>
+        <url-pattern>/abms/DBRetreiveSubmittedComplaintsImpl</url-pattern>
+    </servlet-mapping>
   
   <!-- Default page to serve -->
   <welcome-file-list>

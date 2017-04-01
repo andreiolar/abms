@@ -3,7 +3,7 @@ package com.andreiolar.abms.client;
 import com.andreiolar.abms.client.view.AdminView;
 import com.andreiolar.abms.client.view.LoginView;
 import com.andreiolar.abms.client.view.UserView;
-import com.andreiolar.abms.client.view.impl.AdminViewImpl;
+import com.andreiolar.abms.client.view.impl.AdminPanel;
 import com.andreiolar.abms.client.view.impl.LoginViewImpl;
 import com.andreiolar.abms.client.view.impl.UserPanel;
 import com.google.gwt.event.shared.EventBus;
@@ -16,10 +16,6 @@ public class ClientFactoryImpl implements ClientFactory {
 	private final EventBus eventBus = new SimpleEventBus();
 
 	private final PlaceController placeController = new PlaceController(eventBus);
-	// private final LoginView loginView = new LoginViewImpl();
-	// private final RegisterView registerView = new RegisterViewImpl();
-	// private final UserView userView = new UserViewImpl();
-	// private final AdminView adminView = new AdminViewImpl();
 
 	@Override
 	public EventBus getEventBus() {
@@ -43,7 +39,7 @@ public class ClientFactoryImpl implements ClientFactory {
 
 	@Override
 	public AdminView getAdminView() {
-		return new AdminViewImpl();
+		return new AdminPanel();
 	}
 
 }
