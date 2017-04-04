@@ -23,6 +23,14 @@ public class SelfReading implements IsSerializable {
 		this.date = date;
 	}
 
+	public SelfReading(String aptNumber, String coldWater, String hotWater, String electricity, String gaz) {
+		this.aptNumber = aptNumber;
+		this.coldWater = coldWater;
+		this.hotWater = hotWater;
+		this.electricity = electricity;
+		this.gaz = gaz;
+	}
+
 	public String getAptNumber() {
 		return aptNumber;
 	}

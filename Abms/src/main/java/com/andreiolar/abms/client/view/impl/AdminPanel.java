@@ -4,16 +4,25 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+import com.andreiolar.abms.client.exception.NoReadingsFoundForDateException;
+import com.andreiolar.abms.client.rpc.DBGetContactInfo;
+import com.andreiolar.abms.client.rpc.DBGetContactInfoAsync;
+import com.andreiolar.abms.client.rpc.DBGetReadingsForDate;
+import com.andreiolar.abms.client.rpc.DBGetReadingsForDateAsync;
 import com.andreiolar.abms.client.rpc.DBRetreiveSubmittedComplaints;
 import com.andreiolar.abms.client.rpc.DBRetreiveSubmittedComplaintsAsync;
 import com.andreiolar.abms.client.view.AdminView;
 import com.andreiolar.abms.client.widgets.ModalCreator;
+import com.andreiolar.abms.shared.ContactInfo;
+import com.andreiolar.abms.shared.SelfReading;
 import com.andreiolar.abms.shared.SubmittedComplaint;
 import com.andreiolar.abms.shared.UserDetails;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.dom.client.Style.Float;
 import com.google.gwt.dom.client.Style.FontWeight;
+import com.google.gwt.dom.client.Style.TextDecoration;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.ErrorEvent;
@@ -38,16 +47,25 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+import gwt.material.design.addins.client.combobox.MaterialComboBox;
 import gwt.material.design.addins.client.sideprofile.MaterialSideProfile;
+import gwt.material.design.client.constants.ButtonType;
 import gwt.material.design.client.constants.Color;
+import gwt.material.design.client.constants.Display;
 import gwt.material.design.client.constants.FooterType;
 import gwt.material.design.client.constants.IconPosition;
 import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.constants.Position;
 import gwt.material.design.client.constants.SideNavType;
 import gwt.material.design.client.constants.TextAlign;
+import gwt.material.design.client.constants.WavesType;
 import gwt.material.design.client.data.SelectionType;
 import gwt.material.design.client.data.component.RowComponent;
+import gwt.material.design.client.ui.MaterialButton;
+import gwt.material.design.client.ui.MaterialCollapsible;
+import gwt.material.design.client.ui.MaterialCollapsibleBody;
+import gwt.material.design.client.ui.MaterialCollapsibleHeader;
+import gwt.material.design.client.ui.MaterialCollapsibleItem;
 import gwt.material.design.client.ui.MaterialContainer;
 import gwt.material.design.client.ui.MaterialDropDown;
 import gwt.material.design.client.ui.MaterialFooter;
@@ -62,12 +80,16 @@ import gwt.material.design.client.ui.MaterialNavBrand;
 import gwt.material.design.client.ui.MaterialNavSection;
 import gwt.material.design.client.ui.MaterialPanel;
 import gwt.material.design.client.ui.MaterialSideNav;
+import gwt.material.design.client.ui.MaterialToast;
 import gwt.material.design.client.ui.MaterialTooltip;
 import gwt.material.design.client.ui.html.Anchor;
+import gwt.material.design.client.ui.html.Div;
 import gwt.material.design.client.ui.html.Header;
 import gwt.material.design.client.ui.html.Hr;
+import gwt.material.design.client.ui.html.UnorderedList;
 import gwt.material.design.client.ui.table.MaterialDataTable;
 import gwt.material.design.client.ui.table.cell.TextColumn;
+import gwt.material.design.client.ui.table.cell.WidgetColumn;
 
 public class AdminPanel extends Composite implements AdminView {
 
@@ -355,6 +377,56 @@ public class AdminPanel extends Composite implements AdminView {
 
 		header.add(materialSideNav);
 
+		/** Administration **/
+		MaterialCollapsible administrationCollapsible = new MaterialCollapsible();
+		MaterialCollapsibleItem administrationCollapsibleItem = new MaterialCollapsibleItem();
+		MaterialCollapsibleHeader administrationCollapsibleHeader = new MaterialCollapsibleHeader();
+		administrationCollapsibleHeader.setWaves(WavesType.DEFAULT);
+
+		MaterialLink administrationLink = new MaterialLink();
+		administrationLink.setText("Administration");
+		administrationLink.setIconType(IconType.LOCATION_CITY);
+		administrationLink.setTextColor(Color.BLUE);
+		administrationCollapsibleHeader.add(administrationLink);
+		administrationCollapsibleItem.add(administrationCollapsibleHeader);
+
+		MaterialCollapsibleBody administrationBody = new MaterialCollapsibleBody();
+		UnorderedList administrationListItems = new UnorderedList();
+
+		/** Contact Information **/
+		MaterialLink contactInformationLink = new MaterialLink();
+		contactInformationLink.setText("Contact Information");
+		contactInformationLink.setTextColor(Color.BLUE_DARKEN_2);
+		contactInformationLink.setWaves(WavesType.DEFAULT);
+		contactInformationLink.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				constructContactInformationWidget();
+			}
+		});
+		administrationListItems.add(contactInformationLink);
+
+		/** View Readings **/
+		MaterialLink viewReadingsLink = new MaterialLink();
+		viewReadingsLink.setText("View Readings");
+		viewReadingsLink.setTextColor(Color.BLUE_DARKEN_2);
+		viewReadingsLink.setWaves(WavesType.DEFAULT);
+		viewReadingsLink.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				constructViewReadingsWidget();
+			}
+		});
+		administrationListItems.add(viewReadingsLink);
+
+		administrationBody.add(administrationListItems);
+		administrationCollapsibleItem.add(administrationBody);
+		administrationCollapsible.add(administrationCollapsibleItem);
+
+		materialSideNav.add(administrationCollapsible);
+
 		/** Dropdown **/
 		MaterialDropDown dropDown = new MaterialDropDown("dropProfile");
 
@@ -422,6 +494,224 @@ public class AdminPanel extends Composite implements AdminView {
 		htmlPanel.add(footer);
 
 		return htmlPanel;
+	}
+
+	protected void constructViewReadingsWidget() {
+		container.clear();
+
+		MaterialPanel panel = new MaterialPanel();
+		MaterialPanel tablePanel = new MaterialPanel();
+
+		MaterialLabel title = new MaterialLabel("View Readings");
+		title.setTextColor(Color.BLUE);
+		title.setTextAlign(TextAlign.CENTER);
+		title.setFontSize("36px");
+		title.setFontWeight(FontWeight.BOLD);
+		panel.add(title);
+
+		panel.add(new Hr());
+
+		MaterialComboBox<String> months = new MaterialComboBox<String>();
+		months.setWidth("36%");
+		months.getElement().getStyle().setMarginRight(2, Unit.PCT);
+		months.addItem("January");
+		months.addItem("February");
+		months.addItem("March");
+		months.addItem("April");
+		months.addItem("May");
+		months.addItem("June");
+		months.addItem("July");
+		months.addItem("August");
+		months.addItem("September");
+		months.addItem("October");
+		months.addItem("November");
+		months.addItem("December");
+
+		DateTimeFormat df = DateTimeFormat.getFormat("yyyy");
+		String formattedDate = df.format(new Date());
+		int year = Integer.parseInt(formattedDate);
+
+		MaterialComboBox<String> years = new MaterialComboBox<String>();
+		years.setWidth("36%");
+		years.getElement().getStyle().setMarginRight(2, Unit.PCT);
+		for (int i = year; i >= 2016; i--) {
+			years.addItem(String.valueOf(i));
+		}
+
+		MaterialButton searchButton = new MaterialButton();
+		searchButton.setText("Search");
+		searchButton.setWidth("24%");
+		searchButton.getElement().getStyle().setMarginTop(1, Unit.EM);
+		searchButton.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				String month = months.getSelectedValue();
+				String year = years.getSelectedValue();
+
+				MaterialLoader.showLoading(true);
+
+				DBGetReadingsForDateAsync readingsRpc = (DBGetReadingsForDateAsync) GWT.create(DBGetReadingsForDate.class);
+				ServiceDefTarget readingsTarget = (ServiceDefTarget) readingsRpc;
+				String readingsUrl = GWT.getModuleBaseURL() + "DBGetReadingsForDateImpl";
+				readingsTarget.setServiceEntryPoint(readingsUrl);
+
+				readingsRpc.getReadingsForDate(month + " " + year, new AsyncCallback<List<SelfReading>>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						MaterialLoader.showLoading(false);
+						if (caught instanceof NoReadingsFoundForDateException) {
+							tablePanel.clear();
+
+							MaterialPanel errorPanel = new MaterialPanel();
+							errorPanel.addStyleName("no-readings-found-panel");
+
+							MaterialLabel label = new MaterialLabel();
+							label.setTextColor(Color.BLUE);
+							label.setTextAlign(TextAlign.CENTER);
+							label.setFontSize("18px");
+							label.setText("No readings found for " + month + " " + year);
+
+							errorPanel.add(label);
+							tablePanel.add(errorPanel);
+						} else {
+							MaterialModal errorModal = ModalCreator.createModal(caught);
+							RootPanel.get().add(errorModal);
+							errorModal.open();
+						}
+					}
+
+					@Override
+					public void onSuccess(List<SelfReading> result) {
+						MaterialLoader.showLoading(false);
+						tablePanel.clear();
+
+						MaterialDataTable<SelfReading> table = new MaterialDataTable<SelfReading>();
+						table.setUseStickyHeader(true);
+						table.setUseCategories(false);
+						table.setUseRowExpansion(false);
+						table.setSelectionType(SelectionType.NONE);
+						table.setRedraw(true);
+						table.setStyleName("readings-table");
+
+						tablePanel.add(table);
+
+						table.getTableTitle().setText("Readings for " + month + " " + year);
+
+						table.addColumn(new TextColumn<SelfReading>() {
+
+							@Override
+							public String getHeaderWidth() {
+								return "20%";
+							}
+
+							@Override
+							public Comparator<? super RowComponent<SelfReading>> getSortComparator() {
+								return (o1, o2) -> Integer.compare(Integer.parseInt(o1.getData().getAptNumber()),
+										Integer.parseInt(o2.getData().getAptNumber()));
+							}
+
+							@Override
+							public String getValue(SelfReading object) {
+								return object.getAptNumber();
+							}
+						}, "Apt. Number");
+
+						table.addColumn(new TextColumn<SelfReading>() {
+
+							@Override
+							public String getHeaderWidth() {
+								return "20%";
+							};
+
+							@Override
+							public Comparator<? super RowComponent<SelfReading>> getSortComparator() {
+								return (o1, o2) -> Integer.compare(Integer.parseInt(o1.getData().getColdWater()),
+										Integer.parseInt(o2.getData().getColdWater()));
+							}
+
+							@Override
+							public String getValue(SelfReading object) {
+								return object.getColdWater();
+							}
+						}, "Cold Water");
+
+						table.addColumn(new TextColumn<SelfReading>() {
+
+							@Override
+							public String getHeaderWidth() {
+								return "20%";
+							};
+
+							@Override
+							public Comparator<? super RowComponent<SelfReading>> getSortComparator() {
+								return (o1, o2) -> Integer.compare(Integer.parseInt(o1.getData().getHotWater()),
+										Integer.parseInt(o2.getData().getHotWater()));
+							}
+
+							@Override
+							public String getValue(SelfReading object) {
+								return object.getHotWater();
+							}
+						}, "Hot Water");
+
+						table.addColumn(new TextColumn<SelfReading>() {
+
+							@Override
+							public String getHeaderWidth() {
+								return "20%";
+							};
+
+							@Override
+							public Comparator<? super RowComponent<SelfReading>> getSortComparator() {
+								return (o1, o2) -> Integer.compare(Integer.parseInt(o1.getData().getElectricity()),
+										Integer.parseInt(o2.getData().getElectricity()));
+							}
+
+							@Override
+							public String getValue(SelfReading object) {
+								return object.getElectricity();
+							}
+						}, "Electricity");
+
+						table.addColumn(new TextColumn<SelfReading>() {
+
+							@Override
+							public String getHeaderWidth() {
+								return "20%";
+							};
+
+							@Override
+							public Comparator<? super RowComponent<SelfReading>> getSortComparator() {
+								return (o1, o2) -> Integer.compare(Integer.parseInt(o1.getData().getGaz()), Integer.parseInt(o2.getData().getGaz()));
+							}
+
+							@Override
+							public String getValue(SelfReading object) {
+								return object.getGaz();
+							}
+						}, "Gas");
+
+						table.setRowData(0, result);
+						table.setRowCount(result.size());
+						table.refreshView();
+					}
+				});
+			}
+		});
+
+		Div dateSelectionDiv = new Div();
+		dateSelectionDiv.setDisplay(Display.FLEX);
+		dateSelectionDiv.addStyleName("date-selection");
+		dateSelectionDiv.add(months);
+		dateSelectionDiv.add(years);
+		dateSelectionDiv.add(searchButton);
+
+		panel.add(dateSelectionDiv);
+		panel.add(tablePanel);
+
+		container.add(panel);
 	}
 
 	/**
@@ -595,6 +885,224 @@ public class AdminPanel extends Composite implements AdminView {
 		} catch (Exception e) {
 			userDetails = null;
 		}
+	}
+
+	/**
+	 * Used to construct the {@link MaterialDataTable} representing the Contact Information Widget.
+	 **/
+	protected void constructContactInformationWidget() {
+		container.clear();
+
+		MaterialPanel panel = new MaterialPanel();
+
+		MaterialLabel title = new MaterialLabel("Contact Information");
+		title.setTextColor(Color.BLUE);
+		title.setTextAlign(TextAlign.CENTER);
+		title.setFontSize("36px");
+		title.setFontWeight(FontWeight.BOLD);
+		panel.add(title);
+
+		panel.add(new Hr());
+
+		MaterialDataTable<ContactInfo> table = new MaterialDataTable<ContactInfo>();
+		table.setUseStickyHeader(true);
+		table.setUseCategories(false);
+		table.setUseRowExpansion(false);
+		table.setSelectionType(SelectionType.NONE);
+		table.setRedraw(true);
+		table.setStyleName("contact-info-table");
+
+		panel.add(table);
+
+		container.add(panel);
+
+		table.getTableTitle().setText("Neighbors Contact Information");
+
+		table.addColumn(new WidgetColumn<ContactInfo, MaterialImage>() {
+
+			@Override
+			public MaterialImage getValue(ContactInfo object) {
+				String profilePictureUsername = object.getUsername().replaceAll("\\.", "");
+
+				MaterialImage materialImage = new MaterialImage();
+				materialImage.setUrl("http://res.cloudinary.com/andreiolar/image/upload/" + profilePictureUsername + ".png");
+				materialImage.addErrorHandler(new ErrorHandler() {
+
+					@Override
+					public void onError(ErrorEvent event) {
+						if (object.getGender().equals("Female")) {
+							materialImage.setUrl("images/icons/female.png");
+						} else {
+							materialImage.setUrl("images/icons/male.png");
+						}
+
+					}
+				});
+
+				materialImage.setWidth("40px");
+				materialImage.setHeight("40px");
+				materialImage.setPadding(4);
+				materialImage.setMarginTop(8);
+				materialImage.setBackgroundColor(Color.GREY_LIGHTEN_2);
+				materialImage.setCircle(true);
+
+				return materialImage;
+			}
+
+			@Override
+			public String getHeaderWidth() {
+				return "10%";
+			}
+
+		});
+
+		table.addColumn(new TextColumn<ContactInfo>() {
+
+			@Override
+			public String getHeaderWidth() {
+				return "10%";
+			}
+
+			@Override
+			public Comparator<? super RowComponent<ContactInfo>> getSortComparator() {
+				return (o1, o2) -> o1.getData().getFamilyName().compareTo(o2.getData().getFamilyName());
+			}
+
+			@Override
+			public String getValue(ContactInfo object) {
+				return object.getFamilyName();
+			}
+		}, "Family Name");
+
+		table.addColumn(new TextColumn<ContactInfo>() {
+
+			@Override
+			public String getHeaderWidth() {
+				return "20%";
+			}
+
+			@Override
+			public Comparator<? super RowComponent<ContactInfo>> getSortComparator() {
+				return (o1, o2) -> o1.getData().getContactPerson().compareTo(o2.getData().getContactPerson());
+			}
+
+			@Override
+			public String getValue(ContactInfo object) {
+				return object.getContactPerson();
+			}
+		}, "Contact Person");
+
+		table.addColumn(new TextColumn<ContactInfo>() {
+
+			@Override
+			public String getHeaderWidth() {
+				return "10%";
+			}
+
+			@Override
+			public Comparator<? super RowComponent<ContactInfo>> getSortComparator() {
+				return (o1, o2) -> Integer.compare(Integer.parseInt(o1.getData().getApartmentNumber()),
+						Integer.parseInt(o2.getData().getApartmentNumber()));
+			}
+
+			@Override
+			public String getValue(ContactInfo object) {
+				return object.getApartmentNumber();
+			}
+		}, "Apt. Number");
+
+		table.addColumn(new TextColumn<ContactInfo>() {
+
+			@Override
+			public String getHeaderWidth() {
+				return "20%";
+			}
+
+			@Override
+			public Comparator<? super RowComponent<ContactInfo>> getSortComparator() {
+				return (o1, o2) -> o1.getData().getEmail().compareTo(o2.getData().getEmail());
+			}
+
+			@Override
+			public String getValue(ContactInfo object) {
+				return object.getEmail();
+			}
+		}, "E-Mail Address");
+
+		table.addColumn(new TextColumn<ContactInfo>() {
+
+			@Override
+			public String getHeaderWidth() {
+				return "10%";
+			}
+
+			@Override
+			public Comparator<? super RowComponent<ContactInfo>> getSortComparator() {
+				return (o1, o2) -> o1.getData().getPhoneNumber().compareTo(o2.getData().getPhoneNumber());
+			}
+
+			@Override
+			public String getValue(ContactInfo object) {
+				return object.getPhoneNumber();
+			}
+		}, "Phone Number");
+
+		table.addColumn(new WidgetColumn<ContactInfo, MaterialButton>() {
+
+			@Override
+			public String getHeaderWidth() {
+				return "20%";
+			}
+
+			@Override
+			public MaterialButton getValue(ContactInfo object) {
+				if (object.getUsername().equals(userDetails.getUsername())) {
+					MaterialButton sendMessageButton = new MaterialButton();
+					sendMessageButton.setType(ButtonType.FLAT);
+
+					return sendMessageButton;
+				}
+
+				MaterialButton sendMessageButton = new MaterialButton();
+				sendMessageButton.setText("SEND MESSAGE");
+				sendMessageButton.setTextColor(Color.BLUE);
+				sendMessageButton.setType(ButtonType.FLAT);
+				sendMessageButton.getElement().getStyle().setTextDecoration(TextDecoration.UNDERLINE);
+
+				sendMessageButton.addClickHandler(new ClickHandler() {
+
+					@Override
+					public void onClick(ClickEvent event) {
+						Window.alert("Test: " + object.getContactPerson());
+					}
+				});
+
+				return sendMessageButton;
+			}
+		});
+
+		MaterialLoader.showLoading(true);
+		DBGetContactInfoAsync rpcService = (DBGetContactInfoAsync) GWT.create(DBGetContactInfo.class);
+		ServiceDefTarget target = (ServiceDefTarget) rpcService;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "DBGetContactInfoImpl";
+		target.setServiceEntryPoint(moduleRelativeURL);
+
+		rpcService.getContacts(new AsyncCallback<List<ContactInfo>>() {
+
+			@Override
+			public void onSuccess(List<ContactInfo> result) {
+				MaterialLoader.showLoading(false);
+				table.setRowData(0, result);
+				table.setRowCount(result.size());
+				table.refreshView();
+			}
+
+			@Override
+			public void onFailure(Throwable caught) {
+				MaterialLoader.showLoading(false);
+				MaterialToast.fireToast("Unable to retrieve neighbors contact information.", "rounded");
+			}
+		});
 	}
 
 	@Override

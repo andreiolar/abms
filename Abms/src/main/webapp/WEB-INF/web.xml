@@ -501,6 +501,15 @@
         <servlet-name>retreiveSubmittedComplaints</servlet-name>
         <url-pattern>/abms/DBRetreiveSubmittedComplaintsImpl</url-pattern>
     </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>getReadingsForDate</servlet-name>
+        <servlet-class>com.andreiolar.abms.server.DBGetReadingsForDateImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>getReadingsForDate</servlet-name>
+        <url-pattern>/abms/DBGetReadingsForDateImpl</url-pattern>
+    </servlet-mapping>
   
   <!-- Default page to serve -->
   <welcome-file-list>
