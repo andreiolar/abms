@@ -510,6 +510,15 @@
         <servlet-name>getReadingsForDate</servlet-name>
         <url-pattern>/abms/DBGetReadingsForDateImpl</url-pattern>
     </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>registerTenant</servlet-name>
+        <servlet-class>com.andreiolar.abms.server.DBRegisterTenantImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>registerTenant</servlet-name>
+        <url-pattern>/abms/DBRegisterTenantImpl</url-pattern>
+    </servlet-mapping>
   
   <!-- Default page to serve -->
   <welcome-file-list>

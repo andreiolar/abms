@@ -4,11 +4,15 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+import com.andreiolar.abms.client.exception.AptNumberUnavailableException;
+import com.andreiolar.abms.client.exception.EmailUnavailableException;
 import com.andreiolar.abms.client.exception.NoReadingsFoundForDateException;
 import com.andreiolar.abms.client.rpc.DBGetContactInfo;
 import com.andreiolar.abms.client.rpc.DBGetContactInfoAsync;
 import com.andreiolar.abms.client.rpc.DBGetReadingsForDate;
 import com.andreiolar.abms.client.rpc.DBGetReadingsForDateAsync;
+import com.andreiolar.abms.client.rpc.DBRegisterTenant;
+import com.andreiolar.abms.client.rpc.DBRegisterTenantAsync;
 import com.andreiolar.abms.client.rpc.DBRetreiveSubmittedComplaints;
 import com.andreiolar.abms.client.rpc.DBRetreiveSubmittedComplaintsAsync;
 import com.andreiolar.abms.client.view.AdminView;
@@ -55,6 +59,8 @@ import gwt.material.design.client.constants.Display;
 import gwt.material.design.client.constants.FooterType;
 import gwt.material.design.client.constants.IconPosition;
 import gwt.material.design.client.constants.IconType;
+import gwt.material.design.client.constants.InputType;
+import gwt.material.design.client.constants.ModalType;
 import gwt.material.design.client.constants.Position;
 import gwt.material.design.client.constants.SideNavType;
 import gwt.material.design.client.constants.TextAlign;
@@ -75,11 +81,15 @@ import gwt.material.design.client.ui.MaterialLabel;
 import gwt.material.design.client.ui.MaterialLink;
 import gwt.material.design.client.ui.MaterialLoader;
 import gwt.material.design.client.ui.MaterialModal;
+import gwt.material.design.client.ui.MaterialModalContent;
+import gwt.material.design.client.ui.MaterialModalFooter;
 import gwt.material.design.client.ui.MaterialNavBar;
 import gwt.material.design.client.ui.MaterialNavBrand;
 import gwt.material.design.client.ui.MaterialNavSection;
 import gwt.material.design.client.ui.MaterialPanel;
 import gwt.material.design.client.ui.MaterialSideNav;
+import gwt.material.design.client.ui.MaterialTextBox;
+import gwt.material.design.client.ui.MaterialTitle;
 import gwt.material.design.client.ui.MaterialToast;
 import gwt.material.design.client.ui.MaterialTooltip;
 import gwt.material.design.client.ui.html.Anchor;
@@ -421,6 +431,22 @@ public class AdminPanel extends Composite implements AdminView {
 		});
 		administrationListItems.add(viewReadingsLink);
 
+		/** Add Tenants **/
+		MaterialLink addTenantLink = new MaterialLink();
+		addTenantLink.setText("Add Tenant");
+		addTenantLink.setTextColor(Color.BLUE_DARKEN_2);
+		addTenantLink.setWaves(WavesType.DEFAULT);
+		addTenantLink.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				MaterialModal tenantModal = constructAddTenantModal();
+				RootPanel.get().add(tenantModal);
+				tenantModal.open();
+			}
+		});
+		administrationListItems.add(addTenantLink);
+
 		administrationBody.add(administrationListItems);
 		administrationCollapsibleItem.add(administrationBody);
 		administrationCollapsible.add(administrationCollapsibleItem);
@@ -494,6 +520,115 @@ public class AdminPanel extends Composite implements AdminView {
 		htmlPanel.add(footer);
 
 		return htmlPanel;
+	}
+
+	protected MaterialModal constructAddTenantModal() {
+		MaterialModal materialModal = new MaterialModal();
+		materialModal.setType(ModalType.DEFAULT);
+		materialModal.setDismissible(false);
+		materialModal.setInDuration(500);
+		materialModal.setOutDuration(500);
+
+		MaterialModalContent materialModalContent = new MaterialModalContent();
+		MaterialTitle materialTitle = new MaterialTitle("Add Tenant");
+		materialTitle.setTextColor(Color.BLUE);
+		materialTitle.setDescription("Please provide necessary information in order to add a tenant to be eligible for registration!");
+
+		materialModalContent.add(materialTitle);
+
+		// Content
+		MaterialTextBox emailTextBox = new MaterialTextBox();
+		emailTextBox.setMarginTop(25.0);
+		emailTextBox.setType(InputType.EMAIL);
+		emailTextBox.setPlaceholder("E-Mail");
+		emailTextBox.setIconType(IconType.ACCOUNT_CIRCLE);
+		materialModalContent.add(emailTextBox);
+
+		MaterialTextBox aptNumberBox = new MaterialTextBox();
+		aptNumberBox.setType(InputType.NUMBER);
+		aptNumberBox.setPlaceholder("Apt. Number");
+		aptNumberBox.setIconType(IconType.FORMAT_LIST_NUMBERED);
+		materialModalContent.add(aptNumberBox);
+
+		MaterialModalFooter materialModalFooter = new MaterialModalFooter();
+
+		MaterialButton submitButton = new MaterialButton();
+		submitButton.setText("Add");
+		submitButton.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				String email = emailTextBox.getText();
+				String aptNumber = aptNumberBox.getText();
+
+				boolean canProceed = true;
+
+				if (!email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.(?:[a-zA-Z]{2,6})$")) {
+					canProceed = false;
+					emailTextBox.setError("Not a valid E-Mail Address");
+				} else {
+					emailTextBox.setSuccess("");
+				}
+
+				if (!aptNumber.matches("[1-9][0-9]{0,1}")) {
+					canProceed = false;
+					aptNumberBox.setError("Not a valid apartment number");
+				} else {
+					aptNumberBox.setSuccess("");
+				}
+
+				if (canProceed) {
+					MaterialLoader.showLoading(true);
+
+					DBRegisterTenantAsync registerTenantRpc = (DBRegisterTenantAsync) GWT.create(DBRegisterTenant.class);
+					ServiceDefTarget registerTenantTarget = (ServiceDefTarget) registerTenantRpc;
+					String registerTenantUrl = GWT.getModuleBaseURL() + "DBRegisterTenantImpl";
+					registerTenantTarget.setServiceEntryPoint(registerTenantUrl);
+
+					registerTenantRpc.registerTenant(email, aptNumber, new AsyncCallback<Void>() {
+
+						@Override
+						public void onFailure(Throwable caught) {
+							MaterialLoader.showLoading(false);
+
+							if (caught instanceof EmailUnavailableException) {
+								emailTextBox.setError("E-Mail Address already in registration queue.");
+							} else if (caught instanceof AptNumberUnavailableException) {
+								aptNumberBox.setError("Aptartment Number already in use.");
+							} else {
+								MaterialModal errorModal = ModalCreator.createModal(caught);
+								RootPanel.get().add(errorModal);
+								errorModal.open();
+							}
+						}
+
+						@Override
+						public void onSuccess(Void result) {
+							MaterialLoader.showLoading(false);
+							MaterialToast.fireToast("Tenant successfully added to registration queue.");
+							materialModal.close();
+							RootPanel.get().remove(materialModal);
+						}
+					});
+				}
+
+			}
+		});
+
+		MaterialButton closeButton = new MaterialButton();
+		closeButton.setText("Close");
+		closeButton.setType(ButtonType.FLAT);
+		closeButton.addClickHandler(h -> {
+			materialModal.close();
+			RootPanel.get().remove(materialModal);
+		});
+
+		materialModalFooter.add(submitButton);
+		materialModalFooter.add(closeButton);
+		materialModal.add(materialModalContent);
+		materialModal.add(materialModalFooter);
+
+		return materialModal;
 	}
 
 	protected void constructViewReadingsWidget() {
