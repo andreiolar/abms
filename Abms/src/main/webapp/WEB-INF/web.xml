@@ -519,6 +519,15 @@
         <servlet-name>registerTenant</servlet-name>
         <url-pattern>/abms/DBRegisterTenantImpl</url-pattern>
     </servlet-mapping>
+    
+    <servlet>
+    	<servlet-name>excelUploader</servlet-name>
+    	<servlet-class>com.andreiolar.abms.server.ExcelUploader</servlet-class>
+  	</servlet>
+  	<servlet-mapping>
+    	<servlet-name>excelUploader</servlet-name>
+    	<url-pattern>/abms/excelUploader</url-pattern>
+  	</servlet-mapping>
   
   <!-- Default page to serve -->
   <welcome-file-list>

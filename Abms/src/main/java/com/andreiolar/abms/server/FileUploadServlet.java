@@ -109,6 +109,10 @@ public class FileUploadServlet extends HttpServlet {
 					String lastName = rs.getString("last_name");
 					String email = rs.getString("email");
 
+					if (firstName.contains("Administrator") || lastName.contains("Administrator")) {
+						continue;
+					}
+
 					String subject = "Upkeep report for previous month";
 					String to = email;
 					String message = "<p>" + "Hello " + firstName + " " + lastName + "," + "<br><br>"

@@ -17,6 +17,7 @@ import com.andreiolar.abms.client.rpc.DBRetreiveSubmittedComplaints;
 import com.andreiolar.abms.client.rpc.DBRetreiveSubmittedComplaintsAsync;
 import com.andreiolar.abms.client.view.AdminView;
 import com.andreiolar.abms.client.widgets.ModalCreator;
+import com.andreiolar.abms.client.widgets.UploadUpkeepWidget;
 import com.andreiolar.abms.shared.ContactInfo;
 import com.andreiolar.abms.shared.SelfReading;
 import com.andreiolar.abms.shared.SubmittedComplaint;
@@ -446,6 +447,22 @@ public class AdminPanel extends Composite implements AdminView {
 			}
 		});
 		administrationListItems.add(addTenantLink);
+
+		/** Upload Upkeep Report **/
+		MaterialLink uploadUpkeepReportLink = new MaterialLink();
+		uploadUpkeepReportLink.setText("Upload Upkeep Report");
+		uploadUpkeepReportLink.setTextColor(Color.BLUE_DARKEN_2);
+		uploadUpkeepReportLink.setWaves(WavesType.DEFAULT);
+		uploadUpkeepReportLink.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				container.clear();
+				UploadUpkeepWidget uploadUpkeepWidget = new UploadUpkeepWidget();
+				container.add(uploadUpkeepWidget);
+			}
+		});
+		administrationListItems.add(uploadUpkeepReportLink);
 
 		administrationBody.add(administrationListItems);
 		administrationCollapsibleItem.add(administrationBody);
