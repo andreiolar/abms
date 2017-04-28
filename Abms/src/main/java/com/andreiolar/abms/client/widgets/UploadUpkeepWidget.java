@@ -52,8 +52,7 @@ public class UploadUpkeepWidget extends Composite implements CustomWidget {
 		// Step 1 Excel
 		stepOne.setStep(1);
 		stepOne.setTitle("Excel File Upload");
-		stepOne.setDescription(
-				"Please select the Excel File you want to upload. The file name needs to have the following form: 'Upkeep_CurrentMonth_CurrentYear.xlsx'.");
+		stepOne.setDescription("Please select the Excel File you want to upload.");
 
 		MaterialPanel stepOnePanel = new MaterialPanel();
 		stepOnePanel.setWidth("100%");
@@ -93,14 +92,13 @@ public class UploadUpkeepWidget extends Composite implements CustomWidget {
 		// Step 2 PDF
 		stepTwo.setStep(2);
 		stepTwo.setTitle("PDF File Upload");
-		stepTwo.setDescription(
-				"Please select the PDF File you want to upload. The file name needs to have the following form: 'Upkeep_CurrentMonth_CurrentYear.pdf'.");
+		stepTwo.setDescription("Please select the PDF File you want to upload.");
 
 		MaterialPanel stepTwoPanel = new MaterialPanel();
 		stepTwoPanel.setWidth("100%");
 
 		MaterialFileUploader pdfFileUploader = new MaterialFileUploader();
-		pdfFileUploader.setUrl(GWT.getModuleBaseURL() + "uploader");
+		pdfFileUploader.setUrl(GWT.getModuleBaseURL() + "uploader?type=upkeep&extension=pdf");
 		pdfFileUploader.setMaxFileSize(10);
 		pdfFileUploader.setShadow(1);
 		pdfFileUploader.setAcceptedFiles(".pdf");
@@ -134,14 +132,13 @@ public class UploadUpkeepWidget extends Composite implements CustomWidget {
 		// Step 2 ZIP
 		stepThree.setStep(3);
 		stepThree.setTitle("ZIP Upload");
-		stepThree.setDescription(
-				"Please select the ZIP Archive you want to upload. The file name needs to have the following form: 'Upkeep_CurrentMonth_CurrentYear.zip'.");
+		stepThree.setDescription("Please select the ZIP Archive you want to upload.");
 
 		MaterialPanel stepThreePanel = new MaterialPanel();
 		stepThreePanel.setWidth("100%");
 
 		MaterialFileUploader zipFileUploader = new MaterialFileUploader();
-		zipFileUploader.setUrl(GWT.getModuleBaseURL() + "uploader");
+		zipFileUploader.setUrl(GWT.getModuleBaseURL() + "uploader?type=upkeep&extension=zip");
 		zipFileUploader.setMaxFileSize(10);
 		zipFileUploader.setShadow(1);
 		zipFileUploader.setAcceptedFiles(".zip");
@@ -150,7 +147,8 @@ public class UploadUpkeepWidget extends Composite implements CustomWidget {
 
 			@Override
 			public void onSuccess(SuccessEvent<UploadFile> event) {
-
+				stepper.setSuccess("");
+				stepThree.setEnabled(false);
 			}
 		});
 

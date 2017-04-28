@@ -113,7 +113,7 @@ public class GeneralCostsWidget extends Composite implements CustomWidget {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				String url = "http://res.cloudinary.com/andreiolar/raw/upload/Upkeep_" + previousMonth + "_" + year + ".pdf";
+				String url = "http://res.cloudinary.com/andreiolar/image/upload/Upkeep_" + previousMonth + "_" + year + ".pdf";
 				Window.open(url, "_blank", "status=0,toolbar=0,menubar=0,location=0");
 			}
 		});

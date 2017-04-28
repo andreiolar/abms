@@ -3,6 +3,8 @@ package com.andreiolar.abms.server;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -33,6 +35,21 @@ public class FileUploader extends HttpServlet {
 
 		ServletFileUpload upload = new ServletFileUpload(); // from Commons
 
+		String type = req.getParameter("type");
+		String extension = req.getParameter("extension");
+
+		String filename = null;
+		if (type.equals("upkeep")) {
+			YearMonth currentMonth = YearMonth.now();
+			YearMonth previousMonth = currentMonth.minusMonths(1);
+
+			DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MMMM_yyyy");
+			filename = "Upkeep_" + previousMonth.format(dtf) + "." + extension;
+		} else if (type.equals("picture")) {
+			String username = req.getParameter("username");
+			filename = username + ".png";
+		}
+
 		try {
 			FileItemIterator iter = upload.getItemIterator(req);
 			PropertiesReader reader = new PropertiesReader();
@@ -42,7 +59,7 @@ public class FileUploader extends HttpServlet {
 
 				InputStream in = fileItem.openStream();
 				// The destination of your uploaded files.
-				File targetFile = new File(UPLOAD_DIRECTORY + "/" + fileItem.getName());
+				File targetFile = new File(UPLOAD_DIRECTORY + "/" + filename);
 
 				FileUtils.copyInputStreamToFile(in, targetFile);
 

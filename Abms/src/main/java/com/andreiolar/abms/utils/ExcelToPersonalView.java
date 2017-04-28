@@ -2,6 +2,8 @@ package com.andreiolar.abms.utils;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
@@ -109,7 +111,9 @@ public class ExcelToPersonalView {
 							nume = cellValue;
 							break;
 						case 17 :
-							costTotal = cellValue.length() > 10 ? cellValue.substring(0, 10) : cellValue;
+							BigDecimal total = new BigDecimal(cellValue).setScale(2, RoundingMode.CEILING);
+
+							costTotal = total.toString();
 							break;
 					}
 				}

@@ -7,6 +7,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -39,6 +41,12 @@ public class ExcelUploader extends HttpServlet {
 
 		ServletFileUpload upload = new ServletFileUpload(); // from Commons
 
+		YearMonth currentMonth = YearMonth.now();
+		YearMonth previousMonth = currentMonth.minusMonths(1);
+
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MMMM_yyyy");
+		String fileMonthAndYear = previousMonth.format(dtf);
+
 		try {
 			FileItemIterator iter = upload.getItemIterator(req);
 			PropertiesReader reader = new PropertiesReader();
@@ -48,7 +56,7 @@ public class ExcelUploader extends HttpServlet {
 
 				InputStream in = fileItem.openStream();
 				// The destination of your uploaded files.
-				File targetFile = new File(UPLOAD_DIRECTORY + "/" + fileItem.getName());
+				File targetFile = new File(UPLOAD_DIRECTORY + "/" + "Upkeep_" + fileMonthAndYear + ".xlsx");
 
 				FileUtils.copyInputStreamToFile(in, targetFile);
 
@@ -69,6 +77,12 @@ public class ExcelUploader extends HttpServlet {
 	}
 
 	private void sendMails() {
+		YearMonth currentMonth = YearMonth.now();
+		YearMonth previousMonth = currentMonth.minusMonths(1);
+
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MMMM yyyy");
+		String monthAndYear = previousMonth.format(dtf);
+
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
@@ -91,7 +105,7 @@ public class ExcelUploader extends HttpServlet {
 						continue;
 					}
 
-					String subject = "Upkeep report for previous month";
+					String subject = "Upkeep report for " + monthAndYear;
 					String to = email;
 					String message = "<p>" + "Hello " + firstName + " " + lastName + "," + "<br><br>"
 							+ "The upkeep report was just submitted and it's available to preview and download at Administration -&gt; General Costs View"
