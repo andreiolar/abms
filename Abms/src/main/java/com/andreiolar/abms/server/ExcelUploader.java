@@ -69,7 +69,7 @@ public class ExcelUploader extends HttpServlet {
 
 				cloudinary.uploader().upload(targetFile, ObjectUtils.asMap("use_filename", true, "unique_filename", false, "resource_type", "auto"));
 
-				sendMails();
+				// sendMails();
 			}
 		} catch (Exception caught) {
 			throw new RuntimeException(caught);

@@ -528,6 +528,15 @@
     	<servlet-name>excelUploader</servlet-name>
     	<url-pattern>/abms/excelUploader</url-pattern>
   	</servlet-mapping>
+  	
+  	<servlet>
+    	<servlet-name>checkForUpkeepReport</servlet-name>
+    	<servlet-class>com.andreiolar.abms.server.DBCheckUpkeepReportExistsImpl</servlet-class>
+  	</servlet>
+  	<servlet-mapping>
+    	<servlet-name>checkForUpkeepReport</servlet-name>
+    	<url-pattern>/abms/DBCheckUpkeepReportExistsImpl</url-pattern>
+  	</servlet-mapping>
   
   <!-- Default page to serve -->
   <welcome-file-list>
