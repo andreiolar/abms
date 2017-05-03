@@ -5,11 +5,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.andreiolar.abms.client.exception.NoFinishedVotingSessionFound;
-import com.andreiolar.abms.client.rpc.DBGetFinishedVoteSessions;
-import com.andreiolar.abms.client.rpc.DBGetFinishedVoteSessionsAsync;
+import com.andreiolar.abms.client.rpc.DBGetVoteSessions;
+import com.andreiolar.abms.client.rpc.DBGetVoteSessionsAsync;
 import com.andreiolar.abms.client.utils.ChartDrawer;
 import com.andreiolar.abms.shared.FinishedVoteSession;
-import com.andreiolar.abms.shared.UserDetails;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.FontWeight;
 import com.google.gwt.event.logical.shared.SelectionEvent;
@@ -32,10 +31,10 @@ import gwt.material.design.client.ui.html.Option;
 
 public class VoteResultsWidget extends Composite implements CustomWidget {
 
-	private UserDetails userDetails;
+	private boolean showActiveVotes;
 
-	public VoteResultsWidget(UserDetails userDetails) {
-		this.userDetails = userDetails;
+	public VoteResultsWidget(boolean showActiveVotes) {
+		this.showActiveVotes = showActiveVotes;
 
 		initWidget(initializeWidget());
 	}
@@ -60,14 +59,14 @@ public class VoteResultsWidget extends Composite implements CustomWidget {
 		label.setFontSize("18px");
 		panel.add(label);
 
-		DBGetFinishedVoteSessionsAsync rpc = (DBGetFinishedVoteSessionsAsync) GWT.create(DBGetFinishedVoteSessions.class);
+		DBGetVoteSessionsAsync rpc = (DBGetVoteSessionsAsync) GWT.create(DBGetVoteSessions.class);
 		ServiceDefTarget tar = (ServiceDefTarget) rpc;
-		String moduleURL = GWT.getModuleBaseURL() + "DBGetFinishedVoteSessionsImpl";
+		String moduleURL = GWT.getModuleBaseURL() + "DBGetVoteSessionsImpl";
 		tar.setServiceEntryPoint(moduleURL);
 
 		MaterialLoader.showLoading(true);
 
-		rpc.getFinishedVoteSessions(new AsyncCallback<Map<String, FinishedVoteSession>>() {
+		rpc.getVoteSessions(showActiveVotes, new AsyncCallback<Map<String, FinishedVoteSession>>() {
 
 			@Override
 			public void onSuccess(Map<String, FinishedVoteSession> result) {

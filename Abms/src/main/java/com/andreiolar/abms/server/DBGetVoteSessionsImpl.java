@@ -8,16 +8,16 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.andreiolar.abms.client.exception.NoFinishedVotingSessionFound;
-import com.andreiolar.abms.client.rpc.DBGetFinishedVoteSessions;
+import com.andreiolar.abms.client.rpc.DBGetVoteSessions;
 import com.andreiolar.abms.shared.FinishedVoteSession;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
-public class DBGetFinishedVoteSessionsImpl extends RemoteServiceServlet implements DBGetFinishedVoteSessions {
+public class DBGetVoteSessionsImpl extends RemoteServiceServlet implements DBGetVoteSessions {
 
 	private static final long serialVersionUID = 6649289418019191897L;
 
 	@Override
-	public Map<String, FinishedVoteSession> getFinishedVoteSessions() throws Exception {
+	public Map<String, FinishedVoteSession> getVoteSessions(boolean active) throws Exception {
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
@@ -27,7 +27,7 @@ public class DBGetFinishedVoteSessionsImpl extends RemoteServiceServlet implemen
 			conn = MyConnection.getConnection();
 
 			try {
-				String q = "select * from vote_descriptions where active=false";
+				String q = active ? "select * from vote_descriptions" : "select * from vote_descriptions where active=false";
 				stmt = conn.prepareStatement(q);
 				rs = stmt.executeQuery();
 

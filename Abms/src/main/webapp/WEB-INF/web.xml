@@ -431,12 +431,12 @@
     </servlet-mapping>
     
     <servlet>
-        <servlet-name>getFinishedVoteSessions</servlet-name>
-        <servlet-class>com.andreiolar.abms.server.DBGetFinishedVoteSessionsImpl</servlet-class>
+        <servlet-name>getVoteSessions</servlet-name>
+        <servlet-class>com.andreiolar.abms.server.DBGetVoteSessionsImpl</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>getFinishedVoteSessions</servlet-name>
-        <url-pattern>/abms/DBGetFinishedVoteSessionsImpl</url-pattern>
+        <servlet-name>getVoteSessions</servlet-name>
+        <url-pattern>/abms/DBGetVoteSessionsImpl</url-pattern>
     </servlet-mapping>
     
     <servlet>

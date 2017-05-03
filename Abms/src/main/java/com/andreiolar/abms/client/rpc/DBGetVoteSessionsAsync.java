@@ -5,7 +5,7 @@ import java.util.Map;
 import com.andreiolar.abms.shared.FinishedVoteSession;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public interface DBGetFinishedVoteSessionsAsync {
+public interface DBGetVoteSessionsAsync {
 
-	void getFinishedVoteSessions(AsyncCallback<Map<String, FinishedVoteSession>> callback);
+	void getVoteSessions(boolean active, AsyncCallback<Map<String, FinishedVoteSession>> callback);
 }

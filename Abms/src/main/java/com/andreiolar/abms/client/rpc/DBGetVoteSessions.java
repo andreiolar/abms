@@ -5,7 +5,7 @@ import java.util.Map;
 import com.andreiolar.abms.shared.FinishedVoteSession;
 import com.google.gwt.user.client.rpc.RemoteService;
 
-public interface DBGetFinishedVoteSessions extends RemoteService {
+public interface DBGetVoteSessions extends RemoteService {
 
-	public Map<String, FinishedVoteSession> getFinishedVoteSessions() throws Exception;
+	public Map<String, FinishedVoteSession> getVoteSessions(boolean active) throws Exception;
 }

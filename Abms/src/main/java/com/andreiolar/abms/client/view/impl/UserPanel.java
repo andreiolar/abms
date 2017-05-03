@@ -553,7 +553,7 @@ public class UserPanel extends Composite implements UserView {
 			@Override
 			public void onClick(ClickEvent event) {
 				container.clear();
-				VoteResultsWidget voteResultsWidget = new VoteResultsWidget(userDetails);
+				VoteResultsWidget voteResultsWidget = new VoteResultsWidget(false);
 				container.add(voteResultsWidget);
 			}
 		});

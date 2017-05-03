@@ -18,6 +18,7 @@ import com.andreiolar.abms.client.rpc.DBRetreiveSubmittedComplaintsAsync;
 import com.andreiolar.abms.client.view.AdminView;
 import com.andreiolar.abms.client.widgets.ModalCreator;
 import com.andreiolar.abms.client.widgets.UploadUpkeepWidget;
+import com.andreiolar.abms.client.widgets.VoteResultsWidget;
 import com.andreiolar.abms.shared.ContactInfo;
 import com.andreiolar.abms.shared.SelfReading;
 import com.andreiolar.abms.shared.SubmittedComplaint;
@@ -469,6 +470,58 @@ public class AdminPanel extends Composite implements AdminView {
 		administrationCollapsible.add(administrationCollapsibleItem);
 
 		materialSideNav.add(administrationCollapsible);
+
+		/** Voting **/
+		MaterialCollapsible votingCollapsible = new MaterialCollapsible();
+		MaterialCollapsibleItem votingCollapsibleItem = new MaterialCollapsibleItem();
+		MaterialCollapsibleHeader votingCollapsibleHeader = new MaterialCollapsibleHeader();
+		votingCollapsibleHeader.setWaves(WavesType.DEFAULT);
+
+		MaterialLink votingLink = new MaterialLink();
+		votingLink.setText("Voting");
+		votingLink.setIconType(IconType.ACCOUNT_BALANCE);
+		votingLink.setTextColor(Color.BLUE);
+		votingCollapsibleHeader.add(votingLink);
+		votingCollapsibleItem.add(votingCollapsibleHeader);
+
+		MaterialCollapsibleBody votingBody = new MaterialCollapsibleBody();
+		UnorderedList votingListItems = new UnorderedList();
+
+		/** Vote **/
+		MaterialLink voteLink = new MaterialLink();
+		voteLink.setText("Vote");
+		voteLink.setTextColor(Color.BLUE_DARKEN_2);
+		voteLink.setWaves(WavesType.DEFAULT);
+		voteLink.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+
+			}
+		});
+		votingListItems.add(voteLink);
+
+		/** View Vote Results **/
+		MaterialLink viewVoteResultsLink = new MaterialLink();
+		viewVoteResultsLink.setText("View Vote Results");
+		viewVoteResultsLink.setTextColor(Color.BLUE_DARKEN_2);
+		viewVoteResultsLink.setWaves(WavesType.DEFAULT);
+		viewVoteResultsLink.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				container.clear();
+				VoteResultsWidget voteResultsWidget = new VoteResultsWidget(true);
+				container.add(voteResultsWidget);
+			}
+		});
+		votingListItems.add(viewVoteResultsLink);
+
+		votingBody.add(votingListItems);
+		votingCollapsibleItem.add(votingBody);
+		votingCollapsible.add(votingCollapsibleItem);
+
+		materialSideNav.add(votingCollapsible);
 
 		/** Dropdown **/
 		MaterialDropDown dropDown = new MaterialDropDown("dropProfile");
