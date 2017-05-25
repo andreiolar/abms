@@ -808,3 +808,19 @@ strong {
 .preview-container{
 	z-index: 1000 !important;
 }
+
+.voting-message-panel{
+	width: 40%;
+	height: 140px;
+	margin: auto;
+	margin-top: 25px !important;
+	border-radius: 3px;
+	box-shadow: 0 10px 10px -2px rgba(180,185,201,0.5);
+	border-top: 1px solid #f0f1f4;
+}
+
+.voting-message-panel-center-button{
+	width: 40%;
+	margin: auto;
+	margin-top: 25px !important;
+}

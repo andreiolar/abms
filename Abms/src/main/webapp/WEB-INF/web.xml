@@ -537,6 +537,33 @@
     	<servlet-name>checkForUpkeepReport</servlet-name>
     	<url-pattern>/abms/DBCheckUpkeepReportExistsImpl</url-pattern>
   	</servlet-mapping>
+  	
+  	<servlet>
+    	<servlet-name>activeVotingSession</servlet-name>
+    	<servlet-class>com.andreiolar.abms.server.DBActiveVoteSessionImpl</servlet-class>
+  	</servlet>
+  	<servlet-mapping>
+    	<servlet-name>activeVotingSession</servlet-name>
+    	<url-pattern>/abms/DBActiveVoteSessionImpl</url-pattern>
+  	</servlet-mapping>
+  	
+  	<servlet>
+    	<servlet-name>disableVotingSession</servlet-name>
+    	<servlet-class>com.andreiolar.abms.server.DBDisableVotingSessionImpl</servlet-class>
+  	</servlet>
+  	<servlet-mapping>
+    	<servlet-name>disableVotingSession</servlet-name>
+    	<url-pattern>/abms/DBDisableVotingSessionImpl</url-pattern>
+  	</servlet-mapping>
+  	
+  	<servlet>
+    	<servlet-name>createVotingSession</servlet-name>
+    	<servlet-class>com.andreiolar.abms.server.CreateVotingSessionImpl</servlet-class>
+  	</servlet>
+  	<servlet-mapping>
+    	<servlet-name>createVotingSession</servlet-name>
+    	<url-pattern>/abms/CreateVotingSessionImpl</url-pattern>
+  	</servlet-mapping>
   
   <!-- Default page to serve -->
   <welcome-file-list>

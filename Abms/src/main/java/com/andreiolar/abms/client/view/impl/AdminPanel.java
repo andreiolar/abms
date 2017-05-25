@@ -16,6 +16,7 @@ import com.andreiolar.abms.client.rpc.DBRegisterTenantAsync;
 import com.andreiolar.abms.client.rpc.DBRetreiveSubmittedComplaints;
 import com.andreiolar.abms.client.rpc.DBRetreiveSubmittedComplaintsAsync;
 import com.andreiolar.abms.client.view.AdminView;
+import com.andreiolar.abms.client.widgets.CreateVoteWidget;
 import com.andreiolar.abms.client.widgets.ModalCreator;
 import com.andreiolar.abms.client.widgets.UploadUpkeepWidget;
 import com.andreiolar.abms.client.widgets.VoteResultsWidget;
@@ -489,13 +490,16 @@ public class AdminPanel extends Composite implements AdminView {
 
 		/** Vote **/
 		MaterialLink voteLink = new MaterialLink();
-		voteLink.setText("Vote");
+		voteLink.setText("Create/Disable Voting Session");
 		voteLink.setTextColor(Color.BLUE_DARKEN_2);
 		voteLink.setWaves(WavesType.DEFAULT);
 		voteLink.addClickHandler(new ClickHandler() {
 
 			@Override
 			public void onClick(ClickEvent event) {
+				container.clear();
+				CreateVoteWidget createVoteWidget = new CreateVoteWidget();
+				container.add(createVoteWidget);
 
 			}
 		});

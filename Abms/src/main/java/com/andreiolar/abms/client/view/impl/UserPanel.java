@@ -726,11 +726,15 @@ public class UserPanel extends Composite implements UserView {
 
 		materialModalContent.add(materialTitle);
 
+		String fileUsername = userDetails.getUsername().replaceAll("\\.", "");
+
 		// Content
 		MaterialFileUploader fileUploader = new MaterialFileUploader();
-		fileUploader.setUrl(GWT.getModuleBaseURL() + "uploader");
+		fileUploader.setUrl(GWT.getModuleBaseURL() + "uploader?type=picture&username=" + fileUsername);
 		fileUploader.setMaxFileSize(10);
 		fileUploader.setShadow(1);
+		fileUploader.setAcceptedFiles(".png");
+
 		fileUploader.addSuccessHandler(new SuccessHandler<UploadFile>() {
 
 			@Override

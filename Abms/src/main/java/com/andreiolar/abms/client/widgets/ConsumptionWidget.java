@@ -2,7 +2,6 @@ package com.andreiolar.abms.client.widgets;
 
 import java.util.Date;
 
-import com.andreiolar.abms.client.constants.PriceConstants;
 import com.andreiolar.abms.client.exception.ConsumptionReportNotFoundException;
 import com.andreiolar.abms.client.rpc.DBSearchForConsumptionReport;
 import com.andreiolar.abms.client.rpc.DBSearchForConsumptionReportAsync;
@@ -10,7 +9,6 @@ import com.andreiolar.abms.client.rpc.DBSelfReading;
 import com.andreiolar.abms.client.rpc.DBSelfReadingAsync;
 import com.andreiolar.abms.client.utils.DateUtil;
 import com.andreiolar.abms.shared.ConsumptionPayment;
-import com.andreiolar.abms.shared.Payment;
 import com.andreiolar.abms.shared.SelfReading;
 import com.andreiolar.abms.shared.UserDetails;
 import com.google.gwt.core.client.GWT;
@@ -86,7 +84,7 @@ public class ConsumptionWidget extends Composite implements CustomWidget {
 			public void onSuccess(SelfReading result) {
 				MaterialLoader.showLoading(false);
 
-				Payment consumptionPayment = new ConsumptionPayment(result);
+				ConsumptionPayment consumptionPayment = new ConsumptionPayment(result);
 
 				MaterialLabel label = new MaterialLabel("You have already submitted the consuption report for " + previousMonth + " " + year
 						+ ". Below you will find all information from your consumption report.");
@@ -125,8 +123,7 @@ public class ConsumptionWidget extends Composite implements CustomWidget {
 				descriptionLabel.getElement()
 						.setInnerHTML("Payment description:<br />Consumption payment for " + userDetails.getFirstName() + " "
 								+ userDetails.getLastName() + "<br /><br />Payment includes:<br />Electricity: "
-								+ Integer.parseInt(result.getElectricity()) * PriceConstants.ELECTRICITY_PRICE + " RON<br />Gas: "
-								+ Integer.parseInt(result.getGaz()) * PriceConstants.GAS_PRICE + " RON");
+								+ consumptionPayment.getElectricityCost() + " RON<br />Gas: " + consumptionPayment.getGasCost() + " RON");
 				descriptionLabel.setTextColor(Color.GREY);
 				descriptionLabel.setMarginTop(25.0);
 				descriptionLabel.setMarginLeft(25.0);

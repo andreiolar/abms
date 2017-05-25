@@ -68,6 +68,7 @@ public class FileUploader extends HttpServlet {
 						reader.readProperty("cloudinary.properties", "api_secret")));
 
 				cloudinary.uploader().upload(targetFile, ObjectUtils.asMap("use_filename", true, "unique_filename", false, "resource_type", "auto"));
+
 			}
 		} catch (Exception caught) {
 			throw new RuntimeException(caught);
