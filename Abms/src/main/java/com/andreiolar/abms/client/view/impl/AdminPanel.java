@@ -17,6 +17,7 @@ import com.andreiolar.abms.client.rpc.DBRetreiveSubmittedComplaints;
 import com.andreiolar.abms.client.rpc.DBRetreiveSubmittedComplaintsAsync;
 import com.andreiolar.abms.client.view.AdminView;
 import com.andreiolar.abms.client.widgets.CreateVoteWidget;
+import com.andreiolar.abms.client.widgets.MessengerWidget;
 import com.andreiolar.abms.client.widgets.ModalCreator;
 import com.andreiolar.abms.client.widgets.UploadUpkeepWidget;
 import com.andreiolar.abms.client.widgets.VoteResultsWidget;
@@ -526,6 +527,22 @@ public class AdminPanel extends Composite implements AdminView {
 		votingCollapsible.add(votingCollapsibleItem);
 
 		materialSideNav.add(votingCollapsible);
+
+		/** Messenger **/
+		MaterialLink messengerLink = new MaterialLink();
+		messengerLink.setText("Messenger");
+		messengerLink.setTextColor(Color.BLUE);
+		messengerLink.setIconType(IconType.MESSAGE);
+		messengerLink.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				container.clear();
+				MessengerWidget widget = new MessengerWidget(userDetails);
+				container.add(widget);
+			}
+		});
+		materialSideNav.add(messengerLink);
 
 		/** Dropdown **/
 		MaterialDropDown dropDown = new MaterialDropDown("dropProfile");
