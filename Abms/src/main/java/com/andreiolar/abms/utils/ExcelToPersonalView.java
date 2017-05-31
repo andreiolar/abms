@@ -165,6 +165,21 @@ public class ExcelToPersonalView {
 				} finally {
 					stmt.close();
 				}
+
+				try {
+					String q = "insert into upkeep_costs(apt_number, cost, month) values(?,?,?)";
+
+					stmt = conn.prepareStatement(q);
+					stmt.setInt(1, Integer.valueOf(pui.getAptNumber()));
+					stmt.setString(2, pui.getCostTotal());
+					stmt.setString(3, pui.getLuna());
+
+					stmt.executeUpdate();
+				} catch (Exception e) {
+					throw new RuntimeException("Something went wrong: " + e.getMessage(), e);
+				} finally {
+					stmt.close();
+				}
 			}
 		} catch (Exception e) {
 			throw new RuntimeException("Something went wrong: " + e.getMessage(), e);

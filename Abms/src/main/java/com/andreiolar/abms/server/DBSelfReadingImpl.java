@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 
 import com.andreiolar.abms.client.rpc.DBSelfReading;
 import com.andreiolar.abms.mail.MailSender;
+import com.andreiolar.abms.shared.ConsumptionCost;
+import com.andreiolar.abms.shared.Cost;
 import com.andreiolar.abms.shared.SelfReading;
 import com.andreiolar.abms.shared.UserDetails;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -33,11 +35,28 @@ public class DBSelfReadingImpl extends RemoteServiceServlet implements DBSelfRea
 				stmt.setString(6, reading.getDate());
 
 				executed = stmt.executeUpdate();
+			} catch (Exception ex) {
+				throw new RuntimeException("Something went wrong: " + ex.getMessage(), ex);
+			} finally {
+				stmt.close();
+			}
+
+			try {
+				Cost payment = new ConsumptionCost(reading);
+				String cost = String.valueOf(payment.getTotalCost());
+
+				String q = "insert into reading_costs(apt_number, cost, month) values(?,?,?)";
+				stmt = conn.prepareStatement(q);
+				stmt.setInt(1, Integer.parseInt(userDetails.getApartmentNumber()));
+				stmt.setString(2, cost);
+				stmt.setString(3, reading.getDate());
+
+				executed = stmt.executeUpdate();
 
 				String subject = "Submitted consumption report for " + reading.getDate();
 				String to = userDetails.getEmail();
 				String message = "<p>" + "Hello " + userDetails.getFirstName() + " " + userDetails.getLastName() + "," + "<br><br>"
-						+ "You have successfully submitted yor consumption report for " + reading.getDate() + "." + "<br><br>" + "Details:" + "<br>"
+						+ "You have successfully submitted your consumption report for " + reading.getDate() + "." + "<br><br>" + "Details:" + "<br>"
 						+ "Cold Water: <b>" + reading.getColdWater() + "</b> mc<br>" + "Hot Water: <b>" + reading.getHotWater() + "</b> mc<br>"
 						+ "Electricity: <b>" + reading.getElectricity() + "</b> kW<br>" + "Gas: <b>" + reading.getGaz() + "</b> mc<br>" + "<br>"
 						+ "Best regards," + "<br>" + "Administration" + "</p>";
@@ -48,6 +67,7 @@ public class DBSelfReadingImpl extends RemoteServiceServlet implements DBSelfRea
 			} finally {
 				stmt.close();
 			}
+
 		} catch (Exception ex) {
 			throw new RuntimeException("Something went wrong: " + ex.getMessage(), ex);
 		} finally {

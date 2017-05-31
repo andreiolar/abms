@@ -6,7 +6,7 @@ import java.sql.ResultSet;
 
 import com.andreiolar.abms.client.exception.ConsumptionReportNotFoundException;
 import com.andreiolar.abms.client.rpc.DBSearchForConsumptionReport;
-import com.andreiolar.abms.shared.SelfReading;
+import com.andreiolar.abms.shared.ConsumptionCostReport;
 import com.andreiolar.abms.shared.UserDetails;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -15,12 +15,12 @@ public class DBSearchForConsumptionReportImpl extends RemoteServiceServlet imple
 	private static final long serialVersionUID = 3882952232018953915L;
 
 	@Override
-	public SelfReading searchForConsumptionReport(UserDetails userDetails, String date) throws Exception {
+	public ConsumptionCostReport searchForConsumptionReport(UserDetails userDetails, String date) throws Exception {
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
 
-		SelfReading reading = null;
+		ConsumptionCostReport reading = null;
 
 		boolean submitted = false;
 
@@ -28,9 +28,9 @@ public class DBSearchForConsumptionReportImpl extends RemoteServiceServlet imple
 			conn = MyConnection.getConnection();
 
 			try {
-				String q = "select * from self_readings where apartment_number=? and month=?";
+				String q = "select sr.electricity, sr.gaz, rc.cost from self_readings sr, reading_costs rc where (sr.month=? and rc.month=?) and (sr.apartment_number=rc.apt_number)";
 				stmt = conn.prepareStatement(q);
-				stmt.setString(1, userDetails.getApartmentNumber());
+				stmt.setString(1, date);
 				stmt.setString(2, date);
 
 				rs = stmt.executeQuery();
@@ -38,13 +38,11 @@ public class DBSearchForConsumptionReportImpl extends RemoteServiceServlet imple
 				if (rs.next()) {
 					submitted = true;
 
-					String aptNumber = rs.getString("apartment_number");
-					String coldWater = rs.getString("cold_water");
-					String hotWater = rs.getString("hot_water");
 					String electricity = rs.getString("electricity");
-					String gaz = rs.getString("gaz");
+					String gas = rs.getString("gaz");
+					String cost = rs.getString("cost");
 
-					reading = new SelfReading(aptNumber, coldWater, hotWater, electricity, gaz, date);
+					reading = new ConsumptionCostReport(electricity, gas, cost);
 				}
 			} catch (Exception ex) {
 				throw new RuntimeException("Something went wrong: " + ex.getMessage(), ex);

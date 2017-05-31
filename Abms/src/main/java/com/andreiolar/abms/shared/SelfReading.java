@@ -31,6 +31,11 @@ public class SelfReading implements IsSerializable {
 		this.gaz = gaz;
 	}
 
+	public SelfReading(String electricity, String gaz) {
+		this.electricity = electricity;
+		this.gaz = gaz;
+	}
+
 	public String getAptNumber() {
 		return aptNumber;
 	}

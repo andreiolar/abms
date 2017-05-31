@@ -5,14 +5,14 @@ import java.math.RoundingMode;
 
 import com.andreiolar.abms.client.constants.PriceConstants;
 
-public class ConsumptionPayment implements Payment {
+public class ConsumptionCost implements Cost {
 
 	private SelfReading reading;
 
-	public ConsumptionPayment() {
+	public ConsumptionCost() {
 	}
 
-	public ConsumptionPayment(SelfReading reading) {
+	public ConsumptionCost(SelfReading reading) {
 		this.reading = reading;
 	}
 

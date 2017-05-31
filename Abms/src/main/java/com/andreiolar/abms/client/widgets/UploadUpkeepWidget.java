@@ -232,7 +232,7 @@ public class UploadUpkeepWidget extends Composite implements CustomWidget {
 						stepper.setSuccess("");
 						stepThree.setEnabled(false);
 
-						MaterialToast.fireToast("All files were uploaded successfully.");
+						MaterialToast.fireToast("All files were uploaded successfully.", "rounded");
 						panel.clear();
 						panel.add(new UploadUpkeepWidget());
 					}
