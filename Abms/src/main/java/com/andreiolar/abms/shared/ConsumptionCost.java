@@ -32,7 +32,9 @@ public class ConsumptionCost implements Cost {
 
 	@Override
 	public double getTotalCost() {
-		return getElectricityCost() + getGasCost();
+		double cost = getElectricityCost() + getGasCost();
+		BigDecimal totalCost = new BigDecimal(cost).setScale(2, RoundingMode.CEILING);
+		return totalCost.doubleValue();
 	}
 
 }

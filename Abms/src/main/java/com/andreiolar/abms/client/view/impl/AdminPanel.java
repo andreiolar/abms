@@ -26,7 +26,7 @@ import com.andreiolar.abms.client.widgets.ProfileInfoWidget;
 import com.andreiolar.abms.client.widgets.UploadUpkeepWidget;
 import com.andreiolar.abms.client.widgets.VoteResultsWidget;
 import com.andreiolar.abms.shared.ContactInfo;
-import com.andreiolar.abms.shared.SelfReading;
+import com.andreiolar.abms.shared.SelfReadingCostWrapper;
 import com.andreiolar.abms.shared.SubmittedComplaint;
 import com.andreiolar.abms.shared.UserDetails;
 import com.google.gwt.core.client.GWT;
@@ -814,7 +814,7 @@ public class AdminPanel extends Composite implements AdminView {
 				String readingsUrl = GWT.getModuleBaseURL() + "DBGetReadingsForDateImpl";
 				readingsTarget.setServiceEntryPoint(readingsUrl);
 
-				readingsRpc.getReadingsForDate(month + " " + year, new AsyncCallback<List<SelfReading>>() {
+				readingsRpc.getReadingsForDate(month + " " + year, new AsyncCallback<List<SelfReadingCostWrapper>>() {
 
 					@Override
 					public void onFailure(Throwable caught) {
@@ -841,11 +841,11 @@ public class AdminPanel extends Composite implements AdminView {
 					}
 
 					@Override
-					public void onSuccess(List<SelfReading> result) {
+					public void onSuccess(List<SelfReadingCostWrapper> result) {
 						MaterialLoader.showLoading(false);
 						tablePanel.clear();
 
-						MaterialDataTable<SelfReading> table = new MaterialDataTable<SelfReading>();
+						MaterialDataTable<SelfReadingCostWrapper> table = new MaterialDataTable<SelfReadingCostWrapper>();
 						table.setUseStickyHeader(true);
 						table.setUseCategories(false);
 						table.setUseRowExpansion(false);
@@ -857,7 +857,7 @@ public class AdminPanel extends Composite implements AdminView {
 
 						table.getTableTitle().setText("Readings for " + month + " " + year);
 
-						table.addColumn(new TextColumn<SelfReading>() {
+						table.addColumn(new TextColumn<SelfReadingCostWrapper>() {
 
 							@Override
 							public String getHeaderWidth() {
@@ -865,75 +865,94 @@ public class AdminPanel extends Composite implements AdminView {
 							}
 
 							@Override
-							public Comparator<? super RowComponent<SelfReading>> getSortComparator() {
-								return (o1, o2) -> Integer.compare(Integer.parseInt(o1.getData().getAptNumber()),
-										Integer.parseInt(o2.getData().getAptNumber()));
+							public Comparator<? super RowComponent<SelfReadingCostWrapper>> getSortComparator() {
+								return (o1, o2) -> Integer.compare(Integer.parseInt(o1.getData().getSelfReading().getAptNumber()),
+										Integer.parseInt(o2.getData().getSelfReading().getAptNumber()));
 							}
 
 							@Override
-							public String getValue(SelfReading object) {
-								return object.getAptNumber();
+							public String getValue(SelfReadingCostWrapper object) {
+								return object.getSelfReading().getAptNumber();
 							}
 						}, "Apt. Number");
 
-						table.addColumn(new TextColumn<SelfReading>() {
+						table.addColumn(new TextColumn<SelfReadingCostWrapper>() {
 
 							@Override
 							public String getHeaderWidth() {
-								return "20%";
+								return "10%";
 							};
 
 							@Override
-							public Comparator<? super RowComponent<SelfReading>> getSortComparator() {
-								return (o1, o2) -> Integer.compare(Integer.parseInt(o1.getData().getColdWater()),
-										Integer.parseInt(o2.getData().getColdWater()));
+							public Comparator<? super RowComponent<SelfReadingCostWrapper>> getSortComparator() {
+								return (o1, o2) -> Integer.compare(Integer.parseInt(o1.getData().getSelfReading().getColdWater()),
+										Integer.parseInt(o2.getData().getSelfReading().getColdWater()));
 							}
 
 							@Override
-							public String getValue(SelfReading object) {
-								return object.getColdWater();
+							public String getValue(SelfReadingCostWrapper object) {
+								return object.getSelfReading().getColdWater();
 							}
 						}, "Cold Water");
 
-						table.addColumn(new TextColumn<SelfReading>() {
+						table.addColumn(new TextColumn<SelfReadingCostWrapper>() {
 
 							@Override
 							public String getHeaderWidth() {
-								return "20%";
+								return "10%";
 							};
 
 							@Override
-							public Comparator<? super RowComponent<SelfReading>> getSortComparator() {
-								return (o1, o2) -> Integer.compare(Integer.parseInt(o1.getData().getHotWater()),
-										Integer.parseInt(o2.getData().getHotWater()));
+							public Comparator<? super RowComponent<SelfReadingCostWrapper>> getSortComparator() {
+								return (o1, o2) -> Integer.compare(Integer.parseInt(o1.getData().getSelfReading().getHotWater()),
+										Integer.parseInt(o2.getData().getSelfReading().getHotWater()));
 							}
 
 							@Override
-							public String getValue(SelfReading object) {
-								return object.getHotWater();
+							public String getValue(SelfReadingCostWrapper object) {
+								return object.getSelfReading().getHotWater();
 							}
 						}, "Hot Water");
 
-						table.addColumn(new TextColumn<SelfReading>() {
+						table.addColumn(new TextColumn<SelfReadingCostWrapper>() {
 
 							@Override
 							public String getHeaderWidth() {
-								return "20%";
+								return "10%";
 							};
 
 							@Override
-							public Comparator<? super RowComponent<SelfReading>> getSortComparator() {
-								return (o1, o2) -> Integer.compare(Integer.parseInt(o1.getData().getElectricity()),
-										Integer.parseInt(o2.getData().getElectricity()));
+							public Comparator<? super RowComponent<SelfReadingCostWrapper>> getSortComparator() {
+								return (o1, o2) -> Integer.compare(Integer.parseInt(o1.getData().getSelfReading().getElectricity()),
+										Integer.parseInt(o2.getData().getSelfReading().getElectricity()));
 							}
 
 							@Override
-							public String getValue(SelfReading object) {
-								return object.getElectricity();
+							public String getValue(SelfReadingCostWrapper object) {
+								return object.getSelfReading().getElectricity();
 							}
 						}, "Electricity");
 
-						table.addColumn(new TextColumn<SelfReading>() {
+						table.addColumn(new TextColumn<SelfReadingCostWrapper>() {
+
+							@Override
+							public String getHeaderWidth() {
+								return "10%";
+							};
+
+							@Override
+							public Comparator<? super RowComponent<SelfReadingCostWrapper>> getSortComparator() {
+								return (o1, o2) -> Integer.compare(Integer.parseInt(o1.getData().getSelfReading().getGaz()),
+										Integer.parseInt(o2.getData().getSelfReading().getGaz()));
+							}
+
+							@Override
+							public String getValue(SelfReadingCostWrapper object) {
+								return object.getSelfReading().getGaz();
+							}
+						}, "Gas");
+
+						table.addColumn(new TextColumn<SelfReadingCostWrapper>() {
 
 							@Override
 							public String getHeaderWidth() {
@@ -941,15 +960,40 @@ public class AdminPanel extends Composite implements AdminView {
 							};
 
 							@Override
-							public Comparator<? super RowComponent<SelfReading>> getSortComparator() {
-								return (o1, o2) -> Integer.compare(Integer.parseInt(o1.getData().getGaz()), Integer.parseInt(o2.getData().getGaz()));
+							public Comparator<? super RowComponent<SelfReadingCostWrapper>> getSortComparator() {
+								return (o1, o2) -> Integer.compare(Integer.parseInt(o1.getData().getCost()),
+										Integer.parseInt(o2.getData().getCost()));
 							}
 
 							@Override
-							public String getValue(SelfReading object) {
-								return object.getGaz();
+							public String getValue(SelfReadingCostWrapper object) {
+								return object.getCost() + " RON";
 							}
-						}, "Gas");
+						}, "Total Cost");
+
+						table.addColumn(new WidgetColumn<SelfReadingCostWrapper, MaterialLabel>() {
+
+							@Override
+							public String getHeaderWidth() {
+								return "20%";
+							}
+
+							@Override
+							public MaterialLabel getValue(SelfReadingCostWrapper object) {
+								MaterialLabel label = new MaterialLabel();
+								if (object.isStatus()) {
+									label.setText("PAID");
+									label.setTextColor(Color.GREEN);
+									label.setFontWeight(FontWeight.BOLD);
+								} else {
+									label.setText("NOT PAID");
+									label.setTextColor(Color.RED);
+									label.setFontWeight(FontWeight.BOLD);
+								}
+
+								return label;
+							}
+						}, "Status");
 
 						table.setRowData(0, result);
 						table.setRowCount(result.size());
