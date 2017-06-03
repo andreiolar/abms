@@ -7,6 +7,7 @@ import java.util.List;
 import com.andreiolar.abms.client.exception.AptNumberUnavailableException;
 import com.andreiolar.abms.client.exception.EmailUnavailableException;
 import com.andreiolar.abms.client.exception.NoReadingsFoundForDateException;
+import com.andreiolar.abms.client.exception.NoUpkeepReportsFoundForDateException;
 import com.andreiolar.abms.client.exception.OldPasswordNotCorrectException;
 import com.andreiolar.abms.client.rpc.ChangePassword;
 import com.andreiolar.abms.client.rpc.ChangePasswordAsync;
@@ -18,6 +19,8 @@ import com.andreiolar.abms.client.rpc.DBRegisterTenant;
 import com.andreiolar.abms.client.rpc.DBRegisterTenantAsync;
 import com.andreiolar.abms.client.rpc.DBRetreiveSubmittedComplaints;
 import com.andreiolar.abms.client.rpc.DBRetreiveSubmittedComplaintsAsync;
+import com.andreiolar.abms.client.rpc.RetreiveUpkeepCostReports;
+import com.andreiolar.abms.client.rpc.RetreiveUpkeepCostReportsAsync;
 import com.andreiolar.abms.client.view.AdminView;
 import com.andreiolar.abms.client.widgets.CreateVoteWidget;
 import com.andreiolar.abms.client.widgets.MessengerWidget;
@@ -28,6 +31,7 @@ import com.andreiolar.abms.client.widgets.VoteResultsWidget;
 import com.andreiolar.abms.shared.ContactInfo;
 import com.andreiolar.abms.shared.SelfReadingCostWrapper;
 import com.andreiolar.abms.shared.SubmittedComplaint;
+import com.andreiolar.abms.shared.UpkeepCostReport;
 import com.andreiolar.abms.shared.UserDetails;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Cursor;
@@ -444,6 +448,20 @@ public class AdminPanel extends Composite implements AdminView {
 		});
 		administrationListItems.add(viewReadingsLink);
 
+		/** View Upkeep Reports **/
+		MaterialLink viewUpkeepReportsLink = new MaterialLink();
+		viewUpkeepReportsLink.setText("View Upkeep Report");
+		viewUpkeepReportsLink.setTextColor(Color.BLUE_DARKEN_2);
+		viewUpkeepReportsLink.setWaves(WavesType.DEFAULT);
+		viewUpkeepReportsLink.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				constructViewUpkeepReportWidget();
+			}
+		});
+		administrationListItems.add(viewUpkeepReportsLink);
+
 		/** Add Tenants **/
 		MaterialLink addTenantLink = new MaterialLink();
 		addTenantLink.setText("Add Tenant");
@@ -552,21 +570,6 @@ public class AdminPanel extends Composite implements AdminView {
 			}
 		});
 		materialSideNav.add(messengerLink);
-
-		/** Financial **/
-		MaterialLink financialLink = new MaterialLink();
-		financialLink.setText("Financial");
-		financialLink.setTextColor(Color.BLUE);
-		financialLink.setIconType(IconType.EURO_SYMBOL);
-		financialLink.addClickHandler(new ClickHandler() {
-
-			@Override
-			public void onClick(ClickEvent event) {
-				container.clear();
-
-			}
-		});
-		materialSideNav.add(financialLink);
 
 		/** Dropdown **/
 		MaterialDropDown dropDown = new MaterialDropDown("dropProfile");
@@ -752,6 +755,192 @@ public class AdminPanel extends Composite implements AdminView {
 		materialModal.add(materialModalFooter);
 
 		return materialModal;
+	}
+
+	protected void constructViewUpkeepReportWidget() {
+		container.clear();
+
+		MaterialPanel panel = new MaterialPanel();
+		MaterialPanel tablePanel = new MaterialPanel();
+
+		MaterialLabel title = new MaterialLabel("View Upkeep Report");
+		title.setTextColor(Color.BLUE);
+		title.setTextAlign(TextAlign.CENTER);
+		title.setFontSize("36px");
+		title.setFontWeight(FontWeight.BOLD);
+		panel.add(title);
+
+		panel.add(new Hr());
+
+		MaterialComboBox<String> months = new MaterialComboBox<String>();
+		months.setWidth("36%");
+		months.getElement().getStyle().setMarginRight(2, Unit.PCT);
+		months.addItem("January");
+		months.addItem("February");
+		months.addItem("March");
+		months.addItem("April");
+		months.addItem("May");
+		months.addItem("June");
+		months.addItem("July");
+		months.addItem("August");
+		months.addItem("September");
+		months.addItem("October");
+		months.addItem("November");
+		months.addItem("December");
+
+		DateTimeFormat df = DateTimeFormat.getFormat("yyyy");
+		String formattedDate = df.format(new Date());
+		int year = Integer.parseInt(formattedDate);
+
+		MaterialComboBox<String> years = new MaterialComboBox<String>();
+		years.setWidth("36%");
+		years.getElement().getStyle().setMarginRight(2, Unit.PCT);
+		for (int i = year; i >= 2016; i--) {
+			years.addItem(String.valueOf(i));
+		}
+
+		MaterialButton searchButton = new MaterialButton();
+		searchButton.setText("Search");
+		searchButton.setWidth("24%");
+		searchButton.getElement().getStyle().setMarginTop(1, Unit.EM);
+		searchButton.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				String month = months.getSelectedValue();
+				String year = years.getSelectedValue();
+
+				MaterialLoader.showLoading(true);
+
+				RetreiveUpkeepCostReportsAsync upkeepRpc = (RetreiveUpkeepCostReportsAsync) GWT.create(RetreiveUpkeepCostReports.class);
+				ServiceDefTarget upkeepTarget = (ServiceDefTarget) upkeepRpc;
+				String upkeepUrl = GWT.getModuleBaseURL() + "RetreiveUpkeepCostReportsImpl";
+				upkeepTarget.setServiceEntryPoint(upkeepUrl);
+
+				upkeepRpc.retreiveUpkeepCostReports(month + " " + year, new AsyncCallback<List<UpkeepCostReport>>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						MaterialLoader.showLoading(false);
+						if (caught instanceof NoUpkeepReportsFoundForDateException) {
+							tablePanel.clear();
+
+							MaterialPanel errorPanel = new MaterialPanel();
+							errorPanel.addStyleName("no-readings-found-panel");
+
+							MaterialLabel label = new MaterialLabel();
+							label.setTextColor(Color.BLUE);
+							label.setTextAlign(TextAlign.CENTER);
+							label.setFontSize("18px");
+							label.setText("No Upkeep Report found for " + month + " " + year);
+
+							errorPanel.add(label);
+							tablePanel.add(errorPanel);
+						} else {
+							MaterialModal errorModal = ModalCreator.createModal(caught);
+							RootPanel.get().add(errorModal);
+							errorModal.open();
+						}
+					}
+
+					@Override
+					public void onSuccess(List<UpkeepCostReport> result) {
+						MaterialLoader.showLoading(false);
+						tablePanel.clear();
+
+						MaterialDataTable<UpkeepCostReport> table = new MaterialDataTable<UpkeepCostReport>();
+						table.setUseStickyHeader(true);
+						table.setUseCategories(false);
+						table.setUseRowExpansion(false);
+						table.setSelectionType(SelectionType.NONE);
+						table.setRedraw(true);
+						table.setStyleName("readings-table");
+
+						tablePanel.add(table);
+
+						table.getTableTitle().setText("Upkeep Cost Report for " + month + " " + year);
+
+						table.addColumn(new TextColumn<UpkeepCostReport>() {
+
+							@Override
+							public String getHeaderWidth() {
+								return "35%";
+							};
+
+							@Override
+							public Comparator<? super RowComponent<UpkeepCostReport>> getSortComparator() {
+								return (o1, o2) -> Integer.compare(o1.getData().getAptNumber(), o2.getData().getAptNumber());
+							}
+
+							@Override
+							public String getValue(UpkeepCostReport object) {
+								return "" + object.getAptNumber();
+							}
+						}, "Apt. Number");
+
+						table.addColumn(new TextColumn<UpkeepCostReport>() {
+
+							@Override
+							public String getHeaderWidth() {
+								return "35%";
+							};
+
+							@Override
+							public Comparator<? super RowComponent<UpkeepCostReport>> getSortComparator() {
+								return (o1, o2) -> Double.compare(Double.valueOf(o1.getData().getCostTotal()),
+										Double.valueOf(o2.getData().getCostTotal()));
+							}
+
+							@Override
+							public String getValue(UpkeepCostReport object) {
+								return object.getCostTotal() + " RON";
+							}
+						}, "Total Cost");
+
+						table.addColumn(new WidgetColumn<UpkeepCostReport, MaterialLabel>() {
+
+							@Override
+							public String getHeaderWidth() {
+								return "30%";
+							}
+
+							@Override
+							public MaterialLabel getValue(UpkeepCostReport object) {
+								MaterialLabel label = new MaterialLabel();
+								if (object.isStatus()) {
+									label.setText("PAID");
+									label.setTextColor(Color.GREEN);
+									label.setFontWeight(FontWeight.BOLD);
+								} else {
+									label.setText("NOT PAID");
+									label.setTextColor(Color.RED);
+									label.setFontWeight(FontWeight.BOLD);
+								}
+
+								return label;
+							}
+						}, "Status");
+
+						table.setRowData(0, result);
+						table.setRowCount(result.size());
+						table.refreshView();
+					}
+				});
+
+			}
+		});
+
+		Div dateSelectionDiv = new Div();
+		dateSelectionDiv.setDisplay(Display.FLEX);
+		dateSelectionDiv.addStyleName("date-selection");
+		dateSelectionDiv.add(months);
+		dateSelectionDiv.add(years);
+		dateSelectionDiv.add(searchButton);
+
+		panel.add(dateSelectionDiv);
+		panel.add(tablePanel);
+
+		container.add(panel);
 	}
 
 	protected void constructViewReadingsWidget() {

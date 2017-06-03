@@ -564,6 +564,15 @@
     	<servlet-name>createVotingSession</servlet-name>
     	<url-pattern>/abms/CreateVotingSessionImpl</url-pattern>
   	</servlet-mapping>
+  	
+  	<servlet>
+    	<servlet-name>retreiveUpkeepCostReports</servlet-name>
+    	<servlet-class>com.andreiolar.abms.server.RetreiveUpkeepCostReportsImpl</servlet-class>
+  	</servlet>
+  	<servlet-mapping>
+    	<servlet-name>retreiveUpkeepCostReports</servlet-name>
+    	<url-pattern>/abms/RetreiveUpkeepCostReportsImpl</url-pattern>
+  	</servlet-mapping>
   
   <!-- Default page to serve -->
   <welcome-file-list>
