@@ -3,6 +3,8 @@ package com.andreiolar.abms.client.widgets;
 import java.util.Date;
 
 import com.andreiolar.abms.client.exception.ConsumptionReportNotFoundException;
+import com.andreiolar.abms.client.rpc.ConsumptionPayment;
+import com.andreiolar.abms.client.rpc.ConsumptionPaymentAsync;
 import com.andreiolar.abms.client.rpc.DBSearchForConsumptionReport;
 import com.andreiolar.abms.client.rpc.DBSearchForConsumptionReportAsync;
 import com.andreiolar.abms.client.rpc.DBSelfReading;
@@ -12,9 +14,16 @@ import com.andreiolar.abms.shared.ConsumptionCost;
 import com.andreiolar.abms.shared.ConsumptionCostReport;
 import com.andreiolar.abms.shared.SelfReading;
 import com.andreiolar.abms.shared.UserDetails;
+import com.arcbees.stripe.client.CreditCard;
+import com.arcbees.stripe.client.CreditCardResponseHandler;
+import com.arcbees.stripe.client.Stripe;
+import com.arcbees.stripe.client.StripeFactory;
+import com.arcbees.stripe.client.jso.CreditCardResponse;
+import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Float;
 import com.google.gwt.dom.client.Style.FontWeight;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
@@ -28,16 +37,21 @@ import gwt.material.design.addins.client.stepper.MaterialStep;
 import gwt.material.design.addins.client.stepper.MaterialStepper;
 import gwt.material.design.client.constants.ButtonType;
 import gwt.material.design.client.constants.Color;
+import gwt.material.design.client.constants.Display;
 import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.constants.InputType;
+import gwt.material.design.client.constants.ModalType;
 import gwt.material.design.client.constants.TextAlign;
 import gwt.material.design.client.constants.WavesType;
 import gwt.material.design.client.ui.MaterialButton;
 import gwt.material.design.client.ui.MaterialLabel;
 import gwt.material.design.client.ui.MaterialLoader;
 import gwt.material.design.client.ui.MaterialModal;
+import gwt.material.design.client.ui.MaterialModalContent;
+import gwt.material.design.client.ui.MaterialModalFooter;
 import gwt.material.design.client.ui.MaterialPanel;
 import gwt.material.design.client.ui.MaterialTextBox;
+import gwt.material.design.client.ui.MaterialTitle;
 import gwt.material.design.client.ui.MaterialToast;
 import gwt.material.design.client.ui.html.Div;
 import gwt.material.design.client.ui.html.Hr;
@@ -143,21 +157,34 @@ public class ConsumptionWidget extends Composite implements CustomWidget {
 
 				Div buttonDiv = new Div();
 				buttonDiv.setStyleName("consumption-pay-center-button");
-				MaterialButton payNowButton = new MaterialButton();
-				payNowButton.setWaves(WavesType.LIGHT);
-				payNowButton.setWidth("100%");
-				payNowButton.setHeight("50px");
-				payNowButton.setText("PAY NOW");
-				payNowButton.setTextColor(Color.WHITE);
-				payNowButton.addClickHandler(new ClickHandler() {
 
-					@Override
-					public void onClick(ClickEvent event) {
-						Window.alert("Test: Va urma...");
-					}
-				});
+				if (result.isStatus()) {
+					MaterialLabel alreadyPaidLabel = new MaterialLabel();
+					alreadyPaidLabel.setText("Consumption costs already paid.");
+					alreadyPaidLabel.setFontWeight(FontWeight.BOLD);
+					alreadyPaidLabel.setTextColor(Color.GREEN);
+					alreadyPaidLabel.setTextAlign(TextAlign.CENTER);
+					alreadyPaidLabel.setFontSize("22px");
+					buttonDiv.add(alreadyPaidLabel);
+				} else {
+					MaterialButton payNowButton = new MaterialButton();
+					payNowButton.setWaves(WavesType.LIGHT);
+					payNowButton.setWidth("100%");
+					payNowButton.setHeight("50px");
+					payNowButton.setText("PAY NOW");
+					payNowButton.setTextColor(Color.WHITE);
+					payNowButton.addClickHandler(new ClickHandler() {
 
-				buttonDiv.add(payNowButton);
+						@Override
+						public void onClick(ClickEvent event) {
+							MaterialModal paymentModal = createPaymentModal(result.getCost(), panel);
+							RootPanel.get().add(paymentModal);
+							paymentModal.open();
+						}
+					});
+
+					buttonDiv.add(payNowButton);
+				}
 
 				panel.add(buttonDiv);
 			}
@@ -460,5 +487,163 @@ public class ConsumptionWidget extends Composite implements CustomWidget {
 		});
 
 		return panel;
+	}
+
+	private MaterialModal createPaymentModal(String cost, MaterialPanel panel) {
+		MaterialModal modal = new MaterialModal();
+		modal.setWidth("500px");
+		modal.setType(ModalType.DEFAULT);
+		modal.setDismissible(false);
+		modal.setInDuration(500);
+		modal.setOutDuration(500);
+
+		MaterialModalContent materialModalContent = new MaterialModalContent();
+		MaterialTitle title = new MaterialTitle("Consumption Payment");
+		title.setTextAlign(TextAlign.CENTER);
+		title.setTextColor(Color.BLUE);
+
+		MaterialTextBox nameBox = new MaterialTextBox();
+		nameBox.setPlaceholder("Name on Card");
+		nameBox.setMarginTop(30.0);
+		nameBox.setType(InputType.TEXT);
+
+		MaterialTextBox cardNumberBox = new MaterialTextBox();
+		cardNumberBox.setPlaceholder("Card Number");
+		cardNumberBox.setMarginTop(30.0);
+		cardNumberBox.setType(InputType.TEXT);
+
+		Div div = new Div();
+		div.setMarginTop(30.0);
+		div.setDisplay(Display.FLEX);
+
+		MaterialTextBox monthBox = new MaterialTextBox();
+		monthBox.setPlaceholder("Expiry Month");
+		monthBox.setType(InputType.TEXT);
+		monthBox.setWidth("30%");
+		monthBox.getElement().getStyle().setMarginRight(5, Unit.PCT);
+
+		MaterialTextBox yearBox = new MaterialTextBox();
+		yearBox.setPlaceholder("Expiry Year");
+		yearBox.setType(InputType.TEXT);
+		yearBox.setWidth("30%");
+		yearBox.getElement().getStyle().setMarginRight(5, Unit.PCT);
+
+		MaterialTextBox cvcBox = new MaterialTextBox();
+		cvcBox.setPlaceholder("CVC");
+		cvcBox.setType(InputType.TEXT);
+		cvcBox.setWidth("30%");
+
+		div.add(monthBox);
+		div.add(yearBox);
+		div.add(cvcBox);
+
+		MaterialLabel label = new MaterialLabel();
+		label.setMarginTop(30.0);
+		label.getElement().setInnerHTML("Total Cost: <span style=\"color: #2196f3;\">" + cost + " RON</span>");
+
+		MaterialButton payButton = new MaterialButton();
+		payButton.setMarginTop(30.0);
+		payButton.setText("PAY NOW");
+		payButton.setWidth("100%");
+		payButton.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				payButton.setEnabled(false);
+
+				String name = nameBox.getText();
+				String cardNumber = cardNumberBox.getText();
+				int month = Integer.parseInt(monthBox.getText());
+				int expiryYear = Integer.parseInt(yearBox.getText());
+				String cvc = cvcBox.getText();
+
+				final Stripe stripe = StripeFactory.get();
+
+				stripe.inject(new Callback<Void, Exception>() {
+
+					@Override
+					public void onSuccess(Void result) {
+						stripe.setPublishableKey("pk_test_7XjMYfSUJljmavIx7z5zChB0");
+
+						final CreditCard creditCard = new CreditCard.Builder().creditCardNumber(cardNumber).cvc(cvc).expirationMonth(month)
+								.expirationYear(expiryYear).name(name).build();
+
+						stripe.getCreditCardToken(creditCard, new CreditCardResponseHandler() {
+
+							@Override
+							public void onCreditCardReceived(int status, CreditCardResponse creditCardResponse) {
+								ConsumptionPaymentAsync payRpc = (ConsumptionPaymentAsync) GWT.create(ConsumptionPayment.class);
+								ServiceDefTarget payTarget = (ServiceDefTarget) payRpc;
+								String payUrl = GWT.getModuleBaseURL() + "ConsumptionPaymentImpl";
+								payTarget.setServiceEntryPoint(payUrl);
+
+								if (creditCardResponse.getId() != null) {
+									String description = previousMonth + " " + year + " Consumption Payment from " + userDetails.getFirstName() + " "
+											+ userDetails.getLastName() + " for Apt. Number " + userDetails.getApartmentNumber();
+
+									payRpc.pay(creditCardResponse.getId(), cost, description, previousMonth + " " + year, userDetails,
+											new AsyncCallback<Void>() {
+
+												@Override
+												public void onFailure(Throwable caught) {
+													payButton.setEnabled(true);
+													MaterialToast.fireToast(caught.getMessage(), "rounded");
+
+												}
+
+												@Override
+												public void onSuccess(Void result) {
+													payButton.setEnabled(true);
+
+													modal.close();
+													RootPanel.get().remove(modal);
+
+													MaterialToast.fireToast("Consumption costs successfully paid!", "rounded");
+
+													panel.clear();
+													panel.add(new ConsumptionWidget(userDetails));
+												}
+											});
+								} else {
+
+								}
+							}
+						});
+					}
+
+					@Override
+					public void onFailure(Exception reason) {
+						modal.close();
+						RootPanel.get().remove(modal);
+						Window.alert(reason.getMessage());
+					}
+				});
+
+			}
+		});
+
+		materialModalContent.add(title);
+		materialModalContent.add(nameBox);
+		materialModalContent.add(cardNumberBox);
+		materialModalContent.add(div);
+		materialModalContent.add(label);
+		materialModalContent.add(payButton);
+
+		modal.add(materialModalContent);
+
+		MaterialModalFooter materialModalFooter = new MaterialModalFooter();
+		MaterialButton closeButton = new MaterialButton();
+		closeButton.setText("Close");
+		closeButton.setType(ButtonType.FLAT);
+		closeButton.addClickHandler(h -> {
+			modal.close();
+			RootPanel.get().remove(modal);
+		});
+
+		materialModalFooter.add(closeButton);
+
+		modal.add(materialModalFooter);
+
+		return modal;
 	}
 }

@@ -19,6 +19,7 @@
 	<!-- Other module inherits -->
 	<inherits name="org.moxieapps.gwt.highcharts.Highcharts" />
 	<inherits name="com.vaadin.polymer.Elements" />
+	<inherits name="com.arcbees.stripe.GwtStripe"/>
 
 	<!--GWT Material -->
 	<inherits name="gwt.material.design.GwtMaterialWithJQueryDebug" />

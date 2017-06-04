@@ -28,7 +28,7 @@ public class DBSearchForConsumptionReportImpl extends RemoteServiceServlet imple
 			conn = MyConnection.getConnection();
 
 			try {
-				String q = "select sr.electricity, sr.gaz, rc.cost from self_readings sr, reading_costs rc where (sr.month=? and rc.month=?) and (sr.apartment_number=? and rc.apt_number=?);";
+				String q = "select sr.electricity, sr.gaz, rc.cost, rc.status from self_readings sr, reading_costs rc where (sr.month=? and rc.month=?) and (sr.apartment_number=? and rc.apt_number=?);";
 				stmt = conn.prepareStatement(q);
 				stmt.setString(1, date);
 				stmt.setString(2, date);
@@ -43,8 +43,9 @@ public class DBSearchForConsumptionReportImpl extends RemoteServiceServlet imple
 					String electricity = rs.getString("electricity");
 					String gas = rs.getString("gaz");
 					String cost = rs.getString("cost");
+					boolean status = rs.getBoolean("status");
 
-					reading = new ConsumptionCostReport(electricity, gas, cost);
+					reading = new ConsumptionCostReport(electricity, gas, cost, status);
 				}
 			} catch (Exception ex) {
 				throw new RuntimeException("Something went wrong: " + ex.getMessage(), ex);

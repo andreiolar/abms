@@ -573,6 +573,15 @@
     	<servlet-name>retreiveUpkeepCostReports</servlet-name>
     	<url-pattern>/abms/RetreiveUpkeepCostReportsImpl</url-pattern>
   	</servlet-mapping>
+  	
+  	<servlet>
+    	<servlet-name>payConsumption</servlet-name>
+    	<servlet-class>com.andreiolar.abms.server.ConsumptionPaymentImpl</servlet-class>
+  	</servlet>
+  	<servlet-mapping>
+    	<servlet-name>payConsumption</servlet-name>
+    	<url-pattern>/abms/ConsumptionPaymentImpl</url-pattern>
+  	</servlet-mapping>
   
   <!-- Default page to serve -->
   <welcome-file-list>

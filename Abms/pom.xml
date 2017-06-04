@@ -125,6 +125,19 @@
 			<artifactId>gwt-material-table</artifactId>
 			<version>${gwt-material-table.version}</version>
 		</dependency>
+		
+		<!-- Stripe -->
+		<dependency>
+		    <groupId>com.arcbees.stripe</groupId>
+		    <artifactId>gwt-stripe</artifactId>
+		    <version>0.2.0</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.stripe</groupId>
+			<artifactId>stripe-java</artifactId>
+			<version>5.0.0</version>
+		</dependency>
 
 	</dependencies>
 
