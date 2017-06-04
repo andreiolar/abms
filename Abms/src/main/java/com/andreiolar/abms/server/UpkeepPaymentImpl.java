@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.andreiolar.abms.client.exception.ClientCardException;
-import com.andreiolar.abms.client.rpc.ConsumptionPayment;
+import com.andreiolar.abms.client.rpc.UpkeepPayment;
 import com.andreiolar.abms.mail.MailSender;
 import com.andreiolar.abms.properties.PropertiesReader;
 import com.andreiolar.abms.shared.UserDetails;
@@ -17,9 +17,9 @@ import com.stripe.Stripe;
 import com.stripe.exception.CardException;
 import com.stripe.model.Charge;
 
-public class ConsumptionPaymentImpl extends RemoteServiceServlet implements ConsumptionPayment {
+public class UpkeepPaymentImpl extends RemoteServiceServlet implements UpkeepPayment {
 
-	private static final long serialVersionUID = 8486455797914030412L;
+	private static final long serialVersionUID = -7771546574706468738L;
 
 	@Override
 	public void pay(String token, String amount, String description, String month, UserDetails userDetails) throws Exception {
@@ -58,7 +58,7 @@ public class ConsumptionPaymentImpl extends RemoteServiceServlet implements Cons
 				conn = MyConnection.getConnection();
 
 				try {
-					String q = "update reading_costs set status=true where apt_number=? and month=?";
+					String q = "update upkeep_costs set status=true where apt_number=? and month=?";
 					stmt = conn.prepareStatement(q);
 					stmt.setInt(1, Integer.parseInt(userDetails.getApartmentNumber()));
 					stmt.setString(2, month);
@@ -74,7 +74,7 @@ public class ConsumptionPaymentImpl extends RemoteServiceServlet implements Cons
 					String q = "insert into user_transactions(apt_number, description, cost, date) values(?,?,?,?)";
 					stmt = conn.prepareStatement(q);
 					stmt.setInt(1, Integer.parseInt(userDetails.getApartmentNumber()));
-					stmt.setString(2, "Consumption Payment for " + month);
+					stmt.setString(2, "Upkeep Payment for " + month);
 					stmt.setString(3, amount);
 					stmt.setString(4, sdf.format(creationDate));
 
@@ -91,13 +91,13 @@ public class ConsumptionPaymentImpl extends RemoteServiceServlet implements Cons
 			}
 
 			if (executed > 0) {
-				String subject = "Consumption costs for " + month + " successfully paid";
+				String subject = "Upkeep costs for " + month + " successfully paid";
 				String to = userDetails.getEmail();
 				String message = "<p>" + "Hello " + userDetails.getFirstName() + " " + userDetails.getLastName() + "," + "<br><br>"
-						+ "You have successfully paid the consumption costs for " + month + ".<br><br>" + "<b>Amount Paid: </b>" + amount
-						+ " RON<br><br>" + "<u><b>Issued For:</b></u><br>" + "<b>Username: </b>" + userDetails.getUsername() + "<br>"
-						+ "<b>Email: </b> " + userDetails.getEmail() + "<br>" + "<b>First Name: </b>" + userDetails.getFirstName() + "<br>"
-						+ "<b>Last Name: </b>" + userDetails.getLastName() + "<br>" + "<b>Country: </b>" + userDetails.getCountry() + "<br><br>"
+						+ "You have successfully paid the upkeep costs for " + month + ".<br><br>" + "<b>Amount Paid: </b>" + amount + " RON<br><br>"
+						+ "<u><b>Issued For:</b></u><br>" + "<b>Username: </b>" + userDetails.getUsername() + "<br>" + "<b>Email: </b> "
+						+ userDetails.getEmail() + "<br>" + "<b>First Name: </b>" + userDetails.getFirstName() + "<br>" + "<b>Last Name: </b>"
+						+ userDetails.getLastName() + "<br>" + "<b>Country: </b>" + userDetails.getCountry() + "<br><br>"
 						+ "If you need to contact support regarding this transaction, please have the following information ready: <br>"
 						+ "<b>Date: </b>" + creationDate + "<br>" + "<b>Transaction ID: </b>" + created.getId() + "<br><br>" + "Thank You,"
 						+ "<br><br>" + "Administration";
@@ -109,4 +109,5 @@ public class ConsumptionPaymentImpl extends RemoteServiceServlet implements Cons
 			System.out.println("Error");
 		}
 	}
+
 }

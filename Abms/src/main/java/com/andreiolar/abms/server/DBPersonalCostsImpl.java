@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import com.andreiolar.abms.client.exception.PersonalUpkeepInformationNotFoundException;
 import com.andreiolar.abms.client.rpc.DBPersonalCosts;
 import com.andreiolar.abms.shared.PersonalUpkeepInformation;
+import com.andreiolar.abms.shared.PersonalUpkeepInformationWrapper;
 import com.andreiolar.abms.shared.UserDetails;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -18,8 +19,8 @@ public class DBPersonalCostsImpl extends RemoteServiceServlet implements DBPerso
 	}
 
 	@Override
-	public PersonalUpkeepInformation getPersonalUpkeepInformation(UserDetails userDetails, String month) throws Exception {
-		PersonalUpkeepInformation personalUpkeepInformation = null;
+	public PersonalUpkeepInformationWrapper getPersonalUpkeepInformation(UserDetails userDetails, String month) throws Exception {
+		PersonalUpkeepInformationWrapper personalUpkeepInformationWrapper = null;
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
@@ -28,10 +29,12 @@ public class DBPersonalCostsImpl extends RemoteServiceServlet implements DBPerso
 			conn = MyConnection.getConnection();
 
 			try {
-				String q = "select * from personal_upkeep_information where aptNumber=? and luna=?";
+				String q = "select pui.*, uc.status from personal_upkeep_information pui, upkeep_costs uc where (pui.aptNumber=? and uc.apt_number=?) and (pui.luna=? and uc.month=?)";
 				stmt = conn.prepareStatement(q);
 				stmt.setString(1, userDetails.getApartmentNumber());
-				stmt.setString(2, month);
+				stmt.setInt(2, Integer.parseInt(userDetails.getApartmentNumber()));
+				stmt.setString(3, month);
+				stmt.setString(4, month);
 
 				rs = stmt.executeQuery();
 
@@ -51,9 +54,12 @@ public class DBPersonalCostsImpl extends RemoteServiceServlet implements DBPerso
 					String nume = rs.getString("nume");
 					String costTotal = rs.getString("costTotal");
 					String luna = rs.getString("luna");
+					boolean status = rs.getBoolean("status");
 
-					personalUpkeepInformation = new PersonalUpkeepInformation(apartmentNumber, spatiuComun, suprafataApt, incalzire, apaCaldaMenajera,
-							apaReceSiCanalizare, numarPersoane, gunoi, curent, gaz, servicii, gospodaresti, nume, costTotal, luna);
+					PersonalUpkeepInformation personalUpkeepInformation = new PersonalUpkeepInformation(apartmentNumber, spatiuComun, suprafataApt,
+							incalzire, apaCaldaMenajera, apaReceSiCanalizare, numarPersoane, gunoi, curent, gaz, servicii, gospodaresti, nume,
+							costTotal, luna);
+					personalUpkeepInformationWrapper = new PersonalUpkeepInformationWrapper(personalUpkeepInformation, status);
 				}
 
 			} catch (Exception ex) {
@@ -68,11 +74,11 @@ public class DBPersonalCostsImpl extends RemoteServiceServlet implements DBPerso
 			conn.close();
 		}
 
-		if (personalUpkeepInformation == null) {
+		if (personalUpkeepInformationWrapper == null) {
 			throw new PersonalUpkeepInformationNotFoundException();
 		}
 
-		return personalUpkeepInformation;
+		return personalUpkeepInformationWrapper;
 	}
 
 }
