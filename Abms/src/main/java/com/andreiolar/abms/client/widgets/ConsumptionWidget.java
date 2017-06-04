@@ -2,7 +2,12 @@ package com.andreiolar.abms.client.widgets;
 
 import java.util.Date;
 
+import com.andreiolar.abms.client.exception.ClientCardException;
 import com.andreiolar.abms.client.exception.ConsumptionReportNotFoundException;
+import com.andreiolar.abms.client.jso.ClientCreditCardResponse;
+import com.andreiolar.abms.client.jso.ClientCreditCardResponseHandler;
+import com.andreiolar.abms.client.jso.ClientStripe;
+import com.andreiolar.abms.client.jso.ClientStripeFactory;
 import com.andreiolar.abms.client.rpc.ConsumptionPayment;
 import com.andreiolar.abms.client.rpc.ConsumptionPaymentAsync;
 import com.andreiolar.abms.client.rpc.DBSearchForConsumptionReport;
@@ -15,10 +20,6 @@ import com.andreiolar.abms.shared.ConsumptionCostReport;
 import com.andreiolar.abms.shared.SelfReading;
 import com.andreiolar.abms.shared.UserDetails;
 import com.arcbees.stripe.client.CreditCard;
-import com.arcbees.stripe.client.CreditCardResponseHandler;
-import com.arcbees.stripe.client.Stripe;
-import com.arcbees.stripe.client.StripeFactory;
-import com.arcbees.stripe.client.jso.CreditCardResponse;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Float;
@@ -511,6 +512,7 @@ public class ConsumptionWidget extends Composite implements CustomWidget {
 		cardNumberBox.setPlaceholder("Card Number");
 		cardNumberBox.setMarginTop(30.0);
 		cardNumberBox.setType(InputType.TEXT);
+		cardNumberBox.setMaxLength(16);
 
 		Div div = new Div();
 		div.setMarginTop(30.0);
@@ -521,17 +523,20 @@ public class ConsumptionWidget extends Composite implements CustomWidget {
 		monthBox.setType(InputType.TEXT);
 		monthBox.setWidth("30%");
 		monthBox.getElement().getStyle().setMarginRight(5, Unit.PCT);
+		monthBox.setMaxLength(2);
 
 		MaterialTextBox yearBox = new MaterialTextBox();
 		yearBox.setPlaceholder("Expiry Year");
 		yearBox.setType(InputType.TEXT);
 		yearBox.setWidth("30%");
 		yearBox.getElement().getStyle().setMarginRight(5, Unit.PCT);
+		yearBox.setMaxLength(4);
 
 		MaterialTextBox cvcBox = new MaterialTextBox();
 		cvcBox.setPlaceholder("CVC");
 		cvcBox.setType(InputType.TEXT);
 		cvcBox.setWidth("30%");
+		cvcBox.setMaxLength(3);
 
 		div.add(monthBox);
 		div.add(yearBox);
@@ -549,76 +554,71 @@ public class ConsumptionWidget extends Composite implements CustomWidget {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				payButton.setEnabled(false);
+				nameBox.clearErrorOrSuccess();
+				cardNumberBox.clearErrorOrSuccess();
+				monthBox.clearErrorOrSuccess();
+				yearBox.clearErrorOrSuccess();
+				cvcBox.clearErrorOrSuccess();
 
 				String name = nameBox.getText();
 				String cardNumber = cardNumberBox.getText();
-				int month = Integer.parseInt(monthBox.getText());
-				int expiryYear = Integer.parseInt(yearBox.getText());
 				String cvc = cvcBox.getText();
+				String month = monthBox.getText();
+				String expiryYear = yearBox.getText();
 
-				final Stripe stripe = StripeFactory.get();
+				boolean canProcced = true;
 
-				stripe.inject(new Callback<Void, Exception>() {
+				if (name == null || name.trim().equals("")) {
+					canProcced = false;
+					nameBox.setError("Name cannot be empty");
+				}
 
-					@Override
-					public void onSuccess(Void result) {
-						stripe.setPublishableKey("pk_test_7XjMYfSUJljmavIx7z5zChB0");
+				if (cardNumber == null || cardNumber.trim().equals("")) {
+					canProcced = false;
+					cardNumberBox.setError("Card Number cannot be empty");
+				}
 
-						final CreditCard creditCard = new CreditCard.Builder().creditCardNumber(cardNumber).cvc(cvc).expirationMonth(month)
-								.expirationYear(expiryYear).name(name).build();
+				if (monthBox.getText() == null || monthBox.getText().trim().equals("")) {
+					canProcced = false;
+					monthBox.setError("Expiry Month cannot be empty");
+				}
 
-						stripe.getCreditCardToken(creditCard, new CreditCardResponseHandler() {
+				if (yearBox.getText() == null || yearBox.getText().trim().equals("")) {
+					canProcced = false;
+					yearBox.setError("Expiry Year cannot be empty");
+				}
+
+				if (cvc == null || cvc.trim().equals("")) {
+					canProcced = false;
+					cvcBox.setError("CVC cannot be empty");
+				}
+
+				if (canProcced) {
+					payButton.setEnabled(false);
+
+					final ClientStripe stripe = ClientStripeFactory.get();
+
+					if (stripe.isInjected()) {
+						doPayment(cost, panel, modal, cardNumberBox, monthBox, yearBox, cvcBox, payButton, name, cardNumber, month, expiryYear, cvc,
+								stripe);
+					} else {
+						stripe.inject(new Callback<Void, Exception>() {
 
 							@Override
-							public void onCreditCardReceived(int status, CreditCardResponse creditCardResponse) {
-								ConsumptionPaymentAsync payRpc = (ConsumptionPaymentAsync) GWT.create(ConsumptionPayment.class);
-								ServiceDefTarget payTarget = (ServiceDefTarget) payRpc;
-								String payUrl = GWT.getModuleBaseURL() + "ConsumptionPaymentImpl";
-								payTarget.setServiceEntryPoint(payUrl);
+							public void onSuccess(Void result) {
+								doPayment(cost, panel, modal, cardNumberBox, monthBox, yearBox, cvcBox, payButton, name, cardNumber, month,
+										expiryYear, cvc, stripe);
+							}
 
-								if (creditCardResponse.getId() != null) {
-									String description = previousMonth + " " + year + " Consumption Payment from " + userDetails.getFirstName() + " "
-											+ userDetails.getLastName() + " for Apt. Number " + userDetails.getApartmentNumber();
-
-									payRpc.pay(creditCardResponse.getId(), cost, description, previousMonth + " " + year, userDetails,
-											new AsyncCallback<Void>() {
-
-												@Override
-												public void onFailure(Throwable caught) {
-													payButton.setEnabled(true);
-													MaterialToast.fireToast(caught.getMessage(), "rounded");
-
-												}
-
-												@Override
-												public void onSuccess(Void result) {
-													payButton.setEnabled(true);
-
-													modal.close();
-													RootPanel.get().remove(modal);
-
-													MaterialToast.fireToast("Consumption costs successfully paid!", "rounded");
-
-													panel.clear();
-													panel.add(new ConsumptionWidget(userDetails));
-												}
-											});
-								} else {
-
-								}
+							@Override
+							public void onFailure(Exception reason) {
+								modal.close();
+								RootPanel.get().remove(modal);
+								Window.alert(reason.getMessage());
 							}
 						});
 					}
-
-					@Override
-					public void onFailure(Exception reason) {
-						modal.close();
-						RootPanel.get().remove(modal);
-						Window.alert(reason.getMessage());
-					}
-				});
-
+				}
 			}
 		});
 
@@ -645,5 +645,109 @@ public class ConsumptionWidget extends Composite implements CustomWidget {
 		modal.add(materialModalFooter);
 
 		return modal;
+	}
+
+	private void doPayment(String cost, MaterialPanel panel, MaterialModal modal, MaterialTextBox cardNumberBox, MaterialTextBox monthBox,
+			MaterialTextBox yearBox, MaterialTextBox cvcBox, MaterialButton payButton, String name, String cardNumber, String month,
+			String expiryYear, String cvc, final ClientStripe stripe) {
+		stripe.setPublishableKey("pk_test_7XjMYfSUJljmavIx7z5zChB0");
+
+		int intMonth = 0;
+		int intYear = 0;
+
+		try {
+			intMonth = Integer.parseInt(month);
+		} catch (NumberFormatException nfe) {
+			intMonth = 0;
+		}
+
+		try {
+			intYear = Integer.parseInt(expiryYear);
+		} catch (NumberFormatException nfe) {
+			intYear = 0;
+		}
+
+		final CreditCard creditCard = new CreditCard.Builder().creditCardNumber(cardNumber).cvc(cvc).expirationMonth(intMonth).expirationYear(intYear)
+				.name(name).build();
+
+		stripe.getCreditCardToken(creditCard, new ClientCreditCardResponseHandler() {
+
+			@Override
+			public void onCreditCardReceived(int status, ClientCreditCardResponse creditCardResponse) {
+				ConsumptionPaymentAsync payRpc = (ConsumptionPaymentAsync) GWT.create(ConsumptionPayment.class);
+				ServiceDefTarget payTarget = (ServiceDefTarget) payRpc;
+				String payUrl = GWT.getModuleBaseURL() + "ConsumptionPaymentImpl";
+				payTarget.setServiceEntryPoint(payUrl);
+
+				if (creditCardResponse.getId() != null) {
+					String description = previousMonth + " " + year + " Consumption Payment from " + userDetails.getFirstName() + " "
+							+ userDetails.getLastName() + " for Apt. Number " + userDetails.getApartmentNumber();
+
+					payRpc.pay(creditCardResponse.getId(), cost, description, previousMonth + " " + year, userDetails, new AsyncCallback<Void>() {
+
+						@Override
+						public void onFailure(Throwable caught) {
+							payButton.setEnabled(true);
+
+							if (caught instanceof ClientCardException) {
+								displayErrors(cardNumberBox, monthBox, yearBox, cvcBox, caught.getMessage());
+							} else {
+								MaterialToast.fireToast(caught.getMessage(), "rounded");
+							}
+
+						}
+
+						@Override
+						public void onSuccess(Void result) {
+							payButton.setEnabled(true);
+
+							modal.close();
+							RootPanel.get().remove(modal);
+
+							MaterialToast.fireToast("Consumption costs successfully paid!", "rounded");
+
+							panel.clear();
+							panel.add(new ConsumptionWidget(userDetails));
+						}
+					});
+				} else {
+					displayErrors(cardNumberBox, monthBox, yearBox, cvcBox, creditCardResponse.getError().getCode());
+					payButton.setEnabled(true);
+				}
+			}
+		});
+	}
+
+	private void displayErrors(MaterialTextBox cardNumberBox, MaterialTextBox monthBox, MaterialTextBox yearBox, MaterialTextBox cvcBox,
+			String code) {
+		switch (code) {
+			case "invalid_number" :
+				cardNumberBox.setError("The card number is not a valid credit card number.");
+				break;
+			case "invalid_expiry_month" :
+				monthBox.setError("The card's expiration month is invalid.");
+				break;
+			case "invalid_expiry_year" :
+				yearBox.setError("The card's expiration year is invalid.");
+				break;
+			case "invalid_cvc" :
+				cvcBox.setError("The card's security code is invalid.");
+				break;
+			case "incorrect_number" :
+				cardNumberBox.setError("The card number is incorrect.");
+				break;
+			case "incorrect_cvc" :
+				cvcBox.setError("The card's security code is incorrect.");
+				break;
+			case "expired_card" :
+				cardNumberBox.setError("The card has expired.");
+				break;
+			case "card_declined" :
+				cardNumberBox.setError("The card was declined.");
+				break;
+			case "processing_error" :
+				MaterialToast.fireToast("An error occurred while processing the card. Please try again.", "rounded");
+				break;
+		}
 	}
 }

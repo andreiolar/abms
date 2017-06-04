@@ -6,12 +6,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.andreiolar.abms.client.exception.ClientCardException;
 import com.andreiolar.abms.client.rpc.ConsumptionPayment;
 import com.andreiolar.abms.mail.MailSender;
 import com.andreiolar.abms.properties.PropertiesReader;
 import com.andreiolar.abms.shared.UserDetails;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.stripe.Stripe;
+import com.stripe.exception.CardException;
 import com.stripe.model.Charge;
 
 public class ConsumptionPaymentImpl extends RemoteServiceServlet implements ConsumptionPayment {
@@ -34,7 +36,13 @@ public class ConsumptionPaymentImpl extends RemoteServiceServlet implements Cons
 		chargeParams.put("description", description);
 		chargeParams.put("source", token);
 
-		Charge created = Charge.create(chargeParams);
+		Charge created = null;
+
+		try {
+			created = Charge.create(chargeParams);
+		} catch (CardException ce) {
+			throw new ClientCardException(ce.getCode());
+		}
 
 		if (created.getId() != null) {
 			// Update DB
