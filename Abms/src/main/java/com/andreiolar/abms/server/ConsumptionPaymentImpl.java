@@ -71,12 +71,13 @@ public class ConsumptionPaymentImpl extends RemoteServiceServlet implements Cons
 				}
 
 				try {
-					String q = "insert into user_transactions(apt_number, description, cost, date) values(?,?,?,?)";
+					String q = "insert into user_transactions(transaction_id, apt_number, description, cost, date) values(?,?,?,?,?)";
 					stmt = conn.prepareStatement(q);
-					stmt.setInt(1, Integer.parseInt(userDetails.getApartmentNumber()));
-					stmt.setString(2, "Consumption Payment for " + month);
-					stmt.setString(3, amount);
-					stmt.setString(4, sdf.format(creationDate));
+					stmt.setString(1, created.getId());
+					stmt.setInt(2, Integer.parseInt(userDetails.getApartmentNumber()));
+					stmt.setString(3, "Consumption Payment for " + month);
+					stmt.setString(4, amount);
+					stmt.setString(5, sdf.format(creationDate));
 
 					executed = stmt.executeUpdate();
 				} catch (Exception e) {

@@ -591,6 +591,15 @@
     	<servlet-name>payUpkeep</servlet-name>
     	<url-pattern>/abms/UpkeepPaymentImpl</url-pattern>
   	</servlet-mapping>
+  	
+  	<servlet>
+    	<servlet-name>listPayments</servlet-name>
+    	<servlet-class>com.andreiolar.abms.server.PaymentHistoryServiceImpl</servlet-class>
+  	</servlet>
+  	<servlet-mapping>
+    	<servlet-name>listPayments</servlet-name>
+    	<url-pattern>/abms/PaymentHistoryServiceImpl</url-pattern>
+  	</servlet-mapping>
   
   <!-- Default page to serve -->
   <welcome-file-list>

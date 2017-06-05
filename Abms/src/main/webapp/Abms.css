@@ -824,3 +824,32 @@ strong {
 	margin: auto;
 	margin-top: 25px !important;
 }
+
+.payment-history-main-div{
+	width: 85%;
+	margin: auto;
+	margin-top: 30px !important;
+}
+
+.payment-history-box-div{
+	padding: 30px;
+	border-radius: 3px;
+	box-shadow: 0 10px 10px -2px rgba(180,185,201,0.5);
+	border-top: 1px solid #f0f1f4;
+	margin-bottom: 75px;
+}
+
+.payment-history-header{
+	display: flex;
+	width: 100%;
+	border-bottom: 0.8px solid lightgrey;
+	padding-bottom: 15px;
+}
+
+.payment-history-entry-div{
+	display: flex;
+	width: 100%;
+	border-bottom: 0.8px solid lightgrey;
+	padding-bottom: 15px;
+	padding-top: 15px; 
+}
