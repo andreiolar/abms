@@ -132,15 +132,6 @@
 	    <servlet-name>pdfGenerator</servlet-name>
 	    <url-pattern>/abms/pdfGenerator</url-pattern>
 	</servlet-mapping>
-	
-	<servlet>
-        <servlet-name>dateGetter</servlet-name>
-        <servlet-class>com.andreiolar.abms.server.DateGetterImpl</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>dateGetter</servlet-name>
-        <url-pattern>/abms/DateGetterImpl</url-pattern>
-    </servlet-mapping>
     
     <servlet>
         <servlet-name>selfReader</servlet-name>
